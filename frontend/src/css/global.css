@@ -1,0 +1,22 @@
+/* main */
+html {
+    font-size: 16px;
+}
+body {
+    margin: 0;
+}
+* {
+    font-family: 'Inter', sans-serif;
+}
+/* utilities */
+.flex {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+.flex.col {
+    flex-direction: column;
+}
+.gap {
+    gap: 1rem;
+}
