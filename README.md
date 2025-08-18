@@ -11,9 +11,8 @@
 - ❤️ Избранное
 - *Полный список функций приведён в файле [Functions](functions.md)*
 - *...другие функции в разработке, следите за [CHANGELOG](CHANGELOG.md)!*
-<iframe frameborder="0" width="500" height="315"
-   src="./vid.np4" title="Пример работы приложения"
-/>
+
+![Пример работы приложения](./vid.gif)
 ## 🛠️ Технологический стек
 ### Frontend
 - **Vue.js 3** - *The Progressive JavaScript Framework. An approachable, performant and versatile framework for building web user interfaces.*
