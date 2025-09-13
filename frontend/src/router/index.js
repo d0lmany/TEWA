@@ -6,6 +6,7 @@ import MyFavorite from '../pages/my/Favorite.vue';
 import MyOrders from '../pages/my/Orders.vue';
 import My from '../pages/my/Index.vue';
 import Search from '../pages/search.vue';
+import Product from '../pages/product.vue';
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -41,6 +42,13 @@ const router = createRouter({
       component: Search,
       meta: {
         title: (route) => `Поиск: ${route.query.q ?? route.query.category }`
+      }
+    },
+    {
+      path: '/product/:id/:slug?',
+      component: Product,
+      meta: {
+        title: (route) => `${route.params.slug} на TEWA`
       }
     }
   ],

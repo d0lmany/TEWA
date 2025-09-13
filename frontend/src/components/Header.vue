@@ -16,7 +16,7 @@ const createCategories = async () => {
     try {
         const {data} = await API.get('/categories');
         categories.value.all = data;
-        categories.value.parents = data.filter((cat) => cat.parent_id === null);
+        categories.value.parents = data.filter((cat) => cat.parent_id ?? null === null);
     } catch (e) {
         ElMessage({ message: `Произошла ошибка при загрузке категорий: Нет связи с сервером. ${e}`, type: 'error' });
     }

@@ -6,9 +6,7 @@ import { Top } from '@element-plus/icons-vue';
 <main>
     <ProductList />
     <el-backtop>
-        <el-button circle>
-            <el-icon :size="24"><Top/></el-icon>
-        </el-button>
+        <el-icon :size="24"><Top/></el-icon>
     </el-backtop>
 </main>
 </template>

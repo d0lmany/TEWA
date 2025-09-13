@@ -111,9 +111,7 @@ watch(
 
       <ProductList :params="requestParams"/>
       <el-backtop>
-          <el-button circle>
-              <el-icon :size="24"><Top/></el-icon>
-          </el-button>
+        <el-icon :size="24"><Top/></el-icon>
       </el-backtop>
     </el-main>
   </el-container>

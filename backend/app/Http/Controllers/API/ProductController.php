@@ -5,6 +5,7 @@ namespace App\Http\Controllers\API;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreProductRequest;
 use App\Http\Requests\UpdateProductRequest;
+use App\Http\Resources\ProductResource;
 use App\Models\Product;
 use Illuminate\Http\Request;
 
@@ -90,7 +91,10 @@ class ProductController extends Controller
      */
     public function show(Product $product)
     {
-        return $product;
+        $product
+        ->load('category.parent')
+        ->load('productDetail');
+        return new ProductResource($product);
     }
 
     /**

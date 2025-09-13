@@ -32,6 +32,11 @@ const getPrice = computed(() => {
         maximumFractionDigits: isWholeNumber ? 0 : 2
     }).format(price);
 });
+const createPhotoPath = computed(() => {
+    //return `content/products/${props.img}`
+    return `../../backend/storage/app/public/products/${props.img}`;
+});
+
 const toggleFav = async () => {
     if (isAuthenticated.value) {
         try {
@@ -105,7 +110,7 @@ const handleChange = async () => {
 <template>
     <el-card class="card" shadow="hover">
         <template #header>
-            <el-image :src="`content/products/${img}`" fit="contain" lazy class="img"/>
+            <el-image :src="createPhotoPath" fit="contain" lazy class="img"/>
         </template>
         <p>{{ title }}</p>
         <p class="flex">
@@ -135,7 +140,7 @@ const handleChange = async () => {
                 </div>
             </el-popover>
             <el-input-number v-else v-model="count" :min="0" :max="quantity" disabled-scientific @change="handleChange"/>
-            <el-button round>Перейти</el-button>
+            <el-button round @click="$router.push(`/product/${id}/${title}`)">Перейти</el-button>
         </p>
         <el-popover :disabled="isAuthenticated" trigger="click">
             <template #reference>
