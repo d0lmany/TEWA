@@ -57,20 +57,16 @@ class CartItemController extends Controller
         }
     }
 
-    public function remove(Request $request) {
+    public function remove($id) {
         $userId = Auth::id();
-        $productId = $request->product_id;
 
         $deleted = CartItem::where([
             'user_id' => $userId,
-            'product_id' => $productId
+            'product_id' => $id,
         ])->delete();
 
-        if ($deleted) {
-            return response()->json([], 204);
-        } else {
-            return response()->json(['error' => 'not found'], 404);
-        }
+        if ($deleted) return response()->json([], 204);
+        else return response()->json(['error' => 'not found'], 404);
     }
 
     public function index() {

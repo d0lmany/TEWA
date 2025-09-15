@@ -16,13 +16,13 @@ const createCategories = async () => {
     try {
         const {data} = await API.get('/categories');
         categories.value.all = data;
-        categories.value.parents = data.filter((cat) => cat.parent_id ?? null === null);
+        categories.value.parents = data.filter((cat) => cat.parent_id === null);
     } catch (e) {
         ElMessage({ message: `Произошла ошибка при загрузке категорий: Нет связи с сервером. ${e}`, type: 'error' });
     }
 };
 const collectChildCategories = (parentId) => {
-    categories.value.currentChildren = categories.value.all.filter((cat) => cat.parent_id === parentId);
+    return categories.value.all.filter((cat) => cat.parent_id === parentId);
 }
 const search = () => {
     const target = searchQuery.value.trim();
@@ -95,29 +95,28 @@ onMounted(() => createCategories())
             </el-button>
         </nav>
     </header>
-    <el-dialog title="Категории" v-model="dialogVisibility" width="80%">
-        <el-row>
-            <el-col :span="5" class="flex col">
-                <el-button
-                v-for="category in categories.parents"
-                class="categorySelector"
-                @click="collectChildCategories(category.id)"
-                >{{ category.name }}</el-button>
-            </el-col>
-            <el-col :span="19" class="links">
-                <router-link class="link"
-                v-for="category in categories.currentChildren"
-                :to="{
+    <el-dialog title="Категории"
+    v-model="dialogVisibility"
+    style="border-radius: 1rem"
+    width="75%" top="5vh"
+    center>
+    <div class="categoriesDialog">
+        <ul v-for="category in categories.parents" class="categories">
+            <li>{{ category.name }}</li>
+            <li v-for="childCategory in collectChildCategories(category.id)">
+                <router-link :to="{
                     path: '/search',
                     query: {
-                        category_id: category.id,
-                        category: category.name
+                        category_id: childCategory.id,
+                        category: childCategory.name
                     }
                 }"
-                @click="dialogVisibility = !dialogVisibility"
-                >{{ category.name }}</router-link>
-            </el-col>
-        </el-row>
+                @click="dialogVisibility = !dialogVisibility">
+                    {{ childCategory.name }}
+                </router-link>
+            </li>
+        </ul>
+    </div>
     </el-dialog>
 </template>
 <style scoped>
@@ -158,6 +157,40 @@ header :deep(.el-link__inner) {
     border: 1px solid var(--el-border-color);
     border-radius: var(--el-border-radius-base);
 }
+.categoriesDialog {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 2rem;
+}
+.categories {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    font-size: 1rem;
+}
+.categories li:first-child {
+    font-weight: 600;
+    font-size: 1.25rem;
+    letter-spacing: 5%;
+    color: var(--el-text-color-primary);
+    border-bottom: 4px solid var(--el-color-primary);
+    padding-top: 0 !important;
+    min-height: 55px;
+
+    display: flex;
+    align-items: center;
+}
+.categories li {
+    padding-top: .25rem;
+}
+.categories li a {
+    color: var(--el-text-color-regular) !important;
+    text-decoration: none;
+    transition: .2s ease-out;
+}
+.categories li a:hover {
+    color: var(--el-color-primary) !important;
+}
 @media (max-width: 1250px) {
     header {
         flex-wrap: wrap;
@@ -175,33 +208,8 @@ header :deep(.el-link__inner) {
     .input {
         order: 4;
     }
+    .categoriesDialog {
+        grid-template-columns: repeat(2, 1fr);
+    }
 }
-    .categorySelector {
-        width: 100%;
-        min-width: 14rem;
-        justify-content: flex-start;
-    }
-    .categorySelector + .categorySelector {
-        margin: 0;
-        border-top: none;
-    }
-    .links {
-        padding: 0 1rem;
-        display: grid;
-        grid-template-columns: repeat(5, 1fr);
-    }
-    .links .link {
-        text-decoration: none;
-        font-weight: bold;
-        font-size: 1rem;
-        color: currentColor;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        transition: ease-out .1s;
-        text-align: center;
-    }
-    .links .link:hover {
-        color: var(--el-color-primary);
-    }
 </style>

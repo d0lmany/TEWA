@@ -93,7 +93,10 @@ class ProductController extends Controller
     {
         $product
         ->load('category.parent')
-        ->load('productDetail');
+        ->load('productDetail')
+        ->load('productAttribute')
+        ->load('shop.seller')
+        ->load('review.user');
         return new ProductResource($product);
     }
 

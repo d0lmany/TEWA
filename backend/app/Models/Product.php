@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class Product extends Model
@@ -27,5 +28,20 @@ class Product extends Model
     public function productDetail(): HasOne
     {
         return $this->hasOne(ProductDetail::class);
+    }
+
+    public function productAttribute(): HasMany
+    {
+        return $this->hasMany(ProductAttribute::class);
+    }
+
+    public function shop(): BelongsTo
+    {
+        return $this->belongsTo(Shop::class);
+    }
+
+    public function review(): HasMany
+    {
+        return $this->hasMany(Review::class);
     }
 }

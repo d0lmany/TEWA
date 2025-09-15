@@ -107,7 +107,7 @@ onUnmounted(() => {
       :quantity="product.quantity"
       v-if="products.length > 0"
     />
-    <el-empty v-else description="Магазин пуст" style="grid-column: 1 / -1"/>
+    <el-empty v-else description="Каталог пуст" style="grid-column: 1 / -1"/>
     <div ref="sentinel" style="height:1px"></div>
   </div>
 </template>

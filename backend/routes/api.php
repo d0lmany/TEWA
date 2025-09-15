@@ -24,8 +24,8 @@ Route::middleware(['throttle:api', 'auth:sanctum'])->group(function () {
 
     Route::get('cart', [CartItemController::class, 'index']);
     Route::post('cart', [CartItemController::class, 'add']);
-    Route::post('cart/reduce', [CartItemController::class, 'decrement']);
-    Route::post('cart/remove', [CartItemController::class, 'remove']);
+    Route::patch('cart/reduce', [CartItemController::class, 'decrement']);
+    Route::delete('cart/{id}', [CartItemController::class, 'remove']);
     
     Route::post('favorite', [FavoriteListItemController::class, 'toggle']);
     // TODO: надо перенести к продавцам

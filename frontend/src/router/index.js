@@ -7,6 +7,7 @@ import MyOrders from '../pages/my/Orders.vue';
 import My from '../pages/my/Index.vue';
 import Search from '../pages/search.vue';
 import Product from '../pages/product.vue';
+import Shop from '../pages/shop.vue';
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -50,6 +51,10 @@ const router = createRouter({
       meta: {
         title: (route) => `${route.params.slug} на TEWA`
       }
+    },
+    {
+      path: '/shop/:id',
+      component: Shop,
     }
   ],
 })

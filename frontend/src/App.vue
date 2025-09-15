@@ -3,6 +3,8 @@
 import { provide, ref, watch } from 'vue';
 // extra
 const backendURL = 'http://127.0.0.1:8000/api';
+const storageURL = 'http://127.0.0.1:8000/storage';
+const currency = 'RUB';
 // components
 import Header from './components/Header.vue';
 import Footer from './components/Footer.vue';
@@ -10,7 +12,9 @@ import AuthModal from './components/AuthModal.vue';
 import RegModal from './components/regModal.vue';
 // services
 import { AuthService } from './services/AuthService';
+import { I18nService } from './services/I18nService';
 const authService = new AuthService(backendURL);
+const i18n = new I18nService();
 // variables
 const isAuthModalOpen = ref(false);
 const isRegModalOpen = ref(false);
@@ -28,19 +32,26 @@ const openAuth = () => {
 };
 // provides
 const provides = {
+  // modals
   authModal: {
     open: openAuthModal,
     close: closeAuthModal
   },
-  backendURL: backendURL,
-  authService: authService,
-  API: authService.getApiInstance(),
-  authState: { isAuthenticated, user },
-  isDarkTheme: isDarkTheme,
   regModal: {
     open: openRegModal,
     close: closeRegModal
-  }
+  },
+  // API
+  backendURL: backendURL,
+  storageURL: storageURL,
+  API: authService.getApiInstance(),
+  // services
+  authService: authService,
+  i18n: i18n,
+  authState: { isAuthenticated, user },
+  // UI
+  isDarkTheme: isDarkTheme,
+  currency: currency,
 };
 Object.keys(provides).forEach(key => {
   provide(key, provides[key]);

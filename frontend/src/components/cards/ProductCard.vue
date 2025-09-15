@@ -20,12 +20,13 @@ const API = inject('API');
 const {isAuthenticated, user} = inject('authState');
 const authModal = inject('authModal');
 const regModal = inject('regModal');
+const storageURL = inject('storageURL');
 
 const getPrice = computed(() => {
     const price = props.fee === null ? props.price : props.price * (1 - props.fee / 100);
     const isWholeNumber = Math.round(price * 100) / 100 % 1 === 0;
     
-    return new Intl.NumberFormat('ru-RU', {
+    return new Intl.NumberFormat(navigator.language, {
         style: 'currency',
         currency: 'RUB',
         minimumFractionDigits: isWholeNumber ? 0 : 2,
@@ -33,8 +34,7 @@ const getPrice = computed(() => {
     }).format(price);
 });
 const createPhotoPath = computed(() => {
-    //return `content/products/${props.img}`
-    return `../../backend/storage/app/public/products/${props.img}`;
+    return `${storageURL}/products/${props.img}`;
 });
 
 const toggleFav = async () => {
