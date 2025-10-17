@@ -1,140 +1,107 @@
-<template>
-  <el-dialog 
-    :model-value="visible" 
-    @update:model-value="$emit('update:visible', $event)"
-    title="Вход" width="20%"
-    center align-center
-    :before-close="handleClose">
-    <el-form label-position="top"
-      ref="formRef"
-      :model="formData"
-      :rules="rules"
-      @submit.prevent="handleSubmit">
-      <el-form-item label="Почта" prop="email">
-        <el-input v-model="formData.email"/>
-      </el-form-item>
-      <el-form-item label="Пароль" prop="password">
-        <el-input v-model="formData.password" type="password" show-password/>
-      </el-form-item>
-      <el-form-item>
-        <el-row class="w" justify="space-between">
-          <el-col :span="3.5">
-            <el-link @click="openReg">Нет аккаунта?</el-link>
-          </el-col>
-          <el-col :span="3.5">
-            <el-link>Забыли пароль?</el-link>
-          </el-col>
-        </el-row>
-      </el-form-item>
-      <el-form-item class="margin-bottom:0">
-        <div class="w sub">
-          <el-button
-          type="primary"
-          native-type="submit"
-          :loading="loading"
-          >Войти</el-button>
-        </div>
-      </el-form-item>
-    </el-form>
-  </el-dialog>
-</template>
-
 <script setup>
-import { ElDialog, ElMessage, ElMessageBox } from 'element-plus';
 import { ref, inject } from 'vue';
+import { useUserStore } from '@/stores/userStore';
+import { ElMessage } from 'element-plus';
 
+const AuthService = inject('services').auth;
+const userStore = useUserStore();
+const formRef = ref();
+const form = ref({});
+const loading = ref(false);
+const rules = ref({
+  email: [{ required: true, message: 'Пожалуйста, введите почту', trigger: 'blur' },],
+  password: [{ required: true, message: 'Пожалуйста, введите пароль', trigger: 'blur' },]
+});
 const props = defineProps({
   visible: Boolean
 });
 
-const emit = defineEmits(['update:visible', 'close']);
-
-const authState = inject('authState');
-const authService = inject('authService');
-const authModal = inject('authModal');
-const regModal = inject('regModal');
-
-const formRef = ref();
-const loading = ref(false);
-
-const formData = ref({
-  email: '',
-  password: ''
-});
-
-const rules = {
-  email: [
-    { required: true, message: 'Пожалуйста, введите почту', trigger: 'blur' },
-  ],
-  password: [
-    { required: true, message: 'Пожалуйста, введите пароль', trigger: 'blur' },
-  ]
-};
-const openReg = () => {
-  closeModal();
-  regModal.open();
-}
-
-const closeModal = () => {
-  emit('update:visible', false);
-  authModal.close();
-};
-
-const handleClose = (done) => {
-  closeModal();
-  done();
-};
-
+const emit = defineEmits(['callReg', 'close']);
+const callReg = () => emit('callReg');
+const close = () => emit('close');
 const handleSubmit = () => {
   formRef.value.validate(async (valid) => {
     if (valid) {
       loading.value = true;
-      
+
       try {
-        const result = await authService.login(
-          formData.value.email,
-          formData.value.password
+        const result = await AuthService.login(
+          form.value.email,
+          form.value.password
         );
-        
+
         if (result.error) {
-          throw new Error(result.error);
+          throw result.error;
         }
-        
-        authState.isAuthenticated.value = true;
-        if (authState.user && result.user) {
-          authState.user.value = result.user;
-        }
-        
-        loading.value = false;
-        closeModal();
-        
-        ElMessage.success('Успешный вход!');
-        
+
+        userStore.setIsAuth(true);
+        userStore.setUser(result.data.user);
+
+        close();
+        ElMessage.success('Вход выполнен!');
       } catch (e) {
-        loading.value = false;
-        
-        if (e.response?.status === 401) {
-          ElMessageBox.alert('Неверный email или пароль', 'Ошибка авторизации');
-        } else if (e.response?.status === 429) {
-          ElMessageBox.alert('Слишком много попыток. Попробуйте позже', 'Ошибка');
-        } else {
-          const errorMessage = e.error || e.message || 'Неверные данные';
-          ElMessageBox.alert(`Ошибка входа: ${errorMessage}`, 'Ошибка');
+        switch (e.response?.status ?? 400) {
+          case 401:
+            ElMessage.error('Неверный email или пароль');
+            break;
+          case 429:
+            ElMessage.warning('Слишком много попыток, попробуйте позже');
+            break;
+          default:
+            ElMessage.error(`Ошибка входа: ${e.error || e.message || 'Неизвестная ошибка'}`);
         }
+      } finally {
+        loading.value = false;
       }
     }
-  });
-};
+  })
+}
 </script>
+<template>
+<el-dialog title="Вход"
+  v-model="props.visible"
+  center
+  align-center
+  width="30%"
+  style="border-radius: 1rem"
+  :before-close="close"
+>
+  <el-form
+    label-position="top"
+    ref="formRef"
+    :model="form"
+    @submit.prevent="handleSubmit"
+    :rules="rules"
+  >
+  <el-form-item label="Почта" prop="email">
+    <el-input v-model="form.email"/>
+  </el-form-item>
+  <el-form-item label="Пароль" prop="password">
+    <el-input v-model="form.password" type="password" show-password/>
+  </el-form-item>
+  <el-form-item>
+    <el-button
+      text
+      type="primary"
+      @click="callReg"
+    >Нет аккаунта?</el-button>
+  </el-form-item>
+  <el-form-item style="margin-bottom:0">
+    <el-button
+    type="primary"
+    class="button"
+    :loading="loading"
+    native-type="submit">
+    Войти
+    </el-button>
+  </el-form-item>
+  </el-form>
+</el-dialog>
+</template>
 <style scoped>
-.w {
-  width: 100%;
-}
-.sub {
-  display: flex;
-  justify-content: center;
-}
-.sub button {
-  font-size: 1rem !important;
+.button {
+  margin-inline: auto;
+  font-size: 1rem;
+  min-width: 50%;
 }
 </style>

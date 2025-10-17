@@ -8,6 +8,11 @@ body {
 * {
     font-family: 'Inter', sans-serif;
 }
+/* cards */
+.product-card-header {
+    border-bottom: none;
+    padding-bottom: 0;
+}
 /* utilities */
 .flex {
     display: flex;
@@ -22,4 +27,7 @@ body {
 }
 .gap {
     gap: 1rem;
+}
+.contents {
+    display: contents;
 }

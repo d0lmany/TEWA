@@ -4,14 +4,23 @@ namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreFavoriteRequest;
-use App\Models\Favorite_list_item;
-use App\Models\Favorite_list;
+use App\Http\Resources\FavoriteListItemResource;
+use App\Models\FavoriteListItem;
+use App\Models\FavoriteList;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 class FavoriteListItemController extends Controller
 {
+    public function index($listId) {
+        $items = FavoriteListItem::with('product')
+            ->where('list_id', $listId)
+            ->get();
+        
+        return FavoriteListItemResource::collection($items);
+    }
+
     public function store(StoreFavoriteRequest $request)
     {
         /*
@@ -23,7 +32,7 @@ class FavoriteListItemController extends Controller
         */
     }
 
-    public function destroy(Favorite_list_item $fli)
+    public function destroy(FavoriteListItem $fli)
     {
         /*
         1. из запроса узнаём айди товара и айди списка
@@ -38,28 +47,28 @@ class FavoriteListItemController extends Controller
             $userId = Auth::id();
             $productId = $request->product_id;
 
-            $favoriteList = Favorite_list::where('name', 'Избранное')
-                ->where('user_id', $userId)
-                ->firstOrFail();
-
-            $favoriteItem = Favorite_list_item::where('list_id', $favoriteList->id)
-                ->where('product_id', $productId)
+            $existingItem = FavoriteListItem::where('product_id', $productId)
+                ->whereHas('favoriteList', fn($query) => $query->where('user_id', $userId))
                 ->first();
 
-            if ($favoriteItem) {
-                $favoriteItem->delete();
-                return response()->json([], 204);
-            } else {
-                $favoriteItem = Favorite_list_item::create([
-                    'list_id' => $favoriteList->id,
-                    'product_id' => $productId,
-                    'added_at' => now()
-                ]);
-                return response()->json([
-                    'message' => 'Added',
-                    'data' => $favoriteItem
-                ], 201);
+            if ($existingItem) {
+                $existingItem->delete();
+                return response()->json(['message' => 'Removed'], 200);
             }
+
+            $favoriteList = FavoriteList::where('user_id', $userId)
+                ->where('name', 'Избранное')
+                ->firstOrFail();
+
+            $favoriteItem = $favoriteList->favoriteListItems()->create([
+                'product_id' => $request->product_id,
+                'list_id' => $favoriteList->id,
+            ]);
+
+            return response()->json([
+                'message' => 'Added',
+                'data' => new FavoriteListItemResource($favoriteItem)
+            ], 201);
         } catch (Exception $e) {
             return response()->json([
                 'error' => $e

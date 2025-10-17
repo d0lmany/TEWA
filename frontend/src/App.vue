@@ -9,49 +9,89 @@ const currency = 'RUB';
 import Header from './components/Header.vue';
 import Footer from './components/Footer.vue';
 import AuthModal from './components/AuthModal.vue';
-import RegModal from './components/regModal.vue';
+import RegModal from './components/RegModal.vue';
 // services
-import { AuthService } from './services/AuthService';
-import { I18nService } from './services/I18nService';
-const authService = new AuthService(backendURL);
-const i18n = new I18nService();
-// variables
-const isAuthModalOpen = ref(false);
-const isRegModalOpen = ref(false);
-const isAuthenticated = ref(authService.isAuthenticated());
-const user = ref(null);
+import AuthService from './services/AuthService';
+import I18nService from './services/I18nService';
+import ProductService from './services/ProductService';
+import CategoryService from './services/CategoryService';
+import CartService from './services/CartService';
+import FavoriteService from './services/FavoriteService';
+import ClaimService from './services/ClaimService';
+const createServices = () => {
+  const auth = new AuthService(backendURL);
+  const API = auth.getApiInstance();
+  const i18n = new I18nService();
+  const product = new ProductService(API);
+  const category = new CategoryService(API);
+  const cart = new CartService(API);
+  const favorite = new FavoriteService(API);
+  const claim = new ClaimService(API);
+
+  return { auth, i18n, product,
+    category, cart, favorite,
+    claim };
+}
+const services = createServices();
+// stores
+import { useUserStore } from './stores/userStore';
+import { ElMessage } from 'element-plus';
+const userStore = useUserStore();
+userStore.setIsAuth(services.auth.isAuthenticated());
+// UI
+const modals = ref({
+  authOpen: false,
+  regOpen: false,
+});
+modals.value.login = () => {
+  modals.value.regOpen = false;
+  modals.value.authOpen = true;
+}
 const isDarkTheme = ref(false);
 // methods
-const openAuthModal = () => isAuthModalOpen.value = true;
-const closeAuthModal = () => isAuthModalOpen.value = false;
-const openRegModal = () => isRegModalOpen.value = true;
-const closeRegModal = () => isRegModalOpen.value = false;
-const openAuth = () => {
-  closeRegModal();
-  openAuthModal();
-};
+const callRegFromAuth = () => {
+  modals.value.authOpen = false;
+  modals.value.regOpen = true;
+}
+const callAuthFromReg = () => {
+  modals.value.regOpen = false;
+  modals.value.authOpen = true;
+}
+const closeAuth = () => {
+  modals.value.authOpen = false;
+}
+const closeReg = () => {
+  modals.value.regOpen = false;
+}
+const setCart = async () => {
+  const response = await services.cart.index();
+
+  if (response.success) {
+    userStore.setCart(response.data.data);
+  } else {
+    ElMessage.error(`Не удалось загрузить корзину: ${response.message}`);
+  }
+}
+const setFavorite = async () => {
+  const response = await services.favorite.index();
+
+  if (response.success) {
+    userStore.setFavorite(response.data.data);
+  } else {
+    ElMessage.error(`Не удалось загрузить избранное: ${response.message}`);
+  }
+}
 // provides
 const provides = {
-  // modals
-  authModal: {
-    open: openAuthModal,
-    close: closeAuthModal
-  },
-  regModal: {
-    open: openRegModal,
-    close: closeRegModal
-  },
   // API
   backendURL: backendURL,
   storageURL: storageURL,
-  API: authService.getApiInstance(),
   // services
-  authService: authService,
-  i18n: i18n,
-  authState: { isAuthenticated, user },
+  services: services,
   // UI
   isDarkTheme: isDarkTheme,
   currency: currency,
+  modals: modals.value,
 };
 Object.keys(provides).forEach(key => {
   provide(key, provides[key]);
@@ -62,18 +102,34 @@ watch(isDarkTheme, (value) => {
 });
 // logic
 isDarkTheme.value = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+if (userStore.isAuth) {
+  setCart();
+  setFavorite();
+}
 </script>
 
 <template>
   <Header/>
-  <RouterView style="padding-top: 4.5rem;"/>
+  <RouterView class="view"/>
   <Footer/>
-  <AuthModal 
-    :visible="isAuthModalOpen"
-    @close="closeAuthModal"
-    />
+  <AuthModal
+    :visible="modals.authOpen"
+    @close="closeAuth"
+    @callReg="callRegFromAuth"
+  />
   <RegModal
-    :visible="isRegModalOpen"
-    @login-click="openAuth"
-    />
+    :visible="modals.regOpen"
+    @close="closeReg"
+    @callAuth="callAuthFromReg"
+  />
 </template>
+<style scoped>
+.view {
+  margin-top: 4.5rem !important;
+}
+@media (max-width: 1250px) {
+  .view {
+    margin-top: 7rem !important;
+  }
+}
+</style>

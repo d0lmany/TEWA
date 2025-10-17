@@ -1,10 +1,9 @@
 <script setup>
 import { Moon, Sunny } from '@element-plus/icons-vue';
-import { inject } from 'vue';
+import { inject, ref } from 'vue';
 
 const isDarkTheme = inject('isDarkTheme');
-const regModal = inject('regModal');
-const authModal = inject('authModal');
+const modals = inject('modals');
 
 const toggleTheme = () => {
     isDarkTheme.value = !isDarkTheme.value;
@@ -25,9 +24,9 @@ const toggleTheme = () => {
         </el-button>
     </div>
     <div class="links">
-        <div @click="authModal.open()">Вход</div>
+        <div @click="modals.authOpen = true">Вход</div>
         <div>О проекте</div>
-        <div @click="regModal.open()">Регистрация</div>
+        <div @click="modals.regOpen = true">Регистрация</div>
         <div>О маркетплейсе</div>
         <div>Стать продавцом</div>
         <div><a href="https://d0lmany.vercel.app/"

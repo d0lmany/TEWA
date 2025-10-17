@@ -1,152 +1,149 @@
 <script setup>
-import { ref, computed, watch } from 'vue';
+import Filters from '@/components/Filters.vue';
+import { computed, ref } from 'vue';
 import { useRoute } from 'vue-router';
-import Filters from '../components/Filters.vue';
-import ProductList from '../components/cards/ProductList.vue';
-import { Top } from '@element-plus/icons-vue';
+import ProductList from '@/components/cards/ProductList.vue';
+import {Top} from '@element-plus/icons-vue';
 
 const route = useRoute();
-
-const createInitialFilters = () => ({
-  rate: 0,
-  min: '',
-  max: '',
-  tags: [],
-  category_id: route.query.category_id ?? null,
+const filters = ref({
+  category_id: {
+    value: route.query.category_id,
+    key: route.query.category_id,
+    label: route.query.category_name,
+  }
 });
-
-const activeFilters = ref(createInitialFilters());
-const appliedFilters = ref(createInitialFilters());
-
-const sortOptions = [
+const appliedFilters = ref({
+  category_id: {
+    value: route.query.category_id,
+    key: route.query.category_id,
+    label: route.query.category_name,
+  }
+});
+const sorts = ref({
+  field: 'feedback_count',
+  direction: 'DESC',
+});
+const appliedSorts = ref({
+  field: 'feedback_count',
+  direction: 'DESC',
+});
+const options = [
   { value: 'feedback_count', label: 'Количеству отзывов' },
   { value: 'rating', label: 'Рейтингу' },
   { value: 'base_price', label: 'Цене' },
   { value: 'created_at', label: 'Новизне' }
 ];
+const request = computed(() => ({
+  q: route.query.q ?? null,
+  sort: appliedSorts.value.field,
+  direction: appliedSorts.value.direction,
+  ...appliedFilters.value
+}));
 
-const sortSettings = ref({
-  current: 'feedback_count',
-  direction: 'DESC',
-  applied: 'feedback_count',
-  appliedDirection: 'DESC'
-});
-
-const requestParams = computed(() => {
-  const params = {
-    q: route.query.q ?? null,
-    sort: sortSettings.value.applied,
-    direction: sortSettings.value.appliedDirection
-  };
-
-  if (appliedFilters.value.rate > 0) params.min_rating = appliedFilters.value.rate;
-  if (appliedFilters.value.min) params.min_price = appliedFilters.value.min;
-  if (appliedFilters.value.max) params.max_price = appliedFilters.value.max;
-  if (appliedFilters.value.tags.length) params.tags = appliedFilters.value.tags;
-  if (appliedFilters.value.category_id) params.category_id = appliedFilters.value.category_id;
-
-  return params;
-});
-
-const resetAllFilters = () => {
-  activeFilters.value = createInitialFilters();
-  appliedFilters.value = createInitialFilters();
-  sortSettings.value = {
-    current: 'feedback_count',
+const reset = () => {
+  filters.value = {};
+  sorts.value = {
+    field: 'feedback_count',
     direction: 'DESC',
-    applied: 'feedback_count',
-    appliedDirection: 'DESC'
   };
-};
-
-const applyCurrentFilters = () => {
-  appliedFilters.value = { ...activeFilters.value };
-  sortSettings.value.applied = sortSettings.value.current;
-  sortSettings.value.appliedDirection = sortSettings.value.direction;
-};
-
-watch(
-  () => route.query.category_id,
-  (newCategoryId) => {
-    activeFilters.value.category_id = newCategoryId ?? null;
-    appliedFilters.value.category_id = newCategoryId ?? null;
-  }
-);
-</script>
-
-<template>
-  <el-container class="root">
-    <el-aside class="aside">
-      <h2>Фильтры</h2>
-      <Filters v-model="activeFilters"/>
-      <el-button-group class="buttons">
-        <el-button @click="resetAllFilters" round>Очистить</el-button>
-        <el-button @click="applyCurrentFilters" round type="primary">Применить</el-button>
-      </el-button-group>
-    </el-aside>
-
-    <el-main>
-      <div class="header">
-        <h2>{{ route.query.q ?? route.query.category }}</h2>
-        <div class="flex">
-          <span>Сортировать:</span>
-          <el-select
-            v-model="sortSettings.current"
-            placeholder="Сортировать"
-            style="width:50%"
-          >
-            <el-option
-              v-for="opt in sortOptions"
-              :key="opt.value"
-              :value="opt.value"
-              :label="`по ${opt.label}`"
-            />
-          </el-select>
-          <el-radio-group v-model="sortSettings.direction">
-            <el-radio-button value="ASC">По возрастанию</el-radio-button>
-            <el-radio-button value="DESC">По убыванию</el-radio-button>
-          </el-radio-group>
-        </div>
-      </div>
-
-      <ProductList :params="requestParams"/>
-      <el-backtop>
-        <el-icon :size="24"><Top/></el-icon>
-      </el-backtop>
-    </el-main>
-  </el-container>
-</template>
-
-<style scoped>
-.header {
-    margin-bottom: 1rem;
-    display: flex;
-    flex-direction: column;
-    gap: .5rem;
+  appliedFilters.value = {};
+  appliedSorts.value = {
+    field: 'feedback_count',
+    direction: 'DESC',
+  };
 }
-h2 {
-    margin: 0;
+
+const set = () => {
+  const cleanFilters = {};
+  for (const [key, value] of Object.entries(filters.value)) {
+    if (value !== null && value !== undefined && value !== '') {
+      cleanFilters[key] = value;
+    }
+  }
+  appliedFilters.value = cleanFilters;
+  appliedSorts.value = {...sorts.value};
+}
+</script>
+<template>
+<el-container>
+  <el-main class="main">
+    <div class="main-header">
+      <h1>{{ route.query.q ?? 'Поиск' }}</h1>
+      <div class="sorts">
+        <el-select v-model="sorts.field">
+          <el-option
+            v-for="option in options"
+            :value="option.value"
+            :label="`по ${option.label}`"
+          />
+        </el-select>
+        <el-radio-group v-model="sorts.direction">
+          <el-radio-button value="ASC">По возрастанию</el-radio-button>
+          <el-radio-button value="DESC">По убыванию</el-radio-button>
+        </el-radio-group>
+      </div>
+    </div>
+    <ProductList :params="request"/>
+    <el-backtop>
+      <el-icon :size="24"><Top/></el-icon>
+    </el-backtop>
+  </el-main>
+  <el-aside class="aside">
+    <h2>Фильтры</h2>
+    <Filters v-model="filters"/>
+    <el-button-group class="buttons">
+      <el-button
+        @click="reset"
+      >Очистить</el-button>
+      <el-button
+        type="primary"
+        @click="set"
+      >Применить</el-button>
+    </el-button-group>
+  </el-aside>
+</el-container>
+</template>
+<style scoped>
+.aside, .main {
+  background: var(--el-color-primary-light-9);
+  margin-inline: 1rem;
+  margin-bottom: 1rem;
+  padding: 1rem;
+  border-radius: 1rem;
+  order: 2;
 }
 .aside {
-    margin: 20px;
-    padding: 1rem;
-    margin-right: 0;
-    height: min-content;
-    border-radius: 1rem;
-    background: var(--el-color-primary-light-9);
+  height: min-content;
+  margin-right: 0;
+  order: 1;
 }
-.buttons > * {
-    width: 50%;
+.main-header {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+}
+.sorts {
+  display: flex;
+  width: 50%;
+  gap: 1rem;
+}
+.sorts :deep(.el-radio-group) {
+  flex-wrap: nowrap;
+}
+h1, h2 {
+  font-size: 1.5rem;
+  margin: 0;
+  color: var(--el-text-color-primary);
+}
+h2 {
+  margin-bottom: 1rem;
 }
 .buttons {
-    width: 100%;
+  margin-top: 1rem;
+  width: 100%;
 }
-span {
-    border: var(--el-border);
-    border-radius: var(--el-border-radius-base);
-    padding: 4px 12px;
-}
-.root {
-  padding-top: 3rem !important;
+.buttons > * {
+  width: 50%;
 }
 </style>

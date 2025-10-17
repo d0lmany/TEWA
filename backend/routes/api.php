@@ -3,8 +3,10 @@
 use App\Http\Controllers\API\AuthController;
 use App\Http\Controllers\API\CartItemController;
 use App\Http\Controllers\API\CategoryController;
+use App\Http\Controllers\API\ClaimController;
 use App\Http\Controllers\API\ProductController;
 use App\Http\Controllers\API\FavoriteListItemController;
+use App\Http\Controllers\API\FavoriteListController;
 use Illuminate\Support\Facades\Route;
 
 // публичный маршрут
@@ -21,13 +23,14 @@ Route::middleware('throttle:api')->group(function () {
 // маршрут для авторизованных
 Route::middleware(['throttle:api', 'auth:sanctum'])->group(function () {
     Route::get('auth/logout', [AuthController::class, 'logout']);
-
-    Route::get('cart', [CartItemController::class, 'index']);
-    Route::post('cart', [CartItemController::class, 'add']);
-    Route::patch('cart/reduce', [CartItemController::class, 'decrement']);
-    Route::delete('cart/{id}', [CartItemController::class, 'remove']);
-    
+    // корзина
+    Route::apiResource('cart', CartItemController::class);
+    Route::get('lowCart', [CartItemController::class, 'indexBg']);
+    // избранное
+    Route::get('lowFavorite', [FavoriteListController::class, 'indexBg']);
     Route::post('favorite', [FavoriteListItemController::class, 'toggle']);
+    // жалобы
+    Route::post('claims', [ClaimController::class, 'store']);
     // TODO: надо перенести к продавцам
     //Route::post('products', [ProductController::class, 'store']);
     //Route::put('products/{product}', [ProductController::class, 'update']);

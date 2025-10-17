@@ -4,7 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class Favorite_list_item extends Model
+class FavoriteListItem extends Model
 {
     protected $fillable = [
         'list_id',
@@ -22,7 +22,7 @@ class Favorite_list_item extends Model
 
     public function favoriteList()
     {
-        return $this->belongsTo(Favorite_list::class, 'list_id');
+        return $this->belongsTo(FavoriteList::class, 'list_id');
     }
 
     public function product()

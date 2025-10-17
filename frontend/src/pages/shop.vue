@@ -1,2 +1,3 @@
 <template>
+shop!
 </template>

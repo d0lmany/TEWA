@@ -5,6 +5,7 @@ namespace App\Http\Controllers\API;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\LoginUserRequest;
 use App\Http\Requests\StoredUserRequest;
+use App\Http\Resources\UserResource;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 
@@ -23,9 +24,9 @@ class AuthController extends Controller
         }
 
         $user = Auth::user();
-        return response()->json([
-            'user' => $user,
-            'token' => $user->createToken("token of user '{$user->name}'")->plainTextToken
+
+        return (new UserResource($user))->additional([
+            'token' => $user->createToken("{$user->name}'s token")->plainTextToken,
         ]);
     }
 

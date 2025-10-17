@@ -14,6 +14,7 @@ const router = createRouter({
   routes: [
     {
       path: '/', 
+      name: 'Home',
       component: Index,
       meta: {
         title: 'TEWA — Свободный маркетплейс'
@@ -40,9 +41,10 @@ const router = createRouter({
     },
     {
       path: '/search',
+      name: 'Search',
       component: Search,
       meta: {
-        title: (route) => `Поиск: ${route.query.q ?? route.query.category }`
+        title: (route) => `Поиск: ${route.query.q || route.query.category_name }`
       }
     },
     {
@@ -53,6 +55,7 @@ const router = createRouter({
       }
     },
     {
+      name: 'Shop',
       path: '/shop/:id',
       component: Shop,
     }

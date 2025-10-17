@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-export class AuthService {
+export default class AuthService {
     constructor(url) {
         this.api = axios.create({
             baseURL: url,
@@ -45,26 +45,54 @@ export class AuthService {
                 name: data.name,
                 email: data.email,
                 birthday: data.birthday,
-                password: data.password
+                password: data.password,
             });
 
-            if (response.data && response.data.user) {
+            if (response.data || response.data.id) {
                 try {
-                    const loginResult = await this.login(data.email, data.password);
+                    const loginResult = await this.login({
+                        email: data.email,
+                        password: data.password,
+                    });
+
+                    if (loginResult.error) {
+                        throw loginResult.error;
+                    }
+
                     return loginResult;
-                } catch (loginError) {
-                    throw new Error('Регистрация успешна, но вход не удался: ' + (loginError.message || loginError));
+                } catch (e) {
+                    return {
+                        user: response.data,
+                        needLogin: true,
+                    };
                 }
             }
 
-            if (response.data?.message) {
-                throw new Error(response.data.message);
-            }
-
-            throw new Error('Неизвестная ошибка регистрации');
-
+            throw new Error('Неожиданный ответ от сервера');
         } catch (error) {
-            throw error.response?.data?.message || error.message || 'Ошибка регистрации';
+            if (error.response?.status === 422) {
+                const errorData = error.response.data;
+                
+                let errorMessage = errorData.message || 'Ошибка валидации';
+                
+                if (errorData.errors && Object.keys(errorData.errors).length > 0) {
+                    const firstErrorKey = Object.keys(errorData.errors)[0];
+                    const firstError = errorData.errors[firstErrorKey][0];
+                    errorMessage = firstError;
+                }
+                
+                throw new Error(errorMessage);
+            }
+            
+            if (error.response?.data?.message) {
+                throw new Error(error.response.data.message);
+            }
+            
+            if (error.message) {
+                throw new Error(error.message);
+            }
+            
+            throw new Error('Неизвестная ошибка при регистрации');
         }
     }
 

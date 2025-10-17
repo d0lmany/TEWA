@@ -1,53 +1,60 @@
-export class ProductService
+export default class ProductService
 {
-    constructor(isAuth, API, productId) {
-        this.isAuth = isAuth;
+    constructor(API) {
         this.API = API;
-        this.productId = productId;
     }
 
-    async addToCart(attributes = []) {
+    async index(params = {}, page = 1) {
         try {
-            const request = {
-                product_id: this.productId,
-                product_attributes: JSON.stringify(attributes),
+            const response = await this.API.get('/products', {
+                params: {
+                    ...params,
+                    page: page,
+                }
+            });
+
+            if (response.status === 200) {
+                return {
+                    success: true,
+                    data: response.data.data,
+                    pagination: {
+                        current_page: response.data.current_page,
+                        last_page: response.data.last_page,
+                        total: response.data.total,
+                        per_page: response.data.per_page
+                    }
+                };
+            } else {
+                throw new Error('Ошибка при получении товаров');
+            }
+
+        } catch (e) {
+            return {
+                success: false,
+                message: e.response?.data?.message || e.message || e || 'Произошла ошибка при загрузке товаров'
             };
-
-            const response = await this.API.post('/cart', request);
-
-            if (response.status === 201) return 'added';
-            else throw response;
-
-        } catch (e) {
-            return e;
         }
     }
 
-    async reduceProduct() {
+    async show(id) {
         try {
-            const response = await this.API.patch('/cart/reduce', { product_id: this.productId });
+            const response = await this.API.get(`/products/${id}`);
 
-            if (response.status === 204) return 'deleted';
-
-            if (response.status === 200) return 'reduced';
-
-            return response.data;
-
+            if (response.status === 200) {
+                return {
+                    success: true,
+                    data: response.data
+                };
+            } else if (response.status === 404) {
+                throw new Error('not found');
+            } else {
+                throw new Error('Не удалось загрузить товар');
+            }
         } catch (e) {
-            return e;
-        }
-    }
-
-    async removeFromCart() {
-        try {
-            const response = await this.API.delete(`/cart/${this.productId}`);
-
-            if (response.status === 204) return 'deleted';
-            
-            return response.data;
-
-        } catch (e) {
-            return e;
+            return {
+                success: false,
+                message: e.message || e
+            };
         }
     }
 }

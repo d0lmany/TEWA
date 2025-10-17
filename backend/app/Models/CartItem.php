@@ -8,7 +8,11 @@ class CartItem extends Model
 {
     protected $fillable = [
         'user_id', 'product_id',
-        'quantity', 'products_attributes'
+        'quantity', 'product_attributes'
+    ];
+
+    protected $casts = [
+        'product_attributes' => 'array'
     ];
 
     public $timestamps = false;

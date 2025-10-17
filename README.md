@@ -17,6 +17,7 @@
 ### Frontend
 - **Vue.js 3** - *The Progressive JavaScript Framework. An approachable, performant and versatile framework for building web user interfaces.*
 - **Vue Router** - *Vue Router. Expressive, configurable and convenient routing for Vue.js.*
+- **Pinia** - *The intuitive store for Vue.js.*
 
 ### Backend
 - **Laravel 12** - *Laravel is a web application PHP framework with expressive, elegant syntax, a robust ecosystem.*

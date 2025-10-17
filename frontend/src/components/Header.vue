@@ -3,45 +3,48 @@ import { ref, inject, onMounted } from 'vue';
 import { Menu, Search, ShoppingCart, Star, MessageBox, User, StarFilled } from '@element-plus/icons-vue';
 import { ElMessage } from 'element-plus';
 import { useRouter } from 'vue-router';
+import { useUserStore } from '@/stores/userStore';
+import { storeToRefs } from 'pinia';
 
 const searchQuery = ref('');
 const dialogVisibility = ref(false);
-const API = inject('API');
 const categories = ref({});
-const route = useRouter();
-const {isAuthenticated, user} = inject('authState');
-const authModal = inject('authModal');
+const router = useRouter();
+const CategoryService = inject('services').category;
+const {isAuth} = storeToRefs(useUserStore());
+const modals = inject('modals');
 
-const createCategories = async () => {
-    try {
-        const {data} = await API.get('/categories');
-        categories.value.all = data;
-        categories.value.parents = data.filter((cat) => cat.parent_id === null);
-    } catch (e) {
-        ElMessage({ message: `Произошла ошибка при загрузке категорий: Нет связи с сервером. ${e}`, type: 'error' });
-    }
-};
-const collectChildCategories = (parentId) => {
-    return categories.value.all.filter((cat) => cat.parent_id === parentId);
-}
 const search = () => {
     const target = searchQuery.value.trim();
     if (target !== '') {
-        route.push({
-            path: '/search',
+        router.push({
+            name: 'Search',
             query: { q: target }
         });
     }
 }
 const goto = (path) => {
-    if (isAuthenticated.value) {
-        route.push(path);
+    if (isAuth.value) {
+        router.push(path);
     } else {
-        authModal.open();
+        modals.value.authOpen = true;
+    }
+}
+const loadCategories = async () => {
+    try {
+        const data = await CategoryService.prepare();
+
+        if (data.error) {
+            throw data.error;
+        }
+
+        categories.value = data;
+    } catch (e) {
+        ElMessage.error(`Произошла ошибка при загрузке категорий: Нет связи с сервером. ${e}`);
     }
 }
 
-onMounted(() => createCategories())
+onMounted(() => loadCategories())
 </script>
 <template>
     <header>
@@ -101,19 +104,18 @@ onMounted(() => createCategories())
     width="75%" top="5vh"
     center>
     <div class="categoriesDialog">
-        <ul v-for="category in categories.parents" class="categories">
-            <li>{{ category.name }}</li>
-            <li v-for="childCategory in collectChildCategories(category.id)">
+        <ul class="categories" v-for="(subs, name, i) in categories" :key="i">
+            <li>{{ name }}</li>
+            <li v-for="sub in subs">
                 <router-link :to="{
                     path: '/search',
                     query: {
-                        category_id: childCategory.id,
-                        category: childCategory.name
+                        category_id: sub.id,
+                        category: sub.name
                     }
                 }"
-                @click="dialogVisibility = !dialogVisibility">
-                    {{ childCategory.name }}
-                </router-link>
+                @click="dialogVisibility = false"
+                >{{ sub.name }}</router-link>
             </li>
         </ul>
     </div>

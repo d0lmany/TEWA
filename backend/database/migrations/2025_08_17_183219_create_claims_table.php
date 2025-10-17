@@ -18,6 +18,7 @@ return new class extends Migration
             $table->unsignedBigInteger('entity_id')->index('entity_id_i');
             $table->string('topic');
             $table->text('text');
+            $table->dateTime('created_at');
         });
     }
 

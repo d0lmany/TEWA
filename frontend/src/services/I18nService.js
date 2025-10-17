@@ -1,4 +1,4 @@
-export class I18nService
+export default class I18nService
 {
     constructor(language = this.getLanguage()) {
         this.language = language;
@@ -13,7 +13,7 @@ export class I18nService
 
     async loadDictionary() {
         try {
-            const response = await fetch('/assets/dictionary.json');
+            const response = await fetch('/assets/json/dictionary.json');
 
             if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status}`);

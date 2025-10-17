@@ -18,7 +18,7 @@ const props = defineProps({
   }
 });
 
-const API = inject('API');
+const ProductService = inject('services').product;
 const products = ref([]);
 const paginate = ref({
   observer: null,
@@ -33,30 +33,27 @@ const fetchProducts = async () => {
 
   paginate.value.loading = true;
   try {
-    const response = await API.get('products', {
-      params: {
-        ...props.params,
-        page: paginate.value.page,
-      }
-    });
+    const result = await ProductService.index(props.params, paginate.value.page);
 
-    if (!response.data) {
-      ElMessage({ message: 'Произошла ошибка при загрузке каталога', type: 'error' });
+    if (!result.success) {
+      ElMessage.error(result.message || 'Произошла ошибка при загрузке каталога');
       return;
     }
 
-    const data = response.data;
-    products.value = [...products.value, ...data.data];
+    const data = result.data;
+    const pagination = result.pagination;
+
+    products.value = [...products.value, ...data];
 
     if (props.lastPage && paginate.value.page >= props.lastPage) {
       paginate.value.hasMore = false;
-    } else if (paginate.value.page >= data.last_page) {
+    } else if (paginate.value.page >= pagination.last_page) {
       paginate.value.hasMore = false;
     } else {
       paginate.value.page++;
     }
   } catch (e) {
-    ElMessage({ message: `Фатальная ошибка: Нет связи с сервером`, type: 'error' });
+    ElMessage.error(`Фатальная ошибка: Нет связи с сервером. ${e}`);
     console.error(e);
   } finally {
     paginate.value.loading = false;
@@ -94,26 +91,19 @@ onUnmounted(() => {
 </script>
 
 <template>
-  <div class="cards">
+  <section>
     <ProductCard
-      v-for="product in products"
+      v-for="(product, i) in products"
       :key="product.id"
-      :id="product.id"
-      :img="product.photo"
-      :price="Number(product.base_price)"
-      :fee="Number(product.discount)"
-      :title="product.name"
-      :rating="product.rating"
-      :quantity="product.quantity"
+      v-model="products[i]"
       v-if="products.length > 0"
     />
     <el-empty v-else description="Каталог пуст" style="grid-column: 1 / -1"/>
     <div ref="sentinel" style="height:1px"></div>
-  </div>
+  </section>
 </template>
-
 <style scoped>
-.cards {
+section {
   gap: 1rem;
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(clamp(200px, 25%, 250px), 1fr));
