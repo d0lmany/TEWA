@@ -40,7 +40,7 @@ const album = computed(() => {
     return [...alb, product.value.photo].map(url => makePhotoURL(url)).reverse();
 })
 const rating = computed(() => parseFloat(product.value?.feedbacks?.rating));
-const shopRating = computed(() => parseFloat(product.value.shop.rating));
+const shopRating = computed(() => parseFloat(product.value?.shop?.rating));
 
 const translate = (text) => {
     const word = i18n.translate(text);
@@ -276,7 +276,7 @@ onUnmounted(() => {
                     name: 'Search',
                     query: {
                         category_id: product.category.parent.id,
-                        category_name: product.category.parent.name
+                        category: product.category.parent.name
                     }
                 }"
             >{{ product.category.parent.name }}</el-breadcrumb-item>
@@ -286,7 +286,7 @@ onUnmounted(() => {
                     name: 'Search',
                     query: {
                         category_id: product.category.id,
-                        category_name: product.category.name
+                        category: product.category.name
                     }
                 }"
             >
@@ -364,7 +364,7 @@ onUnmounted(() => {
                                         :size="24"
                                         color="#F7BA2A"
                                     ><StarFilled/></el-icon>
-                                    {{isNaN(rating) ? 'Нет оценок': rating}}
+                                    {{rating ? rating: 'Нет оценок'}}
                                 </div>
                                 <el-text
                                     size="large"
@@ -463,7 +463,7 @@ onUnmounted(() => {
                                 v-if="shopRating"
                                 disabled
                                 allow-half
-                                :v-model="shopRating"
+                                v-model="shopRating"
                                 :colors="['#99A9BF', '#F7BA2A', '#FF9900']"
                             />
                             <el-text v-else size="large">Нет оценок</el-text>
@@ -716,27 +716,19 @@ article, aside {
     height: 75px;
     flex-shrink: 0;
 }
-.hero-content {
-    display: flex;
-    flex-direction: column;
-    gap: .5rem;
-}
 .hero-content h1 {
     margin: 0;
     color: var(--el-text-color-primary);
     font-size: 1.75rem;
 }
-.rating {
-    display: flex;
-    align-items: center;
-    gap: .25rem;
-    font-size: 1.25rem;
-}
-.attributes {
+.attributes, .rating, .hero-content {
     display: flex;
     flex-direction: column;
     gap: .5rem;
-    width: fit-content;
+    font-size: 1.25rem;
+}
+.rating {
+    flex-direction: row;
 }
 .tags {
     display: flex;

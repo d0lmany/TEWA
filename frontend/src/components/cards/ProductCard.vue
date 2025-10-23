@@ -6,14 +6,15 @@ import { StarFilled } from '@element-plus/icons-vue';
 const router = useRouter();
 const storageURL = inject('storageURL');
 const currency = inject('currency');
-const product = defineModel({
-    type: Object,
-    required: true,
-});
-
+const props = defineProps({
+    product: {
+        type: Object,
+        required: true,
+    }
+})
 const getPrice = computed(() => {
-    return product.value.discount === null ? product.value.base_price
-        : product.value.base_price * (1 - product.value.discount / 100);
+    return props.product.price.discount === null ? props.product.price.base_price
+        : props.product.price.base_price * (1 - props.product.price.discount / 100);
 });
 const isWholeNumber = Math.round(getPrice.value * 100) / 100 % 1 === 0;
 const formatter = new Intl.NumberFormat(navigator.language, {
@@ -24,8 +25,14 @@ const formatter = new Intl.NumberFormat(navigator.language, {
 });
 
 const formatPrice = (price) => formatter.format(price);
-const showProduct = () => router.push(`/product/${product.value.id}/${product.value.name}`);
-const createPhotoPath = computed(() => `${storageURL}/products/${product.value.photo}`);
+const showProduct = () => router.push({
+    name: 'Product',
+    params: {
+        id: props.product.id,
+        slug: props.product.name
+    }
+});
+const createPhotoPath = computed(() => `${storageURL}/products/${props.product.photo}`);
 </script>
 <template>
 <el-card
@@ -38,14 +45,14 @@ const createPhotoPath = computed(() => `${storageURL}/products/${product.value.p
         <el-image :src="createPhotoPath" fit="contain" lazy class="img"/>
     </template>
     <div class="flex gap">
-        <b>{{ formatPrice(getPrice) }} <s class="soft" v-if="product.discount > 0">{{ formatPrice(product.base_price) }}</s></b>
-        <div class="rating" v-if="product.rating !== null">
+        <b>{{ formatPrice(getPrice) }} <s class="soft" v-if="props.product.price.discount > 0">{{ formatPrice(props.product.price.base_price) }}</s></b>
+        <div class="rating" v-if="props.product.feedbacks.rating">
             <el-icon :size="20" color="gold"><StarFilled/></el-icon>
-            <div>{{ parseFloat(product.rating) }}</div>
+            <div>{{ parseFloat(props.product.feedbacks.rating) }}</div>
         </div>
         <div class="soft" v-else>Нет оценок</div>
     </div>
-    <p>{{ product.name }}</p>
+    <p>{{ props.product.name }}</p>
 </el-card>
 </template>
 <style scoped>

@@ -7,11 +7,6 @@ use Illuminate\Http\Resources\Json\JsonResource;
 
 class ShopResource extends JsonResource
 {
-    /**
-     * Transform the resource into an array.
-     *
-     * @return array<string, mixed>
-     */
     public function toArray(Request $request): array
     {
         $shop = [
@@ -22,7 +17,7 @@ class ShopResource extends JsonResource
             'seller' => $this->when($this->relationLoaded('seller') && $this->seller, function() {
                 return $this->seller;
             }),
-            'rating' => $this->rating,
+            'rating' => $this->when(isset($this->rating), $this->rating),
             'city' => $this->city,
             'payment_type' => $this->payment_type,
             'fee' => $this->fee,

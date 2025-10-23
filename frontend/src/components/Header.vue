@@ -23,11 +23,11 @@ const search = () => {
         });
     }
 }
-const goto = (path) => {
+const goto = (where) => {
     if (isAuth.value) {
-        router.push(path);
+        router.push({name: where})
     } else {
-        modals.value.authOpen = true;
+        modals.authOpen = true;
     }
 }
 const loadCategories = async () => {
@@ -48,7 +48,7 @@ onMounted(() => loadCategories())
 </script>
 <template>
     <header>
-        <router-link class="logo" to="/">
+        <router-link class="logo" :to="{name: 'Home'}">
             <el-icon>
                 <StarFilled/>
             </el-icon>
@@ -72,25 +72,25 @@ onMounted(() => loadCategories())
             </template>
         </el-input>
         <nav>
-            <el-button @click="goto('/my/cart')">
+            <el-button @click="goto('Cart')">
                 <el-icon class="el-icon--left" :size="22">
                     <ShoppingCart/>
                 </el-icon>
                 Корзина
             </el-button>
-            <el-button @click="goto('/my/favorite')">
+            <el-button @click="goto('Favorite')">
                 <el-icon class="el-icon--left" :size="22">
                     <Star/>
                 </el-icon>
                 Избранное
             </el-button>
-            <el-button @click="goto('/my/orders')">
+            <el-button @click="goto('Orders')">
                 <el-icon class="el-icon--left" :size="22">
                     <MessageBox/>
                 </el-icon>
                 Заказы
             </el-button>
-            <el-button @click="goto('/my')">
+            <el-button @click="goto('Profile')">
                 <el-icon class="el-icon--left" :size="22">
                     <User/>
                 </el-icon>
@@ -108,7 +108,7 @@ onMounted(() => loadCategories())
             <li>{{ name }}</li>
             <li v-for="sub in subs">
                 <router-link :to="{
-                    path: '/search',
+                    name: 'Search',
                     query: {
                         category_id: sub.id,
                         category: sub.name

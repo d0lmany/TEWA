@@ -10,26 +10,26 @@ const filters = ref({
   category_id: {
     value: route.query.category_id,
     key: route.query.category_id,
-    label: route.query.category_name,
+    label: route.query.category,
   }
 });
 const appliedFilters = ref({
   category_id: {
     value: route.query.category_id,
     key: route.query.category_id,
-    label: route.query.category_name,
+    label: route.query.category,
   }
 });
 const sorts = ref({
-  field: 'feedback_count',
+  field: 'reviews_count',
   direction: 'DESC',
 });
 const appliedSorts = ref({
-  field: 'feedback_count',
+  field: 'reviews_count',
   direction: 'DESC',
 });
 const options = [
-  { value: 'feedback_count', label: 'Количеству отзывов' },
+  { value: 'reviews_count', label: 'Количеству отзывов' },
   { value: 'rating', label: 'Рейтингу' },
   { value: 'base_price', label: 'Цене' },
   { value: 'created_at', label: 'Новизне' }
@@ -44,12 +44,12 @@ const request = computed(() => ({
 const reset = () => {
   filters.value = {};
   sorts.value = {
-    field: 'feedback_count',
+    field: 'reviews_count',
     direction: 'DESC',
   };
   appliedFilters.value = {};
   appliedSorts.value = {
-    field: 'feedback_count',
+    field: 'reviews_count',
     direction: 'DESC',
   };
 }
@@ -84,7 +84,7 @@ const set = () => {
         </el-radio-group>
       </div>
     </div>
-    <ProductList :params="request"/>
+    <product-list :params="request"/>
     <el-backtop>
       <el-icon :size="24"><Top/></el-icon>
     </el-backtop>

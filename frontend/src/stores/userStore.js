@@ -12,6 +12,7 @@ export const useUserStore = defineStore('user', {
             this.isAuth = condition;
         },
         setUser (user) {
+            this.logout();
             this.user = user;
         },
         setCart (cart) {
@@ -81,7 +82,7 @@ export const useUserStore = defineStore('user', {
             
             return item;
         },
-        removeFromFavorite(productId) {
+        removeFromFavorite (productId) {
             let removed = false;
             
             this.favorite.forEach(list => {
@@ -95,6 +96,12 @@ export const useUserStore = defineStore('user', {
             });
             
             return removed;
+        },
+        logout () {
+            this.cart = [];
+            this.favorite = [];
+            this.isAuth = false;
+            this.user = null;
         }
     }
 })

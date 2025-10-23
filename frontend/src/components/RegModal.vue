@@ -2,6 +2,7 @@
 import { ElMessage } from 'element-plus';
 import { useUserStore } from '@/stores/userStore';
 import { ref, inject } from 'vue';
+import { InfoFilled } from '@element-plus/icons-vue';
 
 const AuthService = inject('services').auth;
 const userStore = useUserStore();
@@ -11,7 +12,8 @@ const form = ref({
     email: '',
     birthday: '',
     password: '',
-    password2: ''
+    passwordConfirmation: '',
+    agree: false
 });
 const rules = {
     name: [
@@ -50,10 +52,38 @@ const rules = {
         }
     ],
     password: [
-        { required: true, message: '"Пароль" - обязательное поле', trigger: 'blur' },
-        { min: 8, message: 'Пароль должен иметь длину не менее 8 символов', trigger: 'blur' }
+    { 
+        required: true, 
+        message: '"Пароль" - обязательное поле', 
+        trigger: 'blur' 
+    },
+    { 
+        min: 8, 
+        message: 'Пароль должен содержать минимум 8 символов', 
+        trigger: 'blur' 
+    },
+    {
+        validator: (rule, value, callback) => {
+        if (!value) {
+            callback();
+            return;
+        }
+        
+        const hasUpperCase = /[A-Z]/.test(value);
+        const hasLowerCase = /[a-z]/.test(value);
+        const hasNumbers = /\d/.test(value);
+        const hasSpecialChar = /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(value);
+        
+        if (!hasUpperCase || !hasLowerCase || !hasNumbers || !hasSpecialChar) {
+            callback(new Error('Пароль должен содержать латинские буквы в верхнем и нижнем регистре, цифры и специальные символы'));
+        } else {
+            callback();
+        }
+        },
+        trigger: 'blur'
+    }
     ],
-    password2: [
+    passwordConfirmation: [
         { required: true, message: 'Подтверждение пароля обязательно', trigger: 'blur' },
         {
             validator: (_, value, callback) => {
@@ -65,21 +95,34 @@ const rules = {
             },
             trigger: 'blur'
         }
-    ]
+    ],
+    agree: [
+    {
+        validator: (_, value, callback) => {
+            if (!value) {
+                callback(new Error('Необходимо согласиться с условиями использования'));
+            } else {
+                callback();
+            }
+        },
+        trigger: 'change'
+    }
+]
 };
-
 const loading = ref(false);
-const props = defineProps({
-    visible: Boolean
+const visible = defineModel({
+    type: Boolean,
+    required: true,
 });
-const emit = defineEmits(['close', 'callAuth']);
+const emit = defineEmits(['callAuth']);
 const callAuth = () => emit('callAuth');
 const close = () => {
     if (formRef.value) {
         formRef.value.resetFields();
     }
-    emit('close');
+    visible.value = false;
 };
+const loadUserData = inject('globalMethods').loadUserData;
 
 const handleSubmit = async () => {
     if (!formRef.value) return;
@@ -92,18 +135,26 @@ const handleSubmit = async () => {
             try {
                 const result = await AuthService.register(form.value);
 
-                if (result.user) {
+                if (result.user && result.token) {
+                    localStorage.setItem('auth_token', result.token);
+                    
+                    AuthService.setAuthHeader(result.token);
+                    
                     userStore.setIsAuth(true);
                     userStore.setUser(result.user);
-                    close();
+                    
                     ElMessage.success('Регистрация и вход выполнены успешно!');
+                    loadUserData();
+                    close();
                 } 
-                else if (result.needLogin) {
+                else if (result.user) {
                     close();
                     ElMessage.success('Регистрация успешна! Теперь вы можете войти в систему.');
                     callAuth();
                 }
-                
+                else {
+                    throw new Error('Неверный формат ответа от сервера');
+                }
             } catch (e) {
                 ElMessage.error(e.message || 'Ошибка при регистрации');
             } finally {
@@ -118,7 +169,7 @@ const handleSubmit = async () => {
 <template>
     <el-dialog 
         title="Регистрация"
-        v-model="props.visible"
+        v-model="visible"
         center
         align-center
         width="30%"
@@ -161,22 +212,39 @@ const handleSubmit = async () => {
                     show-password
                 />
             </el-form-item>
-            <el-form-item label="Повторите пароль" prop="password2">
+            <el-form-item label="Повторите пароль" prop="passwordConfirmation">
                 <el-input
-                    v-model="form.password2"
+                    v-model="form.passwordConfirmation"
                     type="password"
                     placeholder="Пароль ещё раз"
                     show-password
                 />
             </el-form-item>
+            <el-form-item prop="agree">
+                    <el-checkbox
+                        v-model="form.agree"
+                        label="Соглашаюсь с условиями использования"
+                    />
+            </el-form-item>
             <el-form-item>
-                <el-button
-                    type="primary"
-                    text
-                    @click="callAuth"
-                >
-                    Уже есть аккаунт?
-                </el-button>
+                <div class="flex" style="width: 100%">
+                    <el-button
+                        type="primary"
+                        text
+                        @click="callAuth"
+                    >
+                        Уже есть аккаунт?
+                    </el-button>
+                    <el-button
+                        @click="$router.push({name: 'Legal'}); visible = false"
+                        text
+                    >
+                        Условия использования
+                        <el-icon class="el-icon--right">
+                            <info-filled/>
+                        </el-icon>
+                    </el-button>
+                </div>
             </el-form-item>
         </el-form>
         <template #footer>

@@ -46,53 +46,37 @@ export default class AuthService {
                 email: data.email,
                 birthday: data.birthday,
                 password: data.password,
+                password_confirmation: data.passwordConfirmation
             });
 
-            if (response.data || response.data.id) {
-                try {
-                    const loginResult = await this.login({
-                        email: data.email,
-                        password: data.password,
-                    });
-
-                    if (loginResult.error) {
-                        throw loginResult.error;
-                    }
-
-                    return loginResult;
-                } catch (e) {
-                    return {
-                        user: response.data,
-                        needLogin: true,
-                    };
-                }
+            if (response.data?.data && response.data?.token) {
+                return {
+                    user: response.data.data,
+                    token: response.data.token,
+                    success: true
+                };
             }
 
-            throw new Error('Неожиданный ответ от сервера');
+            throw new Error('Неверный формат ответа от сервера');
+
         } catch (error) {
             if (error.response?.status === 422) {
-                const errorData = error.response.data;
-                
-                let errorMessage = errorData.message || 'Ошибка валидации';
-                
-                if (errorData.errors && Object.keys(errorData.errors).length > 0) {
-                    const firstErrorKey = Object.keys(errorData.errors)[0];
-                    const firstError = errorData.errors[firstErrorKey][0];
-                    errorMessage = firstError;
+                const errors = error.response.data.errors;
+                if (errors) {
+                    const firstError = Object.values(errors)[0]?.[0];
+                    throw new Error(firstError || 'Проверьте правильность введенных данных');
                 }
-                
-                throw new Error(errorMessage);
             }
             
             if (error.response?.data?.message) {
                 throw new Error(error.response.data.message);
             }
             
-            if (error.message) {
-                throw new Error(error.message);
+            if (error.code === 'NETWORK_ERROR' || error.code === 'ECONNABORTED') {
+                throw new Error('Ошибка соединения с сервером');
             }
             
-            throw new Error('Неизвестная ошибка при регистрации');
+            throw new Error(error.message || 'Ошибка при регистрации');
         }
     }
 

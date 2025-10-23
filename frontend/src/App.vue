@@ -18,6 +18,7 @@ import CategoryService from './services/CategoryService';
 import CartService from './services/CartService';
 import FavoriteService from './services/FavoriteService';
 import ClaimService from './services/ClaimService';
+import UserService from './services/UserService';
 const createServices = () => {
   const auth = new AuthService(backendURL);
   const API = auth.getApiInstance();
@@ -27,10 +28,11 @@ const createServices = () => {
   const cart = new CartService(API);
   const favorite = new FavoriteService(API);
   const claim = new ClaimService(API);
+  const user = new UserService(cart, favorite);
 
   return { auth, i18n, product,
     category, cart, favorite,
-    claim };
+    claim, user };
 }
 const services = createServices();
 // stores
@@ -57,29 +59,9 @@ const callAuthFromReg = () => {
   modals.value.regOpen = false;
   modals.value.authOpen = true;
 }
-const closeAuth = () => {
-  modals.value.authOpen = false;
-}
-const closeReg = () => {
-  modals.value.regOpen = false;
-}
-const setCart = async () => {
-  const response = await services.cart.index();
-
-  if (response.success) {
-    userStore.setCart(response.data.data);
-  } else {
-    ElMessage.error(`Не удалось загрузить корзину: ${response.message}`);
-  }
-}
-const setFavorite = async () => {
-  const response = await services.favorite.index();
-
-  if (response.success) {
-    userStore.setFavorite(response.data.data);
-  } else {
-    ElMessage.error(`Не удалось загрузить избранное: ${response.message}`);
-  }
+const loadUserData = async () => {
+  const result = await services.user.loadAndSave();
+  if (result) ElMessage.warning('Не все данные были загружены');
 }
 // provides
 const provides = {
@@ -92,6 +74,7 @@ const provides = {
   isDarkTheme: isDarkTheme,
   currency: currency,
   modals: modals.value,
+  globalMethods: { loadUserData }
 };
 Object.keys(provides).forEach(key => {
   provide(key, provides[key]);
@@ -103,23 +86,20 @@ watch(isDarkTheme, (value) => {
 // logic
 isDarkTheme.value = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
 if (userStore.isAuth) {
-  setCart();
-  setFavorite();
+  loadUserData();
 }
 </script>
 
 <template>
   <Header/>
-  <RouterView class="view"/>
+  <router-view class="view"/>
   <Footer/>
-  <AuthModal
-    :visible="modals.authOpen"
-    @close="closeAuth"
+  <auth-modal
+    v-model="modals.authOpen"
     @callReg="callRegFromAuth"
   />
-  <RegModal
-    :visible="modals.regOpen"
-    @close="closeReg"
+  <reg-modal
+    v-model="modals.regOpen"
     @callAuth="callAuthFromReg"
   />
 </template>

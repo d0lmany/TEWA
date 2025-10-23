@@ -12,13 +12,15 @@ const rules = ref({
   email: [{ required: true, message: 'Пожалуйста, введите почту', trigger: 'blur' },],
   password: [{ required: true, message: 'Пожалуйста, введите пароль', trigger: 'blur' },]
 });
-const props = defineProps({
-  visible: Boolean
+const visible = defineModel({
+    type: Boolean,
+    required: true,
 });
+const loadUserData = inject('globalMethods').loadUserData;
 
-const emit = defineEmits(['callReg', 'close']);
+const emit = defineEmits(['callReg']);
 const callReg = () => emit('callReg');
-const close = () => emit('close');
+const close = () => visible.value = false;
 const handleSubmit = () => {
   formRef.value.validate(async (valid) => {
     if (valid) {
@@ -39,6 +41,7 @@ const handleSubmit = () => {
 
         close();
         ElMessage.success('Вход выполнен!');
+        loadUserData();
       } catch (e) {
         switch (e.response?.status ?? 400) {
           case 401:
@@ -59,7 +62,7 @@ const handleSubmit = () => {
 </script>
 <template>
 <el-dialog title="Вход"
-  v-model="props.visible"
+  v-model="visible"
   center
   align-center
   width="30%"

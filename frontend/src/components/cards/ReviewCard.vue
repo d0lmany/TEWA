@@ -60,13 +60,18 @@ p {
     text-align: justify;
     line-height: 1.4rem;
     white-space: pre-line;
+    color: var(--el-text-color-primary);
 }
 .created {
-    position: absolute;
-    top: 0; right: 0;
+    top: 0;
 }
 .updated {
+    bottom: 0;
+}
+.created, .updated {
+    color: var(--el-text-color-regular);
     position: absolute;
-    bottom: 0; right: 0;
+    font-size: .75rem;
+    right: 0;
 }
 </style>

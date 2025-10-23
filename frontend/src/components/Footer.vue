@@ -1,6 +1,6 @@
 <script setup>
 import { Moon, Sunny } from '@element-plus/icons-vue';
-import { inject, ref } from 'vue';
+import { inject } from 'vue';
 
 const isDarkTheme = inject('isDarkTheme');
 const modals = inject('modals');
@@ -12,11 +12,11 @@ const toggleTheme = () => {
 
 <template>
 <footer>
-    <div class="flex col">
-        <router-link class="logo" to="/">
+    <div class="flex gap">
+        <router-link class="logo" :to="{name: 'Home'}">
             TEWA
         </router-link>
-        <el-button @click="toggleTheme" circle>
+        <el-button @click="toggleTheme" round>
             <el-icon>
                 <Moon v-if="isDarkTheme"/>
                 <Sunny v-else/>
@@ -25,12 +25,15 @@ const toggleTheme = () => {
     </div>
     <div class="links">
         <div @click="modals.authOpen = true">Вход</div>
-        <div>О проекте</div>
+        <div @click="$router.push({name: 'AboutTEWA'})">О проекте</div>
         <div @click="modals.regOpen = true">Регистрация</div>
-        <div>О маркетплейсе</div>
-        <div>Стать продавцом</div>
-        <div><a href="https://d0lmany.vercel.app/"
-        rel="noopener noreferrer nofollow">dev: d0lmany</a></div>
+        <!--div>О маркетплейсе</div-->
+        <!--div>Стать продавцом</div-->
+        <div><a
+            href="https://d0lmany.vercel.app/"
+            rel="noopener noreferrer nofollow">
+            dev: d0lmany
+        </a></div>
     </div>
 </footer>
 </template>
@@ -40,7 +43,7 @@ const toggleTheme = () => {
         padding: .5rem 2rem;
         background: var(--el-color-primary-light-8);
 
-        gap: 2rem;
+        gap: 1rem;
         display: flex;
         justify-content: space-between;
     }

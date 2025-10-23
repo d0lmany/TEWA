@@ -7,6 +7,10 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Review extends Model
 {
+    protected $casts = [
+        'evaluation' => 'float'
+    ];
+
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);

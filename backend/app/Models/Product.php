@@ -20,6 +20,11 @@ class Product extends Model
         'status',
     ];
 
+    protected $appends = [
+        'rating',
+        'reviews_count'
+    ];
+
     public function category(): BelongsTo
     {
         return $this->belongsTo(Category::class);
@@ -40,8 +45,32 @@ class Product extends Model
         return $this->belongsTo(Shop::class);
     }
 
-    public function review(): HasMany
+    public function reviews(): HasMany
     {
         return $this->hasMany(Review::class);
+    }
+
+    public function getRatingAttribute(): float
+    {
+        return (float) $this->reviews()->avg('evaluation') ?? 0.0;
+    }
+
+        public function getReviewsCountAttribute(): int
+    {
+        return $this->reviews()->count();
+    }
+
+    public function scopeWithMinRating($query, $rating)
+    {
+        return $query->whereHas('reviews', function($q) use ($rating) {
+            $q->selectRaw('AVG(evaluation) as avg_rating')
+            ->having('avg_rating', '>=', $rating);
+        });
+    }
+
+    public function scopeOrderByRating($query, $direction = 'desc')
+    {
+        return $query->withAvg('reviews as rating_avg', 'evaluation')
+                ->orderBy('rating_avg', $direction);
     }
 }

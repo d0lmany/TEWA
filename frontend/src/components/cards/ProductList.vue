@@ -33,6 +33,12 @@ const fetchProducts = async () => {
 
   paginate.value.loading = true;
   try {
+    if (props.params.q === 'null' || props.params.q === null) {
+      delete props.params.q;
+    }
+    if (props.params.min_rating === 0 || props.params.min_rating === null) {
+      delete props.params.min_rating;
+    }
     const result = await ProductService.index(props.params, paginate.value.page);
 
     if (!result.success) {
@@ -92,12 +98,14 @@ onUnmounted(() => {
 
 <template>
   <section>
-    <ProductCard
-      v-for="(product, i) in products"
-      :key="product.id"
-      v-model="products[i]"
-      v-if="products.length > 0"
-    />
+    <div
+      class="contents"
+      v-if="products.length > 0">
+        <product-card
+          v-for="product in products"
+          :product="product"
+        />
+      </div>
     <el-empty v-else description="Каталог пуст" style="grid-column: 1 / -1"/>
     <div ref="sentinel" style="height:1px"></div>
   </section>
@@ -107,5 +115,7 @@ section {
   gap: 1rem;
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(clamp(200px, 25%, 250px), 1fr));
+  content-visibility: auto;
+  contain-intrinsic-size: auto 750px;
 }
 </style>

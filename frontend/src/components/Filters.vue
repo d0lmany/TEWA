@@ -9,7 +9,7 @@ const tags = ref([]);
 const filters = defineModel({
     type: Object,
     default: () => ({
-        rating: 0,
+        min_rating: 0,
         min_price: 0,
         max_price: 0,
         tags: [],
@@ -54,7 +54,7 @@ onMounted(() => {
 <template>
 <el-space direction="vertical" alignment="flex-start" class="container">
     <el-text size="large">Минимальный рейтинг</el-text>
-    <el-rate v-model="filters.rating" clearable/>
+    <el-rate v-model="filters.min_rating" clearable/>
     <el-text size="large">Цена</el-text>
     <div class="flex gap">
         <el-input
