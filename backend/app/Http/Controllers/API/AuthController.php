@@ -9,15 +9,18 @@ use App\Http\Resources\UserResource;
 use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Auth;
+use \Illuminate\Support\Facades\DB;
 
 class AuthController extends Controller
 {
     public function register(StoreUserRequest $request): UserResource
     {
-        $user = User::create($request->validated());
-        
-        $token = $this->createAuthToken($user);
-        return (new UserResource($user))->additional(['token' => $token]);
+        return DB::transaction(function () use ($request) {
+            $user = User::create($request->validated());
+            $token = $this->createAuthToken($user);
+            
+            return (new UserResource($user))->additional(['token' => $token]);
+        });
     }
 
     public function login(LoginUserRequest $request): JsonResponse|UserResource {

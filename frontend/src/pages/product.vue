@@ -154,15 +154,17 @@ const getProduct = async () => {
                     if (defaultAttr) checkedAttributes.value[type] = defaultAttr.attr_value;
                 });
             }
-
-        } else if (response.message === 'not found') {
-            router.push({name: 'NotFound'});
         } else {
             throw new Error(response.message);
         }
     } catch (error) {
-        ElMessage.error(`Ошибка: ${error}`);
-        console.error(error);
+        if (error.message.includes('404')) {
+            router.push({name: 'NotFound'});
+        } else {
+            router.push({name: 'Home'});
+            ElMessage.error(`Ошибка: ${error}`);
+            console.error(error);
+        }
     } finally {
         loading.value = false;
     }
@@ -275,8 +277,8 @@ onUnmounted(() => {
                 :to="{
                     name: 'Search',
                     query: {
-                        category_id: product.category.parent.id,
-                        category: product.category.parent.name
+                        category_id: product?.category?.parent.id,
+                        category: product?.category?.parent.name
                     }
                 }"
             >{{ product.category.parent.name }}</el-breadcrumb-item>
@@ -285,8 +287,8 @@ onUnmounted(() => {
                 :to="{
                     name: 'Search',
                     query: {
-                        category_id: product.category.id,
-                        category: product.category.name
+                        category_id: product?.category?.id,
+                        category: product?.category.name
                     }
                 }"
             >
@@ -368,8 +370,8 @@ onUnmounted(() => {
                                 </div>
                                 <el-text
                                     size="large"
-                                    v-if="product.feedbacks.reviews.length"
-                                >Отзывы: {{product.feedbacks.reviews.length}} </el-text>
+                                    v-if="product?.feedbacks?.reviews.length"
+                                >Отзывы: {{product?.feedbacks?.reviews.length}} </el-text>
                             </div>
                             <div class="attributes">
                                 <div
@@ -468,7 +470,7 @@ onUnmounted(() => {
                             />
                             <el-text v-else size="large">Нет оценок</el-text>
                         </div>
-                        <el-button round @click="$router.push({ name: 'Shop', params: {id: product.shop.id}})"
+                        <el-button round @click="$router.push({ name: 'Shop', params: {id: product?.shop.id}})"
                         >
                             <el-icon class="el-icon--left"><Shop/></el-icon>
                             Перейти
@@ -483,26 +485,26 @@ onUnmounted(() => {
             :count="3"
         >
             <template #default>
-                <el-card shadow="hover" v-if="product.details?.description">
+                <el-card shadow="hover" v-if="product?.details?.description">
                     <div class="card-header">Описание</div>
                     <p class="description">
                         {{ product.details.description }}
                     </p>
                 </el-card>
-                <el-card shadow="hover" v-if="product.details?.application">
+                <el-card shadow="hover" v-if="product?.details?.application">
                     <div class="card-header">Способ применения</div>
                     <p class="description">
                         {{ product.details.application }}
                     </p>
                 </el-card>
-                <el-card shadow="hover" v-if="product.feedbacks.rating">
+                <el-card shadow="hover" v-if="product?.feedbacks?.rating">
                     <div class="card-header flex low gap">
                         Отзывы
                         <el-tag effect="dark"
-                        >{{product.feedbacks.reviews.length}}</el-tag>
+                        >{{product?.feedbacks?.reviews.length}}</el-tag>
                     </div>
                     <div class="reviews">
-                        <ReviewCard v-for="review in product.feedbacks.reviews" :review="review"/>
+                        <ReviewCard v-for="review in product?.feedbacks?.reviews" :review="review"/>
                     </div>
                 </el-card>
             </template>

@@ -48,7 +48,7 @@ const handleSubmit = async () => {
                 ElMessage.success('Жалоба отправлена');
                 visible.value = false;
             } else {
-                throw new Error(response);
+                throw response;
             }
         } catch (error) {
             ElMessage.error(`Не удалось отправить жалобу: ${error.message || error}`);

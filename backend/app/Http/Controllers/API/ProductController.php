@@ -103,8 +103,16 @@ class ProductController extends Controller
 
     public function store(StoreProductRequest $request)
     {
-        $product = Product::create($request->all());
-        return response()->json(['id' => $product->id], 201);
+        $productData = $request->validated();
+
+        if ($request->hasFile('photo')) {
+            $productData['photo'] = $request->file('photo')
+                ->store('products', 'public');
+            
+            $product = Product::create($productData);
+
+            return response()->json(['id' => $product->id], 201);
+        }
     }
 
 

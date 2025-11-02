@@ -1,7 +1,7 @@
 <script setup>
 import { ref, inject, onMounted } from 'vue';
 import { Menu, Search, ShoppingCart, Star, MessageBox, User, StarFilled } from '@element-plus/icons-vue';
-import { ElMessage } from 'element-plus';
+import { ElButton, ElMessage } from 'element-plus';
 import { useRouter } from 'vue-router';
 import { useUserStore } from '@/stores/userStore';
 import { storeToRefs } from 'pinia';
@@ -17,10 +17,18 @@ const modals = inject('modals');
 const search = () => {
     const target = searchQuery.value.trim();
     if (target !== '') {
-        router.push({
-            name: 'Search',
-            query: { q: target }
-        });
+        const article = parseInt(target);
+        if (article && article > 0) {
+            router.push({
+                name: 'Product',
+                params: { id: article }
+            });
+        } else {
+            router.push({
+                name: 'Search',
+                query: { q: target }
+            });
+        }
     }
 }
 const goto = (where) => {
@@ -61,10 +69,12 @@ onMounted(() => loadCategories())
             Категории
         </el-button>
         <el-input
+            class="input"
             v-model="searchQuery"
+            clearable
             placeholder="Искать в TEWA"
-            clearable @keyup.enter="search"
-            class="input">
+            @keyup.enter="search"
+        >
             <template #append>
                 <el-button @click="search">
                     <el-icon><Search/></el-icon>
