@@ -9,8 +9,15 @@ const formRef = ref();
 const form = ref({});
 const loading = ref(false);
 const rules = ref({
-  email: [{ required: true, message: 'Пожалуйста, введите почту', trigger: 'blur' },],
-  password: [{ required: true, message: 'Пожалуйста, введите пароль', trigger: 'blur' },]
+  email: [
+    { required: true, message: 'Пожалуйста, введите почту', trigger: 'blur' },
+    { max: 255, message: 'Максимум 255 символов', trigger: 'blur' },
+  ],
+  password: [
+    { required: true, message: 'Пожалуйста, введите пароль', trigger: 'blur' },
+    { max: 100, message: 'Максимум 100 символов', trigger: 'blur' },
+    { min: 8, message: 'Минимум 8 символов', trigger: 'blur' },
+  ]
 });
 const visible = defineModel({
     type: Boolean,
@@ -32,27 +39,29 @@ const handleSubmit = () => {
           form.value.password
         );
 
-        if (result.error) {
-          throw result.error;
+        if (result.success) {
+          userStore.setIsAuth(true);
+          ElMessage.success('Вход выполнен!');
+
+          close();
+          loadUserData();
+        } else {
+          throw result;
         }
-
-        userStore.setIsAuth(true);
-        userStore.setUser(result.data.user);
-
-        close();
-        ElMessage.success('Вход выполнен!');
-        loadUserData();
-      } catch (e) {
-        switch (e.response?.status ?? 400) {
+      } catch (error) {
+        let msg;
+        switch (error.status) {
           case 401:
-            ElMessage.error('Неверный email или пароль');
+            msg = 'Неверный email или пароль';
             break;
           case 429:
-            ElMessage.warning('Слишком много попыток, попробуйте позже');
+            msg = 'Слишком много попыток, попробуйте позже';
             break;
           default:
-            ElMessage.error(`Ошибка входа: ${e.error || e.message || 'Неизвестная ошибка'}`);
+            msg = `Неизвестная ошибка. ${error.message}`;
         }
+
+        ElMessage.error(msg);
       } finally {
         loading.value = false;
       }
@@ -65,7 +74,7 @@ const handleSubmit = () => {
   v-model="visible"
   center
   align-center
-  width="30%"
+  width="25%"
   style="border-radius: 1rem"
   :before-close="close"
 >
@@ -79,32 +88,37 @@ const handleSubmit = () => {
   <el-form-item label="Почта" prop="email">
     <el-input v-model="form.email"/>
   </el-form-item>
+  <el-form-item></el-form-item>
   <el-form-item label="Пароль" prop="password">
     <el-input v-model="form.password" type="password" show-password/>
   </el-form-item>
-  <el-form-item>
-    <el-button
-      text
-      type="primary"
-      @click="callReg"
-    >Нет аккаунта?</el-button>
-  </el-form-item>
+  <el-form-item></el-form-item>
   <el-form-item style="margin-bottom:0">
-    <el-button
-    type="primary"
-    class="button"
-    :loading="loading"
-    native-type="submit">
-    Войти
-    </el-button>
+    <div class="flex" style="width:100%">
+      <el-button
+        text
+        type="primary"
+        @click="callReg"
+      >
+      Нет аккаунта?
+      </el-button>
+      <el-button
+        type="primary"
+        class="button"
+        :loading="loading"
+        native-type="submit"
+      >
+      Войти
+      </el-button>
+    </div>
   </el-form-item>
   </el-form>
 </el-dialog>
 </template>
 <style scoped>
 .button {
-  margin-inline: auto;
   font-size: 1rem;
-  min-width: 50%;
+  min-width: 35%;
+  padding: .5rem .25rem;
 }
 </style>

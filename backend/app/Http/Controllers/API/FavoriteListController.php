@@ -11,7 +11,7 @@ class FavoriteListController extends Controller
 {
     public function indexBg() {
         $userId = Auth::id();
-        $lists = FavoriteList::with(['favoriteListItems'])
+        $lists = FavoriteList::with('favoriteListItems')
             ->where('user_id', $userId)
             ->get();
 

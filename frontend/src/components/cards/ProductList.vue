@@ -1,5 +1,5 @@
 <script setup>
-import { ref, inject, onMounted, nextTick, onUnmounted, watch } from 'vue';
+import { ref, inject, onMounted, nextTick, onUnmounted, watch, computed } from 'vue';
 import ProductCard from './ProductCard.vue';
 import { ElMessage } from 'element-plus';
 
@@ -15,6 +15,10 @@ const props = defineProps({
   lastPage: {
     type: Number,
     default: null
+  },
+  bigPage: {
+    type: Boolean,
+    default: false
   }
 });
 
@@ -65,6 +69,7 @@ const fetchProducts = async () => {
     paginate.value.loading = false;
   }
 };
+const haveProducts = computed(() => !!products.length);
 
 watch(() => [props.params, props.firstPage, props.lastPage], () => {
   products.value = [];
@@ -97,16 +102,23 @@ onUnmounted(() => {
 </script>
 
 <template>
-  <section>
+  <section
+    :class="{
+      'empty': haveProducts
+    }"
+    :style="{
+      'min-height': bigPage ? '75vh': 'max-content'
+    }"
+  >
     <div
       class="contents"
-      v-if="products.length > 0">
+      v-if="!haveProducts">
         <product-card
           v-for="product in products"
           :product="product"
         />
       </div>
-    <el-empty v-else description="Каталог пуст" style="grid-column: 1 / -1"/>
+    <el-empty v-else description="Каталог пуст"/>
     <div ref="sentinel" style="height:1px"></div>
   </section>
 </template>
@@ -117,5 +129,10 @@ section {
   grid-template-columns: repeat(auto-fit, minmax(clamp(200px, 25%, 250px), 1fr));
   content-visibility: auto;
   contain-intrinsic-size: auto 750px;
+}
+section.empty {
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 </style>

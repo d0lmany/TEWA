@@ -7,33 +7,30 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Foundation\Auth\User as Authenticatable;
-use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 
 class User extends Authenticatable
 {
-    /** @use HasFactory<\Database\Factories\UserFactory> */
-    use HasFactory, Notifiable, HasApiTokens;
+    use HasApiTokens, HasFactory;
 
     protected $fillable = [
         'name',
         'email',
         'password',
-        'avatar',
-        'birthday'
+        'birthday',
     ];
 
-    protected $hidden = [
-        'password',
+    public $timestamps = false;
+
+    protected $casts = [
+        'password' => 'hashed',
+        'is_banned' => 'boolean',
     ];
 
-    protected function casts(): array
-    {
-        return [
-            'password' => 'hashed',
-            'birthday' => 'date',
-        ];
-    }
+    protected $attributes = [
+        'role' => 'user',
+        'is_banned' => 0,
+    ];
 
     public function reviews(): HasMany
     {
@@ -43,6 +40,11 @@ class User extends Authenticatable
     public function seller(): HasOne
     {
         return $this->hasOne(Seller::class);
+    }
+
+    public function sellerVerification(): HasOne
+    {
+        return $this->hasOne(SellerVerification::class);
     }
 
     public function cart(): HasMany

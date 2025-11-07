@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "f41aa4e11304267331d484a4f45dc407",
+    "content-hash": "68569f9f1dee475bed778449aef20b1b",
     "packages": [
         {
             "name": "brick/math",
@@ -5687,46 +5687,45 @@
     ],
     "packages-dev": [
         {
-            "name": "kitloong/laravel-migrations-generator",
-            "version": "v7.1.2",
+            "name": "fakerphp/faker",
+            "version": "v1.24.1",
             "source": {
                 "type": "git",
-                "url": "https://github.com/kitloong/laravel-migrations-generator.git",
-                "reference": "e46bdbe9308c211fd896cdc834b28d6b9f0dce3f"
+                "url": "https://github.com/FakerPHP/Faker.git",
+                "reference": "e0ee18eb1e6dc3cda3ce9fd97e5a0689a88a64b5"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/kitloong/laravel-migrations-generator/zipball/e46bdbe9308c211fd896cdc834b28d6b9f0dce3f",
-                "reference": "e46bdbe9308c211fd896cdc834b28d6b9f0dce3f",
+                "url": "https://api.github.com/repos/FakerPHP/Faker/zipball/e0ee18eb1e6dc3cda3ce9fd97e5a0689a88a64b5",
+                "reference": "e0ee18eb1e6dc3cda3ce9fd97e5a0689a88a64b5",
                 "shasum": ""
             },
             "require": {
-                "ext-pdo": "*",
-                "illuminate/support": "^11.0|^12.0",
-                "php": "^8.2"
+                "php": "^7.4 || ^8.0",
+                "psr/container": "^1.0 || ^2.0",
+                "symfony/deprecation-contracts": "^2.2 || ^3.0"
+            },
+            "conflict": {
+                "fzaninotto/faker": "*"
             },
             "require-dev": {
-                "barryvdh/laravel-ide-helper": "^3.0",
-                "friendsofphp/php-cs-fixer": "^3.1",
-                "larastan/larastan": "^2.0|^3.0",
-                "mockery/mockery": "^1.0",
-                "orchestra/testbench": "^9.0|^10.0",
-                "phpmd/phpmd": "^2.10",
-                "phpstan/phpstan-mockery": "^1.0|^2.0",
-                "slevomat/coding-standard": "^8.0",
-                "squizlabs/php_codesniffer": "^3.5"
+                "bamarni/composer-bin-plugin": "^1.4.1",
+                "doctrine/persistence": "^1.3 || ^2.0",
+                "ext-intl": "*",
+                "phpunit/phpunit": "^9.5.26",
+                "symfony/phpunit-bridge": "^5.4.16"
+            },
+            "suggest": {
+                "doctrine/orm": "Required to use Faker\\ORM\\Doctrine",
+                "ext-curl": "Required by Faker\\Provider\\Image to download images.",
+                "ext-dom": "Required by Faker\\Provider\\HtmlLorem for generating random HTML.",
+                "ext-iconv": "Required by Faker\\Provider\\ru_RU\\Text::realText() for generating real Russian text.",
+                "ext-mbstring": "Required for multibyte Unicode string functionality."
             },
             "type": "library",
-            "extra": {
-                "laravel": {
-                    "providers": [
-                        "KitLoong\\MigrationsGenerator\\MigrationsGeneratorServiceProvider"
-                    ]
-                }
-            },
             "autoload": {
                 "psr-4": {
-                    "KitLoong\\MigrationsGenerator\\": "src"
+                    "Faker\\": "src/Faker/"
                 }
             },
             "notification-url": "https://packagist.org/downloads/",
@@ -5735,34 +5734,20 @@
             ],
             "authors": [
                 {
-                    "name": "Kit Loong",
-                    "email": "kitloong1008@gmail.com"
+                    "name": "François Zaninotto"
                 }
             ],
-            "description": "Generates Laravel Migrations from an existing database",
+            "description": "Faker is a PHP library that generates fake data for you.",
             "keywords": [
-                "artisan",
-                "generator",
-                "laravel",
-                "lumen",
-                "migration",
-                "migrations"
+                "data",
+                "faker",
+                "fixtures"
             ],
             "support": {
-                "issues": "https://github.com/kitloong/laravel-migrations-generator/issues",
-                "source": "https://github.com/kitloong/laravel-migrations-generator/tree/v7.1.2"
+                "issues": "https://github.com/FakerPHP/Faker/issues",
+                "source": "https://github.com/FakerPHP/Faker/tree/v1.24.1"
             },
-            "funding": [
-                {
-                    "url": "https://www.buymeacoffee.com/kitloong",
-                    "type": "buy_me_a_coffee"
-                },
-                {
-                    "url": "https://github.com/kitloong",
-                    "type": "github"
-                }
-            ],
-            "time": "2025-02-27T12:06:46+00:00"
+            "time": "2024-11-21T13:46:39+00:00"
         },
         {
             "name": "laravel/pint",

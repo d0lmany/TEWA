@@ -18,11 +18,13 @@ const form = ref({
 const rules = {
     name: [
         { required: true, message: '"Имя" - обязательное поле', trigger: 'blur' },
-        { min: 2, message: 'Не менее двух символов', trigger: 'blur' }
+        { min: 2, message: 'Не менее двух символов', trigger: 'blur' },
+        { max: 255, message: 'Не более 255 символов', trigger: 'blur' },
     ],
     email: [
         { required: true, message: '"Почта" - обязательное поле', trigger: 'blur' },
-        { type: 'email', message: 'Нужен корректный email', trigger: 'blur' }
+        { type: 'email', message: 'Нужен корректный email', trigger: 'blur' },
+        { max: 255, message: 'Не более 255 символов', trigger: 'blur' },
     ],
     birthday: [
         { required: true, message: '"Дата рождения" - обязательное поле', trigger: 'change' },
@@ -52,16 +54,9 @@ const rules = {
         }
     ],
     password: [
-    { 
-        required: true, 
-        message: '"Пароль" - обязательное поле', 
-        trigger: 'blur' 
-    },
-    { 
-        min: 8, 
-        message: 'Пароль должен содержать минимум 8 символов', 
-        trigger: 'blur' 
-    },
+    { required: true, message: '"Пароль" - обязательное поле', trigger: 'blur' },
+    { min: 8, message: 'Пароль должен содержать минимум 8 символов', trigger: 'blur' },
+    { max: 100, message: 'Не более 255 символов', trigger: 'blur' },
     {
         validator: (rule, value, callback) => {
         if (!value) {
@@ -135,28 +130,17 @@ const handleSubmit = async () => {
             try {
                 const result = await AuthService.register(form.value);
 
-                if (result.user && result.token) {
-                    localStorage.setItem('auth_token', result.token);
-                    
-                    AuthService.setAuthHeader(result.token);
-                    
+                if (result.success) {
                     userStore.setIsAuth(true);
-                    userStore.setUser(result.user);
-                    
-                    ElMessage.success('Регистрация и вход выполнены успешно!');
+                    ElMessage.success('Регистрация выполнена успешно!');
+
                     loadUserData();
                     close();
-                } 
-                else if (result.user) {
-                    close();
-                    ElMessage.success('Регистрация успешна! Теперь вы можете войти в систему.');
-                    callAuth();
-                }
-                else {
-                    throw new Error('Неверный формат ответа от сервера');
+                } else {
+                    throw result.message;
                 }
             } catch (e) {
-                ElMessage.error(e.message || 'Ошибка при регистрации');
+                ElMessage.error(e || 'Ошибка регистрации');
             } finally {
                 loading.value = false;
             }

@@ -4,7 +4,11 @@ export default class AuthService {
     constructor(url) {
         this.api = axios.create({
             baseURL: url,
-            timeout: 5000
+            timeout: 5000,
+            headers: {
+                'Content-Type' : 'application/json',
+            },
+            validateStatus: () => true,
         });
         
         this.checkStoredToken();
@@ -24,18 +28,28 @@ export default class AuthService {
     async login(email, password) {
         try {
             const response = await this.api.post('/auth/login', {
-                email,
-                password
+                email: email,
+                password: password,
             });
+
+            if (response.status !== 200) {
+                throw response;
+            }
             
             if (response.data.token) {
                 localStorage.setItem('auth_token', response.data.token);
                 this.setAuthHeader(response.data.token);
             }
             
-            return response.data;
+            return {
+                success: true,
+            }
         } catch (error) {
-            throw error.response?.data || error;
+            return {
+                success: false,
+                message: error.data.message || error,
+                status: error.status
+            }
         }
     }
 
@@ -49,34 +63,29 @@ export default class AuthService {
                 password_confirmation: data.passwordConfirmation
             });
 
-            if (response.data?.data && response.data?.token) {
-                return {
-                    user: response.data.data,
-                    token: response.data.token,
-                    success: true
-                };
-            }
+            if (response.status === 201) {
+                if (response.data.token) {
+                    localStorage.setItem('auth_token', response.data.token);
+                    this.setAuthHeader(response.data.token);
 
-            throw new Error('Неверный формат ответа от сервера');
-
-        } catch (error) {
-            if (error.response?.status === 422) {
-                const errors = error.response.data.errors;
-                if (errors) {
-                    const firstError = Object.values(errors)[0]?.[0];
-                    throw new Error(firstError || 'Проверьте правильность введенных данных');
+                    return { success: true };
+                } else {
+                    throw response;
                 }
+            } else {
+                throw response;
             }
+        } catch (error) {
+            const msg = {
+                422: 'Проверьте правильность введённых данных',
+                429: 'Слишком много попыток',
+                201: 'Регистрация выполнена, но авторизация не удалась'
+            };
             
-            if (error.response?.data?.message) {
-                throw new Error(error.response.data.message);
-            }
-            
-            if (error.code === 'NETWORK_ERROR' || error.code === 'ECONNABORTED') {
-                throw new Error('Ошибка соединения с сервером');
-            }
-            
-            throw new Error(error.message || 'Ошибка при регистрации');
+            return {
+                success: false,
+                message: msg[error.status] ?? (error.error || error)
+            };
         }
     }
 
@@ -90,13 +99,24 @@ export default class AuthService {
 
     async logout() {
         try {
-            await this.api.get('/auth/logout');
+            const response = await this.api.get('/auth/logout');
+
+            if (response.status === 204) {
+                localStorage.removeItem('auth_token');
+                delete this.api.defaults.headers.common['Authorization'];
+
+                return { success: true }
+            } else {
+                throw response.data || response
+            }
         } catch (error) {
-            console.log('Logout error:', error);
+            console.error('Logout error:', error.message || error);
+
+            return {
+                success: false,
+                message: error.message || error,
+            }
         }
-        
-        localStorage.removeItem('auth_token');
-        delete this.api.defaults.headers.common['Authorization'];
     }
 
     getApiInstance() {

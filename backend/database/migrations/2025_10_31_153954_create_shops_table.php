@@ -14,7 +14,9 @@ return new class extends Migration
             $table->string('name', 300);
             $table->string('picture')->nullable();
             $table->text('description')->nullable();
-            $table->foreignIdFor(Seller::class);
+            $table->foreignIdFor(Seller::class)
+                ->constrained()
+                ->cascadeOnDelete();
             $table->timestamps();
         });
     }

@@ -7,11 +7,6 @@ use Illuminate\Http\Resources\Json\JsonResource;
 
 class CategoryResource extends JsonResource
 {
-    /**
-     * Transform the resource into an array.
-     *
-     * @return array<string, mixed>
-     */
     public function toArray(Request $request): array
     {
         $category = [
@@ -21,10 +16,8 @@ class CategoryResource extends JsonResource
                 return [
                     'id' => $this->parent->id,
                     'name' => $this->parent->name,
-                    'fee' => $this->parent->fee,
                 ];
             }),
-            'fee' => $this->fee,
         ];
         return $category;
     }

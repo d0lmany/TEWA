@@ -12,11 +12,7 @@ const props = defineProps({
         required: true,
     }
 })
-const getPrice = computed(() => {
-    return props.product.price.discount === null ? props.product.price.base_price
-        : props.product.price.base_price * (1 - props.product.price.discount / 100);
-});
-const isWholeNumber = Math.round(getPrice.value * 100) / 100 % 1 === 0;
+const isWholeNumber = Math.round(props.product.price.final_price * 100) / 100 % 1 === 0;
 const formatter = new Intl.NumberFormat(navigator.language, {
         style: 'currency',
         currency: currency,
@@ -32,7 +28,10 @@ const showProduct = () => router.push({
         slug: props.product.name
     }
 });
-const createPhotoPath = computed(() => `${storageURL}/products/${props.product.photo}`);
+
+const photoPath = computed(() => props.product.photo.includes('http') ?
+    props.product.photo : `${storageURL}/${props.product.photo}`);
+const rating = computed(() => parseFloat(props.product.feedbacks.rating).toFixed(1));
 </script>
 <template>
 <el-card
@@ -42,13 +41,13 @@ const createPhotoPath = computed(() => `${storageURL}/products/${props.product.p
     header-class="product-card-header"
 >
     <template #header>
-        <el-image :src="createPhotoPath" fit="contain" lazy class="img"/>
+        <el-image :src="photoPath" fit="contain" lazy class="img"/>
     </template>
     <div class="flex gap">
-        <b>{{ formatPrice(getPrice) }} <s class="soft" v-if="props.product.price.discount > 0">{{ formatPrice(props.product.price.base_price) }}</s></b>
-        <div class="rating" v-if="props.product.feedbacks.rating">
+        <b>{{ formatPrice(props.product.price.final_price) }} <s class="soft" v-if="props.product.price.discount > 0">{{ formatPrice(props.product.price.base_price) }}</s></b>
+        <div class="rating" v-if="rating">
             <el-icon :size="20" color="gold"><StarFilled/></el-icon>
-            <div>{{ parseFloat(props.product.feedbacks.rating) }}</div>
+            <div>{{ rating }}</div>
         </div>
         <div class="soft" v-else>Нет оценок</div>
     </div>

@@ -348,10 +348,11 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 
-### Laravel Migrations Generator
-The MIT License (MIT)
-
-Copyright (c) 2020 Kit Loong Liow <kitloong1008@gmail.com>
+## PHPFaker/Faker
+Copyright (c) 2011 François Zaninotto
+Portions Copyright (c) 2008 Caius Durling
+Portions Copyright (c) 2008 Adam Royle
+Portions Copyright (c) 2008 Fiona Burrows
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal

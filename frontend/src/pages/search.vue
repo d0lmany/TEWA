@@ -31,7 +31,7 @@ const appliedSorts = ref({
 const options = [
   { value: 'reviews_count', label: 'Количеству отзывов' },
   { value: 'rating', label: 'Рейтингу' },
-  { value: 'base_price', label: 'Цене' },
+  { value: 'final_price', label: 'Цене' },
   { value: 'created_at', label: 'Новизне' }
 ];
 const request = computed(() => ({

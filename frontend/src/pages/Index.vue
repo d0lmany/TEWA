@@ -4,7 +4,7 @@ import { Top } from '@element-plus/icons-vue';
 </script>
 <template>
 <main>
-    <product-list/>
+    <product-list :bigPage="true"/>
     <el-backtop>
         <el-icon :size="24"><Top/></el-icon>
     </el-backtop>

@@ -17,11 +17,12 @@ const formRef = ref();
 const rules = {
     topic: [
         { required: true, message: '"Тема" - обязательное поле', trigger: 'blur' },
-        { min: 5, message: 'Не менее 5 символов', trigger: 'blur' }
+        { min: 5, message: 'Не менее 5 символов', trigger: 'blur' },
+        { max: 255, message: 'Не более 255 символов', trigger: 'blur' },
     ],
     text: [
         { required: true, message: '"Текст" - обязательное поле', trigger: 'blur' },
-        { min: 30, message: 'Не менее 30 символов', trigger: 'blur' }
+        { min: 15, message: 'Не менее 15 символов', trigger: 'blur' },
     ]
 };
 const loading = ref(false);
@@ -32,6 +33,9 @@ const handleSubmit = async () => {
     if (!formRef.value) return;
 
     if (!isAuth.value) visible.value = false;
+
+    formData.value.topic = formData.value.topic.trim();
+    formData.value.text = formData.value.text.trim();
     
     const valid = await formRef.value.validate();
 
@@ -44,6 +48,8 @@ const handleSubmit = async () => {
                 ...formData.value,
             });
 
+            console.log(response)
+
             if (response.success) {
                 ElMessage.success('Жалоба отправлена');
                 visible.value = false;
@@ -51,7 +57,7 @@ const handleSubmit = async () => {
                 throw response;
             }
         } catch (error) {
-            ElMessage.error(`Не удалось отправить жалобу: ${error.message || error}`);
+            ElMessage.error(`Не удалось отправить жалобу. ${error.message}`);
         }
         loading.value = false;
     } else {

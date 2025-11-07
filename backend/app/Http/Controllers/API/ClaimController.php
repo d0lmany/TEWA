@@ -10,14 +10,16 @@ use Illuminate\Support\Facades\Auth;
 class ClaimController extends Controller
 {
     public function store(StoreClaimRequest $request) {
-        $product = Claim::create([
+        $claimData = $request->validated();
+        
+        $claim = Claim::create([
             'user_id' => Auth::id(),
-            'entity' => $request->entity,
-            'entity_id' => $request->entity_id,
-            'topic' => $request->topic,
-            'text' => $request->text,
-            'created_at' => now()
+            'entity' => $claimData['entity'],
+            'entity_id' => $claimData['entity_id'],
+            'topic' => $claimData['topic'],
+            'text' => $claimData['text'],
         ]);
-        return response()->json(['id' => $product->id], 201);
+
+        return response()->json(['id' => $claim->id], 201);
     }
 }

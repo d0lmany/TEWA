@@ -4,7 +4,7 @@ import { computed, inject, onMounted, onUnmounted, ref } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
 import { ElMessage } from 'element-plus';
 import ReviewCard from '@/components/cards/ReviewCard.vue';
-import ClaimModal from '@/components/ClaimModal.vue';
+import ClaimModal from '@/components/modals/Claim.vue';
 import { storeToRefs } from 'pinia';
 import { useUserStore } from '@/stores/userStore';
 
@@ -73,8 +73,8 @@ const addToCart = async () => {
             item.id = response.data.data.id;
             userStore.addToCart(item);
         } else {
-            ElMessage.error(`Не удалось добавить товар в корзину: ${response.message}`);
-            console.error(response);
+            ElMessage.error(`Не удалось добавить товар в корзину: ${response.message.data.message}`);
+            console.log(response);
         }
     } else {
         ElMessage.warning('Корзина? А вы вошли в аккаунт?');
@@ -130,7 +130,6 @@ const collectCheckedAttrs = computed(() => {
         })
         .filter(id => id !== undefined);
 })
-const makeAvatarURL = (filename) => `${storageURL}/avatars/${filename}`;
 const copyURL = async () => await copy(window.location.href);
 const copy = async (target) => {
     try {
@@ -140,7 +139,8 @@ const copy = async (target) => {
         ElMessage.error(`Не удалось скопировать "${target}": ${e}`);
     }
 }
-const makePhotoURL = (filename) => `${storageURL}/products/${filename}`;
+const makePhotoURL = (filename) => filename.includes('http') ?
+    filename : `${storageURL}/${filename}`;
 const getProduct = async () => {
     try {
         const response = await ProductService.show(route.params.id);
@@ -366,7 +366,7 @@ onUnmounted(() => {
                                         :size="24"
                                         color="#F7BA2A"
                                     ><StarFilled/></el-icon>
-                                    {{rating ? rating: 'Нет оценок'}}
+                                    {{rating ? rating.toFixed(1) : 'Нет оценок'}}
                                 </div>
                                 <el-text
                                     size="large"
@@ -444,7 +444,7 @@ onUnmounted(() => {
                         size="large"
                         shape="square"
                         style="width: 75px; height: 75px;"
-                        :src="makeAvatarURL(product.shop.avatar)"
+                        :src="makePhotoURL(product.shop.picture)"
                     >
                         <el-icon :size="24"><Shop /></el-icon>
                     </el-avatar>

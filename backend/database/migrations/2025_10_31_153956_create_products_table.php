@@ -13,21 +13,46 @@ return new class extends Migration
     {
         Schema::create('products', function (Blueprint $table) {
             $table->id();
-            $table->string('name');
-            $table->decimal('discount', 5, 2);
+            $table->string('name', 300);
             $table->unsignedInteger('quantity');
             $table->decimal('base_price', 12, 2);
             $table->string('photo');
-            $table->foreignIdFor(Category::class);
-            $table->text('tags')->default('[]');
-            $table->enum('status', ['on', 'off', 'draft']);
-            $table->foreignIdFor(Shop::class);
-            $table->timestamp('created_at');
+            $table->foreignIdFor(Category::class)
+                ->nullable()
+                ->constrained()
+                ->nullOnDelete();
+            $table->json('tags')->default('[]');
+            $table->decimal('discount', 5, 2)->default(0.0);
+            $table->enum('status', ['on', 'off', 'draft'])->default('draft');
+            $table->foreignIdFor(Shop::class)
+                ->constrained()
+                ->cascadeOnDelete();
+            $table->timestamps();
+        });
+
+        DB::statement("
+            ALTER TABLE products
+            ADD COLUMN final_price DECIMAL(12,2)
+            AS (base_price * (100 - discount) / 100)
+            STORED
+        ");
+
+        Schema::table('products', function (Blueprint $table) {
+            $table->index(['status', 'quantity'], 'idx_main_filter');
+
+            $table->index(['status', 'category_id', 'quantity'], 'idx_category_base');
+            $table->index(['status', 'category_id', 'quantity', 'created_at'], 'idx_category_created');
+            $table->index(['status', 'category_id', 'quantity', 'final_price'], 'idx_category_price');
+
+            $table->index(['status', 'quantity', 'created_at'], 'idx_global_created');
+            $table->index(['status', 'quantity', 'final_price'], 'idx_global_price');
         });
 
         Schema::create('product_attributes', function (Blueprint $table) {
             $table->id();
-            $table->foreignIdFor(Product::class);
+            $table->foreignIdFor(Product::class)
+                ->constrained()
+                ->cascadeOnDelete();
             $table->string('attr_key', 100);
             $table->string('attr_value', 100);
             $table->decimal('price', 12, 2);
@@ -37,7 +62,9 @@ return new class extends Migration
 
         Schema::create('product_details', function (Blueprint $table) {
             $table->id();
-            $table->foreignIdFor(Product::class);
+            $table->foreignIdFor(Product::class)
+                ->constrained()
+                ->cascadeOnDelete();
             $table->text('album')->default('[]');
             $table->text('description');
             $table->text('application')->nullable();
@@ -46,8 +73,8 @@ return new class extends Migration
 
     public function down(): void
     {
-        Schema::dropIfExists('products');
         Schema::dropIfExists('product_attributes');
         Schema::dropIfExists('product_details');
+        Schema::dropIfExists('products');
     }
 };

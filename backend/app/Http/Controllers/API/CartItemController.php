@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\StoreCartItemRequest;
 use App\Http\Resources\CartResource;
 use App\Models\CartItem;
 use Illuminate\Http\JsonResponse;
@@ -13,7 +14,9 @@ class CartItemController extends Controller
 {
     public function index() {
         $userId = Auth::id();
-        $cart = CartItem::where('user_id', $userId)->with('product')->get();
+        $cart = CartItem::where('user_id', $userId)
+            ->with('product')
+            ->get();
 
         return CartResource::collection($cart);
     }
@@ -25,18 +28,14 @@ class CartItemController extends Controller
         return CartResource::collection($cart);
     }
 
-    public function store(Request $request): JsonResponse {
-        $validated = $request->validate([
-            'product_id' => 'required|integer|exists:products,id',
-            'quantity' => 'sometimes|integer|min:1',
-            'product_attributes' => 'sometimes|array',
-            'product_attributes.*' => 'integer|exists:product_attributes,id'
-        ]);
+    public function store(StoreCartItemRequest $request): JsonResponse {
+
+        $cartItemData = $request->validated();
 
         $userId = Auth::id();
-        $productId = $validated['product_id'];
-        $quantityToAdd = $validated['quantity'] ?? 1;
-        $attributes = $validated['product_attributes'] ?? [];
+        $productId = $cartItemData['product_id'];
+        $quantityToAdd = $cartItemData['quantity'] ?? 1;
+        $attributes = $cartItemData['product_attributes'] ?? [];
         sort($attributes);
 
         $cartItems = CartItem::where('user_id', $userId)

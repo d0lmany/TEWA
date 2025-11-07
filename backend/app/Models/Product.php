@@ -6,23 +6,31 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Product extends Model
 {
+    use HasFactory;
+
     protected $fillable = [
-        'name',
-        'quantity',
-        'photo',
-        'category_id',
+        'name', 'quantity',
+        'base_price', 'photo',
+        'category_id', 'tags',
+        'discount', 'status',
         'shop_id',
-        'discount',
-        'tags',
-        'status',
+    ];
+
+    protected $casts = [
+        'tags' => 'array',
+        'base_price' => 'decimal:2',
+        'final_price' => 'decimal:2',
+        'discount' => 'decimal:2',
+        'quantity' => 'integer',
     ];
 
     protected $appends = [
         'rating',
-        'reviews_count'
+        'reviews_count',
     ];
 
     public function category(): BelongsTo
@@ -35,7 +43,7 @@ class Product extends Model
         return $this->hasOne(ProductDetail::class);
     }
 
-    public function productAttribute(): HasMany
+    public function attributes(): HasMany
     {
         return $this->hasMany(ProductAttribute::class);
     }
@@ -55,7 +63,7 @@ class Product extends Model
         return (float) $this->reviews()->avg('evaluation') ?? 0.0;
     }
 
-        public function getReviewsCountAttribute(): int
+    public function getReviewsCountAttribute(): int
     {
         return $this->reviews()->count();
     }
@@ -72,5 +80,17 @@ class Product extends Model
     {
         return $query->withAvg('reviews as rating_avg', 'evaluation')
                 ->orderBy('rating_avg', $direction);
+    }
+
+    public function claims(): HasMany
+    {
+        return $this->hasMany(Claim::class, 'entity_id')
+                    ->where('entity', 'product');
+    }
+
+    public function scopeActive($query)
+    {
+        return $query->where('status', 'on')
+                    ->where('quantity', '>', 0);
     }
 }

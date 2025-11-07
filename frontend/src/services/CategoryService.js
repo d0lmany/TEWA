@@ -8,46 +8,70 @@ export default class CategoryService
         try {
             const response = await this.API.get('/categories');
             if (response.status === 200) {
-                return response.data;
+                return {
+                    success: true,
+                    data: response.data
+                };
             } else {
                 throw 'Ошибка при загрузке категорий';
             }
         } catch (e) {
-            return e;
+            return {
+                success: false,
+                message: e
+            };
         }
     }
 
     async prepare() {
         try {
             const raw = await this.getRawCategories();
-            const grouped = Object.groupBy(raw, cat => cat.parent_id ?? 'root');
-            const result = {};
+            if (raw.success) {
+                const grouped = await Object.groupBy(raw.data, category => category.parent_id ?? 'root');
+                const result = {};
 
-            grouped.root.forEach(category => {
-                result[category.name] = grouped[category.id] || [];
-            });
+                if (grouped.root) {
+                    grouped.root.forEach(category => {
+                        result[category.name] = grouped[category.id] || [];
+                    });
+                }
 
-            return result;
+                return {
+                    success: true,
+                    data: result,
+                };
+            } else {
+                throw new Error('Ошибка при загрузке категорий');
+            }
         } catch (e) {
-            return { error: e.message }
+            return {
+                success: false,
+                message: e.message,
+            }
         }
     }
 
-    async loadTags(all) {
+    async loadOptions() {
         try {
             const response = await fetch('/assets/json/tags.json');
-
+            
             if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
+                throw response;
             }
 
-            const tags = await response.json();
-            return all
-                ? tags
-                : tags.options;
-        } catch (error) {
-            console.error(error);
-            return {error};
+            const data = await response.json();
+
+            return {
+                success: true,
+                data: data.options,
+            };
+        } catch (e) {
+            console.error(e);
+
+            return {
+                success: false,
+                message: e.message || e.status || e
+            }
         }
     }
 }

@@ -42,11 +42,11 @@ const loadCategories = async () => {
     try {
         const data = await CategoryService.prepare();
 
-        if (data.error) {
-            throw data.error;
+        if (data.success) {
+            categories.value = data.data;
+        } else {
+            throw data.message;
         }
-
-        categories.value = data;
     } catch (e) {
         ElMessage.error(`Произошла ошибка при загрузке категорий: Нет связи с сервером. ${e}`);
     }

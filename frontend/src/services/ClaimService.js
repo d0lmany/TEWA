@@ -14,12 +14,18 @@ export default class ClaimService
                     data: response.data,
                 }
             } else {
-                throw new Error(response);
+                throw response;
             }
         } catch (e) {
+            const msg = {
+                422: 'Проверьте правильность введённых данных',
+                429: 'Слишком много попыток',
+            }
+
             return {
                 success: false,
-                message: e.message || e,
+                message: msg[e.status] ?? (e.data.message || e.data),
+                idk: e
             }
         }
     }

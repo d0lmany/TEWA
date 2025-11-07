@@ -24,23 +24,24 @@ const setCategories = async () => {
     try {
         const data = await CategoryService.prepare();
 
-        if (data.error) {
-            throw data.error;
+        if (data.success) {
+            categories.value = data.data;
+        } else {
+            throw data.message;
         }
-
-        categories.value = data;
     } catch (e) {
         ElMessage.error(`Произошла ошибка при загрузке категорий: Нет связи с сервером. ${e}`);
     }
 };
 const setTags = async () => {
     try {
-        const data = await CategoryService.loadTags(false);
-        if (data.error) {
-            throw data.error;
-        }
+        const data = await CategoryService.loadOptions();
 
-        tags.value = data;
+        if (data.success) {
+            tags.value = data.data;
+        } else {
+            throw data.message;
+        }
     } catch (e) {
         ElMessage.error(`Произошла ошибка при загрузке тегов: ${e}`);
     }
@@ -111,7 +112,7 @@ onMounted(() => {
             <template #content>
                 <div style="max-width:12rem">{{ tag.about }}</div>
             </template>
-            <el-icon><InfoFilled/></el-icon>
+            <el-icon><info-filled/></el-icon>
             </el-tooltip>
         </div>
         </el-option>

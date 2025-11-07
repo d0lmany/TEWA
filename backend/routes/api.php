@@ -32,7 +32,7 @@ Route::middleware(['throttle:api', 'auth:sanctum'])->group(function () {
     // жалобы
     Route::post('claims', [ClaimController::class, 'store']);
     // TODO: надо перенести к продавцам
-    //Route::post('products', [ProductController::class, 'store']);
+    Route::post('products', [ProductController::class, 'store']);
     //Route::put('products/{product}', [ProductController::class, 'update']);
     //Route::patch('products/{product}', [ProductController::class, 'update']);
     //Route::delete('products/{product}', [ProductController::class, 'destroy']);

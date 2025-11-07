@@ -44,12 +44,10 @@ class ProductController extends Controller
         if ($request->filled('min_price') || $request->filled('max_price')) {
             $query->where(function($q) use ($request) {
                 if ($request->filled('min_price')) {
-                    $minPrice = (float) $request->min_price;
-                    $q->whereRaw('base_price * (100 - discount) / 100 >= ?', [$minPrice]);
+                    $q->where('final_price', '>=', (float) $request->min_price);
                 }
                 if ($request->filled('max_price')) {
-                    $maxPrice = (float) $request->max_price;
-                    $q->whereRaw('base_price * (100 - discount) / 100 <= ?', [$maxPrice]);
+                    $q->where('final_price', '<=', (float) $request->max_price);
                 }
             });
         }
@@ -77,17 +75,18 @@ class ProductController extends Controller
         }
 
         $sortField = $request->get('sort', 'reviews_count');
-        $sortDirection = $request->get('direction', 'desc');
+        $sortDirection = in_array($request->get('direction'), ['ASC', 'DESC']) 
+            ? $request->get('direction') 
+            : 'DESC';
 
-        $allowedSortFields = ['reviews_count', 'rating', 'base_price', 'created_at'];
-        
+        $allowedSortFields = ['reviews_count', 'rating', 'final_price', 'created_at'];
         if (!in_array($sortField, $allowedSortFields)) {
             $sortField = 'reviews_count';
         }
 
         switch ($sortField) {
-            case 'base_price':
-                $query->orderByRaw("(base_price * (100 - discount) / 100) {$sortDirection}");
+            case 'final_price':
+                $query->orderBy('final_price', $sortDirection);
                 break;
             case 'rating':
                 $query->orderBy('rating_avg', $sortDirection);
@@ -101,27 +100,37 @@ class ProductController extends Controller
         return ProductResource::collection($products)->response();
     }
 
-    public function store(StoreProductRequest $request)
+    public function store(StoreProductRequest $request): JsonResponse
     {
         $productData = $request->validated();
 
         if ($request->hasFile('photo')) {
             $productData['photo'] = $request->file('photo')
                 ->store('products', 'public');
-            
-            $product = Product::create($productData);
-
-            return response()->json(['id' => $product->id], 201);
         }
+
+        if (isset($productData['tags']) && is_array($productData['tags'])) {
+            $productData['tags'] = json_encode($productData['tags']);
+        }
+
+        if (!isset($productData['status'])) {
+            $productData['status'] = 'draft';
+        }
+
+        $product = Product::create($productData);
+
+        return response()->json([
+            'id' => $product->id,
+            'message' => 'Product created successfully'
+        ], 201);
     }
 
-
-    public function show(Product $product)
+    public function show(Product $product): ProductResource
     {
         $product->load([
             'category.parent',
             'productDetail', 
-            'productAttribute',
+            'attributes',
             'shop.seller',
             'reviews.user'
         ])
@@ -131,10 +140,10 @@ class ProductController extends Controller
         return new ProductResource($product);
     }
 
-    public function update(UpdateProductRequest $request, Product $product)
+    public function update(UpdateProductRequest $request, Product $product): ProductResource
     {
-        $product->update($request->all());
-        return $product;
+        $product->update($request->validated());
+        return new ProductResource($product);
     }
 
     public function destroy(Product $product)

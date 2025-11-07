@@ -3,17 +3,13 @@ import { defineStore } from "pinia";
 export const useUserStore = defineStore('user', {
     state: () => ({
         isAuth: false,
-        user: null,
         cart: [],
         favorite: [],
     }),
     actions: {
         setIsAuth (condition) {
-            this.isAuth = condition;
-        },
-        setUser (user) {
             this.logout();
-            this.user = user;
+            this.isAuth = condition;
         },
         setCart (cart) {
             this.cart = cart;
@@ -68,7 +64,7 @@ export const useUserStore = defineStore('user', {
                 return false;
             }
             
-            const targetList = this.favorite.find(list => list.name === 'Избранное');
+            const targetList = this.favorite.find(list => list.name === '__favorite__');
             if (!targetList) {
                 console.error('Список не найден');
                 return false;
@@ -101,7 +97,6 @@ export const useUserStore = defineStore('user', {
             this.cart = [];
             this.favorite = [];
             this.isAuth = false;
-            this.user = null;
         }
     }
 })

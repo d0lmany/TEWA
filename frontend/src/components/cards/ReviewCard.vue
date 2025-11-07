@@ -1,5 +1,5 @@
 <script setup>
-import { inject, ref, computed } from 'vue';
+import { inject, computed } from 'vue';
 import { User } from '@element-plus/icons-vue';
 
 const props = defineProps({
@@ -9,10 +9,9 @@ const props = defineProps({
     }
 });
 const storageURL = inject('storageURL');
-const review = ref({...props.review});
 
 const getRating = computed(() => {
-    return parseFloat(review.value.evaluation);
+    return parseFloat(props.review.evaluation);
 })
 const prettyDate = (date) => {
     return new Intl.DateTimeFormat(navigator.language, {
@@ -23,26 +22,25 @@ const prettyDate = (date) => {
     }).format(new Date(date));
 }
 
-const getAvatarPath = (filename) => {
-    return filename ? `${storageURL}/avatars/${filename}`: '';
-}
+const profilePicture = computed(() => (props.review.user.picture).includes('http') ?
+    props.review.user.picture : `${storageURL}/${props.review.user.picture}`);
 </script>
 <template>
 <el-card shadow="never" body-style="padding:1rem">
     <template #header>
         <div class="header">
-            <el-avatar size="large" shape="square" :src="getAvatarPath(review.user.avatar)">
+            <el-avatar size="large" shape="square" :src="profilePicture">
                 <el-icon :size="24"><User /></el-icon>
             </el-avatar>
             <div class="header-content">
-                <b>{{review.user.name}}</b>
+                <b>{{props.review.user.name}}</b>
                 <el-rate disabled v-model="getRating"/>
             </div>
-            <div class="created">Создан: {{ prettyDate(review.created_at) }}</div>
-            <div class="updated" v-if="review.created_at != review.updated_at">Обновлён: {{prettyDate(review.updated_at)}}</div>
+            <div class="created">Создан: {{ prettyDate(props.review.created_at) }}</div>
+            <div class="updated" v-if="props.review.created_at != props.review.updated_at">Обновлён: {{prettyDate(props.review.updated_at)}}</div>
         </div>
     </template>
-    <p>{{ review.text }}</p>
+    <p>{{ props.review.text }}</p>
 </el-card>
 </template>
 <style scoped>

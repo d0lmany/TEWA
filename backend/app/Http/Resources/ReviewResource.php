@@ -7,18 +7,12 @@ use Illuminate\Http\Resources\Json\JsonResource;
 
 class ReviewResource extends JsonResource
 {
-    /**
-     * Transform the resource into an array.
-     *
-     * @return array<string, mixed>
-     */
     public function toArray(Request $request): array
     {
-        //return parent::toArray($request);
         $review = [
             'id' => $this->id,
             'user' => $this->when($this->relationLoaded('user') && $this->user, function () {
-                return $this->user;
+                return new UserResource($this->user);
             }),
             'text' => $this->text,
             'evaluation' => $this->evaluation,

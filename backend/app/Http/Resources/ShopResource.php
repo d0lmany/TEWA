@@ -12,15 +12,12 @@ class ShopResource extends JsonResource
         $shop = [
             'id' => $this->id,
             'name' => $this->name,
-            'avatar' => $this->avatar,
+            'picture' => $this->picture,
             'description' => $this->description,
             'seller' => $this->when($this->relationLoaded('seller') && $this->seller, function() {
-                return $this->seller;
+                return new SellerResource($this->seller);
             }),
             'rating' => $this->when(isset($this->rating), $this->rating),
-            'city' => $this->city,
-            'payment_type' => $this->payment_type,
-            'fee' => $this->fee,
         ];
 
         return $shop;

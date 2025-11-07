@@ -10,7 +10,7 @@ export default class CartService
             const response = await this.API.get(endpoint);
 
             if (response.status !== 200) {
-                throw new Error(response);
+                throw response;
             }
 
             return {
@@ -45,7 +45,7 @@ export default class CartService
                         data: response.data,
                     };
                 } else {
-                    throw new Error(response);
+                    throw response;
                 }
             } catch (e) {
                 return {
@@ -68,20 +68,18 @@ export default class CartService
                 quantity: newCount
             });
 
-            console.log(response)
-
             if (response.status === 200) {
                 return {
                     success: true,
                     data: response.data
                 };
             } else {
-                throw new Error(response);
+                throw response;
             }
         } catch (e) {
             return {
                 success: false,
-                message: e.message || e
+                message: e.data.message || e
             };
         }
     }

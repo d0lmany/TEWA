@@ -23,7 +23,8 @@ class ProductResource extends JsonResource
             'category' => new CategoryResource($this->whenLoaded('category')),
             'price' => [
                 'discount' => $this->discount,
-                'base_price' => $this->base_price
+                'base_price' => $this->base_price,
+                'final_price' => $this->final_price,
             ],
             'tags' => $this->tags,
             'feedbacks' => [
@@ -32,8 +33,8 @@ class ProductResource extends JsonResource
             ],
             'details' => $this->whenLoaded('productDetail'),
             'attributes' => $this->when(
-                $this->relationLoaded('productAttribute') && $this->productAttribute->isNotEmpty(),
-                fn() => $this->productAttribute
+                $this->relationLoaded('attributes') && $this->attributes->isNotEmpty(),
+                fn() => $this->attributes
                     ->groupBy('attr_key')
                     ->map(fn($group) => $group->map(fn($item) => Arr::except($item->toArray(), ['attr_key', 'product_id'])))
                     ->toArray()

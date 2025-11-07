@@ -8,7 +8,6 @@ use App\Http\Resources\FavoriteListItemResource;
 use App\Models\FavoriteListItem;
 use App\Models\FavoriteList;
 use Exception;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 class FavoriteListItemController extends Controller
@@ -21,57 +20,62 @@ class FavoriteListItemController extends Controller
         return FavoriteListItemResource::collection($items);
     }
 
-    public function store(StoreFavoriteRequest $request)
-    {
-        /*
-        1. получаем из реквеста айди юзера и айди продукта
-        2. обращаемся к спискам избранного: получаем первый, совпавший с name=Избранное, user_id=айди из реквеста - получаем айди списка
-        3. вставляем в FavListItems запись с айди списка, продукта, когда вставили
-        4. готово! мы в шоколадке
-        5. на фронте сохранить айди списка избранного куда нибудь
-        */
-    }
-
-    public function destroy(FavoriteListItem $fli)
-    {
-        /*
-        1. из запроса узнаём айди товара и айди списка
-        2. по ним находим запись product_id=айди товара, list_id=айди спика - удаляем запись
-        3. возвращаем ответ что записи не было (404)/ запись удалена (204)
-        */
-    }
-
     public function toggle(StoreFavoriteRequest $request)
     {
+        $fiData = $request->validated();
+
         try {
             $userId = Auth::id();
-            $productId = $request->product_id;
+            $productId = $fiData['product_id'];
+            $listId = $fiData['list_id'] ?? null;
+
+            if ($listId) {
+                $favoriteList = FavoriteList::where('user_id', $userId)
+                    ->where('id', $listId)
+                    ->firstOrFail();
+            } else {
+                $favoriteList = FavoriteList::where('user_id', $userId)
+                    ->where('name', '__favorite__')
+                    ->first();
+
+                if (!$favoriteList) {
+                    $favoriteList = FavoriteList::create([
+                        'user_id' => $userId,
+                        'name' => '__favorite__',
+                    ]);
+                }
+            }
 
             $existingItem = FavoriteListItem::where('product_id', $productId)
-                ->whereHas('favoriteList', fn($query) => $query->where('user_id', $userId))
+                ->where('list_id', $favoriteList->id)
                 ->first();
 
             if ($existingItem) {
                 $existingItem->delete();
-                return response()->json(['message' => 'Removed'], 200);
+                return response()->json([
+                    'message' => 'Product removed from favorites',
+                    'action' => 'removed'
+                ], 200);
             }
 
-            $favoriteList = FavoriteList::where('user_id', $userId)
-                ->where('name', 'Избранное')
-                ->firstOrFail();
-
             $favoriteItem = $favoriteList->favoriteListItems()->create([
-                'product_id' => $request->product_id,
+                'product_id' => $productId,
                 'list_id' => $favoriteList->id,
             ]);
 
             return response()->json([
-                'message' => 'Added',
+                'message' => 'Product added to favorites',
+                'action' => 'added',
                 'data' => new FavoriteListItemResource($favoriteItem)
             ], 201);
+
+        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
+            return response()->json([
+                'error' => 'Favorite list not found or access denied'
+            ], 404);
         } catch (Exception $e) {
             return response()->json([
-                'error' => $e
+                'error' => 'Unable to process favorite action'
             ], 500);
         }
     }

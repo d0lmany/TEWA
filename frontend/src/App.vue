@@ -8,8 +8,8 @@ const currency = 'RUB';
 // components
 import Header from './components/Header.vue';
 import Footer from './components/Footer.vue';
-import AuthModal from './components/AuthModal.vue';
-import RegModal from './components/RegModal.vue';
+import LogModal from './components/modals/Login.vue';
+import RegModal from './components/modals/Registration.vue';
 // services
 import AuthService from './services/AuthService';
 import I18nService from './services/I18nService';
@@ -94,7 +94,7 @@ if (userStore.isAuth) {
   <Header/>
   <router-view class="view"/>
   <Footer/>
-  <auth-modal
+  <log-modal
     v-model="modals.authOpen"
     @callReg="callRegFromAuth"
   />
