@@ -37,12 +37,15 @@ const fetchProducts = async () => {
 
   paginate.value.loading = true;
   try {
-    if (props.params.q === 'null' || props.params.q === null) {
-      delete props.params.q;
+    const params = { ...props.params };
+
+    if (params.q === 'null' || params.q === null) {
+      delete params.q;
     }
-    if (props.params.min_rating === 0 || props.params.min_rating === null) {
-      delete props.params.min_rating;
+    if (params.min_rating === 0 || params.min_rating === null) {
+      delete params.min_rating;
     }
+
     const result = await ProductService.index(props.params, paginate.value.page);
 
     if (!result.success) {
@@ -69,7 +72,7 @@ const fetchProducts = async () => {
     paginate.value.loading = false;
   }
 };
-const haveProducts = computed(() => !!products.length);
+const haveProducts = computed(() => !!products.value.length);
 
 watch(() => [props.params, props.firstPage, props.lastPage], () => {
   products.value = [];
@@ -104,7 +107,7 @@ onUnmounted(() => {
 <template>
   <section
     :class="{
-      'empty': haveProducts
+      'empty': !haveProducts
     }"
     :style="{
       'min-height': bigPage ? '75vh': 'max-content'
@@ -112,10 +115,11 @@ onUnmounted(() => {
   >
     <div
       class="contents"
-      v-if="!haveProducts">
+      v-if="haveProducts">
         <product-card
           v-for="product in products"
           :product="product"
+          :key="product.id"
         />
       </div>
     <el-empty v-else description="Каталог пуст"/>

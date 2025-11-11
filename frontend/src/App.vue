@@ -6,10 +6,10 @@ const backendURL = 'http://127.0.0.1:8000/api';
 const storageURL = 'http://127.0.0.1:8000/storage';
 const currency = 'RUB';
 // components
-import Header from './components/Header.vue';
-import Footer from './components/Footer.vue';
-import LogModal from './components/modals/Login.vue';
-import RegModal from './components/modals/Registration.vue';
+import Header from './components/AppHeader.vue';
+import Footer from './components/AppFooter.vue';
+import LogModal from './components/modals/LoginModal.vue';
+import RegModal from './components/modals/RegistrationModal.vue';
 // services
 import AuthService from './services/AuthService';
 import I18nService from './services/I18nService';

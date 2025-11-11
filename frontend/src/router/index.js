@@ -1,15 +1,15 @@
 import { createRouter, createWebHistory } from 'vue-router'
 
-import Index from '@/pages/Index.vue';
-import MyCart from '@/pages/my/Cart.vue';
-import MyFavorite from '@/pages/my/Favorite.vue';
-import MyOrders from '@/pages/my/Orders.vue';
-import My from '@/pages/my/Index.vue';
-import Search from '@/pages/search.vue';
-import Product from '@/pages/product.vue';
-import Shop from '@/pages/shop.vue';
-import About from '@/pages/legal/about.vue';
-import Legal from '@/pages/legal/legal.vue';
+import Index from '@/pages/IndexPage.vue';
+import MyCart from '@/pages/my/CartPage.vue';
+import MyFavorite from '@/pages/my/FavoritePage.vue';
+import MyOrders from '@/pages/my/OrdersPage.vue';
+import My from '@/pages/my/ProfilePage.vue';
+import Search from '@/pages/SearchPage.vue';
+import Product from '@/pages/ProductPage.vue';
+import Shop from '@/pages/ShopPage.vue';
+import About from '@/pages/legal/AboutPage.vue';
+import Legal from '@/pages/legal/LegalPage.vue';
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -79,7 +79,7 @@ const router = createRouter({
     {
       name: 'NotFound',
       path: '/:pathMatch(.*)*',
-      component: () => import('@/pages/404.vue')
+      component: () => import('@/pages/404Page.vue')
     }
   ],
 })
