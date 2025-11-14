@@ -76,6 +76,7 @@ const set = () => {
             v-for="option in options"
             :value="option.value"
             :label="`по ${option.label}`"
+            :key="option.id"
           />
         </el-select>
         <el-radio-group v-model="sorts.direction">

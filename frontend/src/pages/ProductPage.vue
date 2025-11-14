@@ -347,6 +347,7 @@ onUnmounted(() => {
                                 lazy
                                 v-for="photo in album"
                                 :src="photo"
+                                :key="photo"
                             />
                         </div>
                         <el-image
@@ -377,6 +378,7 @@ onUnmounted(() => {
                                 <div
                                     v-for="(v, k) in getAttributes(true)"
                                     class="flex gap"
+                                    :key="v[0].id"
                                 >
                                 <el-tag
                                     size="large"
@@ -388,6 +390,7 @@ onUnmounted(() => {
                                     <el-radio-button
                                         v-for="obj in v"
                                         :value="obj.attr_value"
+                                        :key="obj.id"
                                     >
                                         {{obj.attr_value}}
                                     </el-radio-button>
@@ -398,6 +401,7 @@ onUnmounted(() => {
                                 <div
                                     v-for="(v, k) in getAttributes()"
                                     class="flex gap"
+                                    :key="v[0].id"
                                 >
                                     <el-tag
                                         size="large"
@@ -412,6 +416,7 @@ onUnmounted(() => {
                                 <el-tag
                                     size="large"
                                     v-for="tag in JSON.parse(product.tags)"
+                                    :key="tag"
                                 >{{tag}}</el-tag>
                             </div>
                         </div>
@@ -504,7 +509,11 @@ onUnmounted(() => {
                         >{{product?.feedbacks?.reviews.length}}</el-tag>
                     </div>
                     <div class="reviews">
-                        <ReviewCard v-for="review in product?.feedbacks?.reviews" :review="review"/>
+                        <review-card
+                            v-for="review in product?.feedbacks?.reviews"
+                            :review="review"
+                            :key="review.id"
+                        />
                     </div>
                 </el-card>
             </template>
@@ -665,7 +674,12 @@ onUnmounted(() => {
                         />
                         <el-text size="large">{{ `${rating} / 5` }}</el-text>
                     </div>
-                    <div class="flex gap" style="padding-top:.5rem" v-for="(v, k) in filteredEvaluations">
+                    <div
+                        class="flex gap"
+                        style="padding-top:.5rem"
+                        v-for="(v, k) in filteredEvaluations"
+                        :key="v"
+                    >
                         <el-progress :percentage="v" :show-text="false" style="flex:1"/>
                         <el-text size="large">{{k}}</el-text>
                     </div>

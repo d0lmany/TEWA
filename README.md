@@ -35,6 +35,8 @@
 - **Drawio** - *Security-first diagramming for teams.*
 - **Bruno** - *Re-Inventing the API Client. Git-integrated, fully offline, and open-source API client.*
 
+**Полный перечень зависимостей и их лицензий приведён в [этом файле](./ATTRIBUTIONS.md)**
+
 ## Установка и запуск
 ### Требования
 - PHP 8.4+

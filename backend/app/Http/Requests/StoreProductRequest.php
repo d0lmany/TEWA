@@ -18,9 +18,10 @@ class StoreProductRequest extends FormRequest
             'name' => ['required', 'string', 'max:300'],
             'quantity' => ['required', 'integer', 'min:0'],
             'base_price' => ['required', 'numeric', 'max:9999999999,99', 'min:0'],
-            'photo' => ['required', 'file', 'image',
+            'photo' => [
+                'required', 'image',
                 'mimes:jpeg,png,jpg,webp', 'max:5120',
-                'mimetypes:image/jpeg,image/png,image/jpg,image/webp'],
+            ],
             'category_id' => ['required', 'exists:categories,id'],
             'tags' => ['sometimes', 'array'],
             'tags.*' => ['string'],

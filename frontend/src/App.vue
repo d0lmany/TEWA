@@ -2,7 +2,7 @@
 // imports
 import { provide, ref, watch } from 'vue';
 // extra
-const backendURL = 'http://127.0.0.1:8000/api';
+const backendURL = 'http://127.0.0.1:8000/api/v1';
 const storageURL = 'http://127.0.0.1:8000/storage';
 const currency = 'RUB';
 // components

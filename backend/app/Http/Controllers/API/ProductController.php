@@ -107,6 +107,10 @@ class ProductController extends Controller
         if ($request->hasFile('photo')) {
             $productData['photo'] = $request->file('photo')
                 ->store('products', 'public');
+        } else {
+            return response()->json([
+                'message' => 'Unprocessable Entity'
+            ], 422);
         }
 
         if (isset($productData['tags']) && is_array($productData['tags'])) {

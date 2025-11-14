@@ -22,8 +22,17 @@ const prettyDate = (date) => {
     }).format(new Date(date));
 }
 
-const profilePicture = computed(() => (props.review.user.picture).includes('http') ?
-    props.review.user.picture : `${storageURL}/${props.review.user.picture}`);
+const profilePicture = computed(() => {
+    if (props.review?.user?.picture) {
+        if (props.review?.user?.picture.includes('http')) {
+            return `${storageURL}/${props.review.user.picture}`;
+        } else {
+            return props.review.user.picture;
+        }
+    } else {
+        return null;
+    }
+});
 </script>
 <template>
 <el-card shadow="never" body-style="padding:1rem">
