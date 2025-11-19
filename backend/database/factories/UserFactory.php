@@ -18,7 +18,7 @@ class UserFactory extends Factory
             'password' => Hash::make('password'),
             'birthday' => fake()->date('Y-m-d', '-13 years'),
             'picture' => fake()->randomElement([
-                fake()->imageUrl(640, 480, 'people'),
+                str_replace('https://via.placeholder.com/', '', fake()->imageUrl(400, 400, 'people')),
                 'NULL'
             ]),
         ];

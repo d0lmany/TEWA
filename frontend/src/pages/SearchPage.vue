@@ -69,7 +69,7 @@ const set = () => {
 <el-container>
   <el-main class="main">
     <div class="main-header">
-      <h1>{{ route.query.q ?? 'Поиск' }}</h1>
+      <h1 class="section-header">{{ route.query.q ?? 'Поиск' }}</h1>
       <div class="sorts">
         <el-select v-model="sorts.field">
           <el-option
@@ -91,7 +91,7 @@ const set = () => {
     </el-backtop>
   </el-main>
   <el-aside class="aside">
-    <h2>Фильтры</h2>
+    <h2 class="section-header">Фильтры</h2>
     <Filters v-model="filters"/>
     <el-button-group class="buttons">
       <el-button
@@ -131,11 +131,6 @@ const set = () => {
 }
 .sorts :deep(.el-radio-group) {
   flex-wrap: nowrap;
-}
-h1, h2 {
-  font-size: 1.5rem;
-  margin: 0;
-  color: var(--el-text-color-primary);
 }
 h2 {
   margin-bottom: 1rem;

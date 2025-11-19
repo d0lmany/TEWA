@@ -131,7 +131,7 @@ const handleSubmit = async () => {
                 const result = await AuthService.register(form.value);
 
                 if (result.success) {
-                    userStore.setIsAuth(true);
+                    userStore.setUser(result.data);
                     ElMessage.success('Регистрация выполнена успешно!');
 
                     loadUserData();

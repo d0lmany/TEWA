@@ -28,7 +28,7 @@ class SellerSeeder extends Seeder
                 SellerVerification::create([
                     'user_id' => $user->id,
                     'passport_numbers' => fake()->numerify('#### ######'),
-                    'passport_scan' => fake()->imageUrl(800, 600, 'document', true, 'passport'),
+                    'passport_scan' => str_replace('https://via.placeholder.com/', '', fake()->imageUrl(400, 400, 'document', true, 'passport')),
                 ]);
 
                 if (fake()->boolean(80)) {
@@ -47,7 +47,7 @@ class SellerSeeder extends Seeder
             SellerVerification::create([
                 'user_id' => $seller->user_id,
                 'passport_numbers' => fake()->numerify('#### ######'),
-                'passport_scan' => fake()->imageUrl(800, 600, 'document', true, 'passport'),
+                'passport_scan' => str_replace('https://via.placeholder.com/', '', fake()->imageUrl(400, 400, 'document', true, 'passport')),
             ]);
         }
     }

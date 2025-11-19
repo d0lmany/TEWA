@@ -3,7 +3,7 @@
 import { provide, ref, watch } from 'vue';
 // extra
 const backendURL = 'http://127.0.0.1:8000/api/v1';
-const storageURL = 'http://127.0.0.1:8000/storage';
+const storageURL = 'http://127.0.0.1:8001/storage';
 const currency = 'RUB';
 // components
 import Header from './components/AppHeader.vue';
@@ -28,7 +28,7 @@ const createServices = () => {
   const cart = new CartService(API);
   const favorite = new FavoriteService(API);
   const claim = new ClaimService(API);
-  const user = new UserService(cart, favorite);
+  const user = new UserService(cart, favorite, auth);
 
   return { auth, i18n, product,
     category, cart, favorite,

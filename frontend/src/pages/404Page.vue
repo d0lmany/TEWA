@@ -1,7 +1,7 @@
 <template>
 <main>
-    <h1>404</h1>
-    <h2>Страница не найдена :(</h2>
+    <h1 class="section-header">404</h1>
+    <h2 class="section-header">Страница не найдена :(</h2>
     <router-link :to="{name: 'Home'}">
         <el-link style="font-size: 1rem;">Вернуться на главную?</el-link>
     </router-link>
@@ -19,10 +19,6 @@ main {
     align-items: center;
     min-height: 70vh;
     justify-content: center;
-}
-h1, h2 {
-    margin: 0;
-    color: var(--el-text-color-primary);
 }
 h1 {
     font-size: 3rem;

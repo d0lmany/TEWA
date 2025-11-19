@@ -15,7 +15,7 @@ class ProductDetailFactory extends Factory
     {
         $images = [];
         for ($i = 0; $i < fake()->numberBetween(2, 6); $i++) {
-            $images[] = fake()->imageUrl(600, 600, 'product', true);
+            $images[] = str_replace('https://via.placeholder.com/', '', fake()->imageUrl(400, 400, 'product', true));
         }
         
         return [
@@ -37,7 +37,7 @@ class ProductDetailFactory extends Factory
     {
         return $this->state(fn (array $attributes) => [
             'application' => null,
-            'album' => json_encode([fake()->imageUrl(600, 600, 'product', true)]),
+            'album' => json_encode([str_replace('https://via.placeholder.com/', '', fake()->imageUrl(400, 400, 'product', true))]),
         ]);
     }
 }

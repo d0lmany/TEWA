@@ -15,7 +15,7 @@ class SellerVerificationFactory extends Factory
         return [
             'user_id' => User::factory(),
             'passport_numbers' => fake()->numerify('#### ######'),
-            'passport_scan' => fake()->imageUrl(800, 600, 'document', true, 'passport')
+            'passport_scan' => str_replace('https://via.placeholder.com/', '', fake()->imageUrl(400, 400, 'document', true, 'passport'))
         ];
     }
 

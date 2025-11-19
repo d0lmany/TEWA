@@ -12,7 +12,6 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
-        web: __DIR__.'/../routes/web.php',
         api: __DIR__.'/../routes/api.php',
         health: '/up',
     )
@@ -27,13 +26,9 @@ return Application::configure(basePath: dirname(__DIR__))
     })
     ->withMiddleware(function (Middleware $middleware): void {
         $middleware->alias([
-            'admin' => AdminOnly::class
-        ]);
-    })
-    ->withMiddleware(function (Middleware $middleware): void {
-        $middleware->alias([
             'shop.owner' => ShopOwner::class,
             'product.owner' => ProductOwner::class,
+            'adminOnly' => AdminOnly::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {

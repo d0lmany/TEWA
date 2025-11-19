@@ -8,6 +8,7 @@ use App\Http\Requests\LoginUserRequest;
 use App\Http\Requests\StoreUserRequest;
 use App\Http\Resources\UserResource;
 use App\Models\User;
+use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
@@ -22,19 +23,17 @@ class AuthController extends Controller
                 
                 $user = User::create($data);
                 $token = $this->createAuthToken($user);
-                
-                return response()->json([
-                    'token' => $token
-                ], 201);
+
+                return (new UserResource($user))->additional(['token' => $token]);
             });
         } catch (\Exception $e) {
             return response()->json([
-                'error' => $e->getMessage(),
+                'message' => $e->getMessage(),
             ], 500);
         }
     }
 
-    public function login(LoginUserRequest $request): JsonResponse 
+    public function login(LoginUserRequest $request): UserResource|JsonResponse 
     {
         $user = User::where('email', $request->email)->first();
 
@@ -47,9 +46,7 @@ class AuthController extends Controller
 
         $token = $this->createAuthToken($user);
         
-        return response()->json([
-            'token' => $token,
-        ]);
+        return (new UserResource($user))->additional(['token' => $token]);
     }
 
     public function logout(): JsonResponse 
@@ -65,6 +62,19 @@ class AuthController extends Controller
         } catch (\Exception $e) {
             return response()->json([
                 'message' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+    public function show() {
+        try {
+            $user = Auth::user();
+
+            return new UserResource($user);
+        } catch (Exception $e) {
+            return response()->json([
+                'message' => 'Couldn\'t get the user',
+                'data' => $e->getMessage(),
             ], 500);
         }
     }

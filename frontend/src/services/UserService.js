@@ -2,16 +2,18 @@ import { useUserStore } from "@/stores/userStore";
 
 export default class UserService
 {
-    constructor(CartService, FavoriteService) {
+    constructor(CartService, FavoriteService, AuthService) {
         this.CartService = CartService;
         this.FavoriteService = FavoriteService;
         this.userStore = useUserStore();
+        this.AuthService = AuthService;
     }
 
     async loadData() {
         const result = {};
         const responseCart = await this.CartService.index();
         const responseFavorite = await this.FavoriteService.index();
+        const responseUser = await this.AuthService.show();
         
         if (responseCart.success) {
             result.cart = responseCart.data.data;
@@ -23,6 +25,12 @@ export default class UserService
             result.favorite = responseFavorite.data.data;
         } else {
             result.failFavorite = true;
+        }
+
+        if (responseUser.success) {
+            result.user = responseUser.data;
+        } else {
+            result.failUser = true;
         }
 
         return result;
@@ -38,6 +46,10 @@ export default class UserService
             this.userStore.setFavorite(data.favorite);
         }
 
-        return data.failCart || data.failFavorite;
+        if (!data.failUser) {
+            this.userStore.setUser(data.user);
+        }
+
+        return data.failCart || data.failFavorite || data.failUser;
     }
 }

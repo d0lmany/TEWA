@@ -16,7 +16,7 @@ class ShopFactory extends Factory
 
         return [
             'name' => $name,
-            'picture' => fake()->imageUrl(640, 480, 'logo'),
+            'picture' => str_replace('https://via.placeholder.com/', '', fake()->imageUrl(400, 400, 'logo')),
             'description' => fake()->text(300),
             'seller_id' => Seller::factory(),
         ];

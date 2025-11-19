@@ -18,7 +18,7 @@ return new class extends Migration
                 ->nullOnDelete();
             $table->string('code', 50);
             $table->enum('type', ['individual', 'LLC', 'self-employed']);
-            $table->string('payment_account')
+            $table->text('payment_account')
                 ->nullable();
             $table->dateTime('verified_at')
                 ->nullable();
@@ -31,8 +31,8 @@ return new class extends Migration
                 ->nullable()
                 ->constrained()
                 ->nullOnDelete();
-            $table->string('passport_numbers');
-            $table->string('passport_scan');
+            $table->text('passport_numbers');
+            $table->text('passport_scan');
             $table->timestamp('created_at')->useCurrent();
         });
     }

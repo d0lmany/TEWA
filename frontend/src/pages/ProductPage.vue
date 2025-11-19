@@ -34,11 +34,15 @@ const favoriteItem = ref(null);
 const claimFormVisible = ref(false);
 
 const album = computed(() => {
-    if (!product.value.details) return [];
+    if (!product.value?.details) return [mainPhoto.value];
 
     const alb = JSON.parse(product.value.details.album || '[]');
-    return [...alb, product.value.photo].map(url => makePhotoURL(url)).reverse();
-})
+
+    return [
+        mainPhoto.value,
+        ...alb.map(url => makePhotoURL(url)),
+    ];
+});
 const rating = computed(() => parseFloat(product.value?.feedbacks?.rating));
 const shopRating = computed(() => parseFloat(product.value?.shop?.rating));
 
@@ -96,8 +100,10 @@ const total = computed(() => {
     setProductCount();
     return parseFloat(product.value.price?.base_price || 0) + impact;
 });
-const totalWithDisc = computed(() => product.value.price.discount === null?
-    total.value : total.value * (1 - product.value.price.discount / 100));
+const totalWithDisc = computed(() => {
+    if (!product.value.price?.discount) return total.value;
+    return total.value * (1 - product.value.price.discount / 100);
+});
 const evaluations = computed(() => {
     const reviews = product.value.feedbacks.reviews;
     const result = {};
@@ -139,8 +145,8 @@ const copy = async (target) => {
         ElMessage.error(`Не удалось скопировать "${target}": ${e}`);
     }
 }
-const makePhotoURL = (filename) => filename.includes('http') ?
-    filename : `${storageURL}/${filename}`;
+const makePhotoURL = (filename) => `${storageURL}/${filename}`;
+const mainPhoto = computed(() => makePhotoURL(product.value.photo));
 const getProduct = async () => {
     try {
         const response = await ProductService.show(route.params.id);
@@ -351,8 +357,8 @@ onUnmounted(() => {
                             />
                         </div>
                         <el-image
-                            :preview-src-list="product.details ? album : [makePhotoURL(product.photo)]"
-                            :src="makePhotoURL(product.photo)"
+                            :preview-src-list="album"
+                            :src="mainPhoto"
                             class="image"
                             fit="cover"
                             show-progress
@@ -360,7 +366,7 @@ onUnmounted(() => {
                         />
                         <div class="hero-content">
                             <div class="flex gap">
-                                <h1>{{product.name}}</h1>
+                                <h1 class="section-header">{{product.name}}</h1>
                                 <div class="rating">
                                     <el-icon
                                         v-if="rating"
@@ -491,19 +497,19 @@ onUnmounted(() => {
         >
             <template #default>
                 <el-card shadow="hover" v-if="product?.details?.description">
-                    <div class="card-header">Описание</div>
+                    <div class="section-header">Описание</div>
                     <p class="description">
                         {{ product.details.description }}
                     </p>
                 </el-card>
                 <el-card shadow="hover" v-if="product?.details?.application">
-                    <div class="card-header">Способ применения</div>
+                    <div class="section-header">Способ применения</div>
                     <p class="description">
                         {{ product.details.application }}
                     </p>
                 </el-card>
                 <el-card shadow="hover" v-if="product?.feedbacks?.rating">
-                    <div class="card-header flex low gap">
+                    <div class="section-header flex low gap">
                         Отзывы
                         <el-tag effect="dark"
                         >{{product?.feedbacks?.reviews.length}}</el-tag>
@@ -575,12 +581,12 @@ onUnmounted(() => {
                         class="contents"
                     >
                         <div
-                            class="card-header"
+                            class="section-header"
                             style="text-align: center"
                         >
                             {{ formatter.format(totalWithDisc) }}
-                            <span style="font-size:1rem" v-if="parseFloat(product.price.discount)">{{ `- ${parseFloat(product.price.discount)}% ` }}</span>
-                            <s v-if="parseFloat(product.price.discount)">{{ formatter.format(total) }}</s>
+                            <span style="font-size:1rem" v-if="parseFloat(product.price?.discount)">{{ `- ${parseFloat(product.price.discount)}% ` }}</span>
+                            <s v-if="parseFloat(product.price?.discount)">{{ formatter.format(total) }}</s>
                         </div>
                         <div
                             v-if="isAuth"
@@ -645,13 +651,17 @@ onUnmounted(() => {
                             </el-button>
                         </div>
                     </div>
-                    <div class="card-header" v-else>
-                        Этот товар не продаётся.
+                    <div
+                        class="section-header"
+                        style="text-align: center; margin: 0;"
+                        v-else
+                    >
+                        Этот товар не продаётся
                     </div>
                 </template>
             </el-skeleton>
         </el-card>
-        <el-card shadow="hover" style="position: sticky; top: 4.5rem;" v-if="rating">
+        <el-card shadow="hover" v-if="rating">
             <el-skeleton
                 :loading="loading"
                 animated
@@ -678,7 +688,7 @@ onUnmounted(() => {
                         class="flex gap"
                         style="padding-top:.5rem"
                         v-for="(v, k) in filteredEvaluations"
-                        :key="v"
+                        :key="k"
                     >
                         <el-progress :percentage="v" :show-text="false" style="flex:1"/>
                         <el-text size="large">{{k}}</el-text>
@@ -707,6 +717,11 @@ article, aside {
     flex-direction: column;
     gap: 1rem;
 }
+aside {
+    height: max-content;
+    position: sticky;
+    top: 4.5rem;
+}
 .hero {
     display: flex;
     gap: 1rem;
@@ -732,11 +747,6 @@ article, aside {
     height: 75px;
     flex-shrink: 0;
 }
-.hero-content h1 {
-    margin: 0;
-    color: var(--el-text-color-primary);
-    font-size: 1.75rem;
-}
 .attributes, .rating, .hero-content {
     display: flex;
     flex-direction: column;
@@ -758,12 +768,11 @@ article, aside {
     flex-direction: column;
     gap: 1rem;
 }
-.card-header {
-    font-size: 1.5rem;
+.section-header {
     font-weight: 600;
-    margin-bottom: 1rem;
+    margin-bottom: .75rem;
 }
-.card-header + .description {
+.section-header + .description {
     margin: 0;
     text-align: justify;
     line-height: 1.4rem;

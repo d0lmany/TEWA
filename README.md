@@ -24,6 +24,7 @@
 - **Vue Router** - *Vue Router. Expressive, configurable and convenient routing for Vue.js.*
 - **Pinia** - *The intuitive store for Vue.js.*
 - **Element Plus** - *A Vue 3 based component library for designers and developers.*
+- **TypeScript** - *Strongly typed programming language that builds on JavaScript, giving you better tooling at any scale*
 
 ### Backend
 - **Laravel 12** - *Laravel is a web application PHP framework with expressive, elegant syntax, a robust ecosystem.*
@@ -68,13 +69,9 @@
    php artisan migrate
    ```
 
-5. **Запуск приложений (режим разработчика)**
+5. **Запуск приложения (режим разработчика)**
    ```bash
-   # Frontend (в папке frontend)
-   npm run dev
-   
-   # Backend (в папке backend)
-   php artisan serve # ИЛИ composer run dev
+   ./run # Запустит 3 сервера: для бэкенда, фронтенда и картинок
    ```
 
 ## Документация

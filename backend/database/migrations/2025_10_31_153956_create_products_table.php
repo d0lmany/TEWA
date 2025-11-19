@@ -1,11 +1,12 @@
 <?php
 
-use App\Models\Category;
-use App\Models\Product;
 use App\Models\Shop;
-use Illuminate\Database\Migrations\Migration;
-use Illuminate\Database\Schema\Blueprint;
+use App\Models\Product;
+use App\Models\Category;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Database\Migrations\Migration;
 
 return new class extends Migration
 {
@@ -21,7 +22,7 @@ return new class extends Migration
                 ->nullable()
                 ->constrained()
                 ->nullOnDelete();
-            $table->json('tags')->default('[]');
+            $table->json('tags')->default('"[]"');
             $table->decimal('discount', 5, 2)->default(0.0);
             $table->enum('status', ['on', 'off', 'draft'])->default('draft');
             $table->foreignIdFor(Shop::class)

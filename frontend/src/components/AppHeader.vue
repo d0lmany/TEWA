@@ -1,6 +1,6 @@
 <script setup>
 import { ref, inject, onMounted } from 'vue';
-import { Menu, Search, ShoppingCart, Star, MessageBox, User } from '@element-plus/icons-vue';
+import { Menu, Search, /*ShoppingCart, Star, MessageBox, */User } from '@element-plus/icons-vue';
 import { ElButton, ElMessage } from 'element-plus';
 import { useRouter } from 'vue-router';
 import { useUserStore } from '@/stores/userStore';
@@ -79,7 +79,7 @@ onMounted(() => loadCategories())
             </template>
         </el-input>
         <nav>
-            <el-button @click="goto('Cart')">
+            <!--el-button @click="goto('Cart')">
                 <el-icon class="el-icon--left" :size="22">
                     <ShoppingCart/>
                 </el-icon>
@@ -91,12 +91,12 @@ onMounted(() => loadCategories())
                 </el-icon>
                 Избранное
             </el-button>
-            <el-button @click="goto('Orders')">
+            <el-button-- @click="goto('Orders')">
                 <el-icon class="el-icon--left" :size="22">
                     <MessageBox/>
                 </el-icon>
                 Заказы
-            </el-button>
+            </el-button-->
             <el-button @click="goto('Profile')">
                 <el-icon class="el-icon--left" :size="22">
                     <User/>

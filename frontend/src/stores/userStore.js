@@ -5,11 +5,15 @@ export const useUserStore = defineStore('user', {
         isAuth: false,
         cart: [],
         favorite: [],
+        user: null,
     }),
     actions: {
         setIsAuth (condition) {
             this.logout();
             this.isAuth = condition;
+        },
+        setUser (user) {
+            this.user = user;
         },
         setCart (cart) {
             this.cart = cart;
@@ -97,6 +101,7 @@ export const useUserStore = defineStore('user', {
             this.cart = [];
             this.favorite = [];
             this.isAuth = false;
+            this.user = null;
         }
     }
 })

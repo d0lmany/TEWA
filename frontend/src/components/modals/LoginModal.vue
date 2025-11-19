@@ -40,7 +40,8 @@ const handleSubmit = () => {
         );
 
         if (result.success) {
-          userStore.setIsAuth(true);
+          userStore.setUser(result.data);
+
           ElMessage.success('Вход выполнен!');
 
           close();

@@ -43,6 +43,7 @@ export default class AuthService {
             
             return {
                 success: true,
+                data: response.data.data,
             }
         } catch (error) {
             return {
@@ -68,7 +69,10 @@ export default class AuthService {
                     localStorage.setItem('auth_token', response.data.token);
                     this.setAuthHeader(response.data.token);
 
-                    return { success: true };
+                    return {
+                        success: true,
+                        data: response.data.data,
+                    };
                 } else {
                     throw response;
                 }
@@ -115,6 +119,26 @@ export default class AuthService {
             return {
                 success: false,
                 message: error.message || error,
+            }
+        }
+    }
+
+    async show() {
+        try {
+            const response = await this.api.get('/auth');
+
+            if (response.status === 200) {
+                return {
+                    success: true,
+                    data: response.data.data,
+                };
+            } else {
+                throw response.data || response;
+            }
+        } catch (e) {
+            return {
+                success: false,
+                data: e.message || e,
             }
         }
     }

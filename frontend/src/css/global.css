@@ -31,3 +31,9 @@ body {
 .contents {
     display: contents;
 }
+.section-header {
+    color: var(--el-text-color-primary);
+    margin-bottom: 1rem;
+    font-size: 1.5rem;
+    margin: 0;
+}

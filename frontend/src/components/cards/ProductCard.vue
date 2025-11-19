@@ -29,8 +29,7 @@ const showProduct = () => router.push({
     }
 });
 
-const photoPath = computed(() => props.product.photo.includes('http') ?
-    props.product.photo : `${storageURL}/${props.product.photo}`);
+const photoPath = computed(() => `${storageURL}/${props.product.photo}`);
 const rating = computed(() => parseFloat(props.product.feedbacks.rating).toFixed(1));
 </script>
 <template>

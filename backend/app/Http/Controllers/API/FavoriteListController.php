@@ -2,10 +2,10 @@
 
 namespace App\Http\Controllers\API;
 
-use App\Http\Controllers\Controller;
-use App\Http\Resources\FavoriteListResource;
 use App\Models\FavoriteList;
-use Auth;
+use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Auth;
+use App\Http\Resources\FavoriteListResource;
 
 class FavoriteListController extends Controller
 {
