@@ -13,6 +13,7 @@ export const useUserStore = defineStore('user', {
             this.isAuth = condition;
         },
         setUser (user) {
+            this.isAuth = true;
             this.user = user;
         },
         setCart (cart) {

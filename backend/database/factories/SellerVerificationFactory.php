@@ -2,9 +2,10 @@
 
 namespace Database\Factories;
 
+use App\Utils\Utils;
+use \App\Models\User;
 use App\Models\SellerVerification;
 use Illuminate\Database\Eloquent\Factories\Factory;
-use \App\Models\User;
 
 class SellerVerificationFactory extends Factory
 {
@@ -15,7 +16,7 @@ class SellerVerificationFactory extends Factory
         return [
             'user_id' => User::factory(),
             'passport_numbers' => fake()->numerify('#### ######'),
-            'passport_scan' => str_replace('https://via.placeholder.com/', '', fake()->imageUrl(400, 400, 'document', true, 'passport'))
+            'passport_scan' => Utils::generateImage('passport scan')
         ];
     }
 

@@ -5,7 +5,9 @@ docs, style, refactor,
 test, chore, etc
  -->
 ## Unreleased
-- chore: Добавлен ESLint
+- chore[]:
+    - Добавлен ESLint
+    - Лишние зависимости бэкенда удалены
 - etc[]:
     - README обновлён
     - Новое видео демонстрации работы

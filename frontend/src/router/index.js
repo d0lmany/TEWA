@@ -8,8 +8,6 @@ import My from '@/pages/my/ProfilePage.vue';
 import Search from '@/pages/SearchPage.vue';
 import Product from '@/pages/ProductPage.vue';
 import Shop from '@/pages/ShopPage.vue';
-import About from '@/pages/legal/AboutPage.vue';
-import Legal from '@/pages/legal/LegalPage.vue';
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -69,17 +67,17 @@ const router = createRouter({
     {
       name: 'AboutTEWA',
       path: '/legal/about',
-      component: About,
+      component: () => import('@/pages/legal/AboutPage.vue'),
     },
     {
       name: 'Legal',
       path: '/legal',
-      component: Legal
+      component: () => import('@/pages/legal/LegalPage.vue'),
     },
     {
       name: 'NotFound',
       path: '/:pathMatch(.*)*',
-      component: () => import('@/pages/404Page.vue')
+      component: () => import('@/pages/404Page.vue'),
     }
   ],
 })

@@ -3,8 +3,9 @@
 namespace Database\Factories;
 
 use App\Models\User;
-use Illuminate\Database\Eloquent\Factories\Factory;
+use App\Utils\Utils;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Database\Eloquent\Factories\Factory;
 
 class UserFactory extends Factory
 {
@@ -18,7 +19,7 @@ class UserFactory extends Factory
             'password' => Hash::make('password'),
             'birthday' => fake()->date('Y-m-d', '-13 years'),
             'picture' => fake()->randomElement([
-                str_replace('https://via.placeholder.com/', '', fake()->imageUrl(400, 400, 'people')),
+                Utils::generateImage('people'),
                 'NULL'
             ]),
         ];

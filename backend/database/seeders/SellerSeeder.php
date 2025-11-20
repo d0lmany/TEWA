@@ -3,9 +3,10 @@
 namespace Database\Seeders;
 
 use App\Models\User;
+use App\Utils\Utils;
 use App\Models\Seller;
-use App\Models\SellerVerification;
 use Illuminate\Database\Seeder;
+use App\Models\SellerVerification;
 
 class SellerSeeder extends Seeder
 {
@@ -28,7 +29,7 @@ class SellerSeeder extends Seeder
                 SellerVerification::create([
                     'user_id' => $user->id,
                     'passport_numbers' => fake()->numerify('#### ######'),
-                    'passport_scan' => str_replace('https://via.placeholder.com/', '', fake()->imageUrl(400, 400, 'document', true, 'passport')),
+                    'passport_scan' => Utils::generateImage('passport scan'),
                 ]);
 
                 if (fake()->boolean(80)) {
@@ -47,7 +48,7 @@ class SellerSeeder extends Seeder
             SellerVerification::create([
                 'user_id' => $seller->user_id,
                 'passport_numbers' => fake()->numerify('#### ######'),
-                'passport_scan' => str_replace('https://via.placeholder.com/', '', fake()->imageUrl(400, 400, 'document', true, 'passport')),
+                'passport_scan' => Utils::generateImage('passport scan'),
             ]);
         }
     }

@@ -15,6 +15,10 @@ class CartItem extends Model
         'product_attributes' => 'array'
     ];
 
+    protected $attributes = [
+        'product_attributes' => '[]',
+    ];
+
     public $timestamps = false;
 
     protected $table = 'cart_items';

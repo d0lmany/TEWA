@@ -22,7 +22,7 @@ return new class extends Migration
                 ->nullable()
                 ->constrained()
                 ->nullOnDelete();
-            $table->json('tags')->default('"[]"');
+            $table->text('tags');
             $table->decimal('discount', 5, 2)->default(0.0);
             $table->enum('status', ['on', 'off', 'draft'])->default('draft');
             $table->foreignIdFor(Shop::class)
@@ -66,7 +66,7 @@ return new class extends Migration
             $table->foreignIdFor(Product::class)
                 ->constrained()
                 ->cascadeOnDelete();
-            $table->text('album')->default('[]');
+            $table->text('album');
             $table->text('description');
             $table->text('application')->nullable();
         });

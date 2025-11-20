@@ -2,8 +2,9 @@
 // imports
 import { provide, ref, watch } from 'vue';
 // extra
-const backendURL = 'http://127.0.0.1:8000/api/v1';
-const storageURL = 'http://127.0.0.1:8001/storage';
+const host = 'http://127.0.0.1:800';
+const backendURL = `${host}0/api/v1`;
+const storageURL = `${host}1/storage`;
 const currency = 'RUB';
 // components
 import Header from './components/AppHeader.vue';
@@ -37,10 +38,10 @@ const createServices = () => {
 const services = createServices();
 // stores
 import { useUserStore } from './stores/userStore';
-import { ElMessage } from 'element-plus';
 const userStore = useUserStore();
 userStore.setIsAuth(services.auth.isAuthenticated());
 // UI
+import { ElMessage, ElNotification } from 'element-plus';
 const modals = ref({
   authOpen: false,
   regOpen: false,
@@ -88,6 +89,12 @@ isDarkTheme.value = window.matchMedia && window.matchMedia('(prefers-color-schem
 if (userStore.isAuth) {
   loadUserData();
 }
+
+ElNotification({
+  title: 'Внимание',
+  message: 'Это тестовый релиз для дипломного проекта, не пытайтесь воспользоваться системой',
+  type: 'info'
+})
 </script>
 
 <template>

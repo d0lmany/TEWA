@@ -8,6 +8,7 @@ use App\Models\Product;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use App\Models\ProductAttribute;
 use App\Models\ProductDetail;
+use App\Utils\Utils;
 
 class ProductFactory extends Factory
 {
@@ -22,7 +23,7 @@ class ProductFactory extends Factory
             'name' => $name,
             'quantity' => fake()->numberBetween(0, 1000),
             'base_price' => fake()->randomFloat(2, 10, 100000),
-            'photo' => str_replace('https://via.placeholder.com/', '', fake()->imageUrl(480, 640, 'product', true, $name)),
+            'photo' => Utils::generateImage($name),
             'category_id' => Category::whereNotNull('parent_id')->inRandomOrder()->value('id'),
             'tags' => json_encode(fake()->randomElements($tags, fake()->randomDigit())),
             'discount' => fake()->randomFloat(2, 0, 100),

@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Utils\Utils;
 use App\Models\Product;
 use App\Models\ProductDetail;
 use Illuminate\Database\Eloquent\Factories\Factory;
@@ -15,7 +16,7 @@ class ProductDetailFactory extends Factory
     {
         $images = [];
         for ($i = 0; $i < fake()->numberBetween(2, 6); $i++) {
-            $images[] = str_replace('https://via.placeholder.com/', '', fake()->imageUrl(400, 400, 'product', true));
+            $images[] = Utils::generateImage('product detail');
         }
         
         return [
@@ -37,7 +38,7 @@ class ProductDetailFactory extends Factory
     {
         return $this->state(fn (array $attributes) => [
             'application' => null,
-            'album' => json_encode([str_replace('https://via.placeholder.com/', '', fake()->imageUrl(400, 400, 'product', true))]),
+            'album' => json_encode([Utils::generateImage('only one product detail')]),
         ]);
     }
 }

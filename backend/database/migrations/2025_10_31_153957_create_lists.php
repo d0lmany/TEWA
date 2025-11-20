@@ -53,7 +53,7 @@ return new class extends Migration
                 ->constrained()
                 ->nullOnDelete();
             $table->unsignedInteger('quantity');
-            $table->json('product_attributes')->default('[]');
+            $table->text('product_attributes');
         });
     }
 

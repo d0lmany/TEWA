@@ -33,6 +33,10 @@ class Product extends Model
         'reviews_count',
     ];
 
+    protected $attributes = [
+        'tags' => '[]',
+    ];
+
     public function category(): BelongsTo
     {
         return $this->belongsTo(Category::class);

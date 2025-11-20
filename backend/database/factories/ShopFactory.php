@@ -2,8 +2,9 @@
 
 namespace Database\Factories;
 
-use App\Models\Seller;
 use App\Models\Shop;
+use App\Utils\Utils;
+use App\Models\Seller;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 class ShopFactory extends Factory
@@ -16,7 +17,7 @@ class ShopFactory extends Factory
 
         return [
             'name' => $name,
-            'picture' => str_replace('https://via.placeholder.com/', '', fake()->imageUrl(400, 400, 'logo')),
+            'picture' => Utils::generateImage("{$name} logo"),
             'description' => fake()->text(300),
             'seller_id' => Seller::factory(),
         ];

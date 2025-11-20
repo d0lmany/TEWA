@@ -17,6 +17,10 @@ class ProductDetail extends Model
         'application',
     ];
 
+    protected $attributes = [
+        'album' => '[]',
+    ];
+
     public $timestamps = false;
 
     public function product(): BelongsTo

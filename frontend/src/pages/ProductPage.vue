@@ -461,7 +461,7 @@ onUnmounted(() => {
                     </el-avatar>
                     <div class="shop">
                         <div class="flex gap">
-                            <b>{{product.shop.name}}</b>
+                            <b style="font-size: 1.5rem">{{product.shop.name}}</b>
                             <el-popover
                                 placement="top"
                                 :width="175"
@@ -481,11 +481,11 @@ onUnmounted(() => {
                             />
                             <el-text v-else size="large">Нет оценок</el-text>
                         </div>
-                        <el-button round @click="$router.push({ name: 'Shop', params: {id: product?.shop.id}})"
+                        <!--el-button round @click="$router.push({ name: 'Shop', params: {id: product?.shop.id}})"
                         >
                             <el-icon class="el-icon--left"><Shop/></el-icon>
                             Перейти
-                        </el-button>
+                        </el-button-->
                     </div>
                 </template>
             </el-skeleton>
