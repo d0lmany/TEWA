@@ -15,72 +15,76 @@ use Illuminate\Support\Facades\Hash;
 
 class AuthController extends Controller
 {
-    public function register(StoreUserRequest $request): UserResource|JsonResponse
-    {
-        try {
-            return DB::transaction(function () use ($request) {
-                $data = $request->validated();
-                
-                $user = User::create($data);
-                $token = $this->createAuthToken($user);
-
-                return (new UserResource($user))->additional(['token' => $token]);
-            });
-        } catch (\Exception $e) {
-            return response()->json([
-                'message' => $e->getMessage(),
-            ], 500);
-        }
-    }
-
-    public function login(LoginUserRequest $request): UserResource|JsonResponse 
-    {
-        $user = User::where('email', $request->email)->first();
-
-        if (!$user || !Hash::check($request->password, $user->password)) {
+   public function register(StoreUserRequest $request): JsonResponse
+   {
+      try {
+         return DB::transaction(function () use ($request) {
+            $data = $request->validated();
             
+            $user = User::create($data);
+            $token = $this->createAuthToken($user);
+
             return response()->json([
-                'message' => 'Wrong email or password'
-            ], 401);
-        }
+               'token' => $token,
+            ], 201);
+         });
+      } catch (\Exception $e) {
+         return response()->json([
+            'message' => $e->getMessage(),
+         ], 500);
+      }
+   }
 
-        $token = $this->createAuthToken($user);
-        
-        return (new UserResource($user))->additional(['token' => $token]);
-    }
+   public function login(LoginUserRequest $request): JsonResponse 
+   {
+      $user = User::where('email', $request->email)->first();
 
-    public function logout(): JsonResponse 
-    {
-        try {
-            $token = Auth::user()?->currentAccessToken();
-            
-            if ($token) {
-                $token->delete();
-            }
+      if (!$user || !Hash::check($request->password, $user->password)) {
+         
+         return response()->json([
+            'message' => 'Wrong email or password'
+         ], 401);
+      }
 
-            return response()->json([], 204);
-        } catch (\Exception $e) {
-            return response()->json([
-                'message' => $e->getMessage()
-            ], 500);
-        }
-    }
+      $token = $this->createAuthToken($user);
+      
+      return response()->json([
+         'token' => $token,
+      ]);
+   }
 
-    public function show() {
-        try {
-            $user = Auth::user();
+   public function show() {
+      try {
+         $user = Auth::user();
 
-            return new UserResource($user);
-        } catch (Exception $e) {
-            return response()->json([
-                'message' => 'Couldn\'t get the user',
-                'data' => $e->getMessage(),
-            ], 500);
-        }
-    }
+         return new UserResource($user);
+      } catch (Exception $e) {
+         return response()->json([
+            'message' => 'Couldn\'t get the user',
+            'data' => $e->getMessage(),
+         ], 500);
+      }
+   }
 
-    private function createAuthToken(User $user): string
-    {
-        return $user->createToken("{$user->name}'s device")->plainTextToken;
-    }
+   public function logout(): JsonResponse 
+   {
+      try {
+         $token = Auth::user()?->currentAccessToken();
+         
+         if ($token) {
+            $token->delete();
+         }
+
+         return response()->json([], 204);
+      } catch (\Exception $e) {
+         return response()->json([
+            'message' => $e->getMessage()
+         ], 500);
+      }
+   }
+
+   private function createAuthToken(User $user): string
+   {
+      return $user->createToken("{$user->name}'s device")->plainTextToken;
+   }
 }

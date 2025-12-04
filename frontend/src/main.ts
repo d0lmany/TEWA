@@ -1,7 +1,7 @@
 // logic modules
 import { createApp } from 'vue';
 import { createPinia } from 'pinia';
-import router from './router';
+import router from '@/router/index';
 // UI modules
 import App from './App.vue';
 import ElementPlus from 'element-plus'
@@ -18,7 +18,7 @@ const app = createApp(App);
 
 app.use(router);
 app.use(ElementPlus, {
-    locale: ru  
+   locale: ru  
 });
 app.use(createPinia());
 

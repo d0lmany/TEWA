@@ -30,7 +30,4 @@ return Application::configure(basePath: dirname(__DIR__))
             'product.owner' => ProductOwner::class,
             'adminOnly' => AdminOnly::class,
         ]);
-    })
-    ->withExceptions(function (Exceptions $exceptions): void {
-        //
     })->create();

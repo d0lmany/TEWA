@@ -8,23 +8,27 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class ProductDetail extends Model
 {
-    use HasFactory;
+   use HasFactory;
 
-    protected $fillable = [
-        'product_id',
-        'album',
-        'description',
-        'application',
-    ];
+   protected $fillable = [
+      'product_id',
+      'album',
+      'description',
+      'application',
+   ];
 
-    protected $attributes = [
-        'album' => '[]',
-    ];
+   protected $attributes = [
+      'album' => '[]',
+   ];
 
-    public $timestamps = false;
+   protected $casts = [
+      'album' => 'array'
+   ];
 
-    public function product(): BelongsTo
-    {
-        return $this->belongsTo(Product::class);
-    }
+   public $timestamps = false;
+
+   public function product(): BelongsTo
+   {
+      return $this->belongsTo(Product::class);
+   }
 }
