@@ -14,15 +14,13 @@ class ClaimSeeder extends Seeder
         $products = Product::all();
         $users = User::all();
 
-        foreach ($users->take(15) as $user) {
+        foreach ($users->take(35) as $user) {
             Claim::factory(fake()->numberBetween(0, 3))->create([
                 'user_id' => $user->id,
             ]);
         }
 
-        Claim::factory(5)->withoutUser()->create();
-
-        Claim::factory(3)->urgent()->create();
+        Claim::factory(10)->withoutUser()->create();
 
         $problematicProducts = $products->random(5);
         foreach ($problematicProducts as $product) {

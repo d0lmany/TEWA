@@ -7,14 +7,14 @@ use Illuminate\Http\Resources\Json\JsonResource;
 
 class FavoriteListItemResource extends JsonResource
 {
-   public function toArray(Request $request): array
-   {
-      return [
-         'id' => $this->id,
-         'list_id' => $this->list_id,
-         'product_id' => $this->product_id,
-         'product' => new ProductResource($this->whenLoaded('product')),
-         'added_at' => $this->added_at,
-      ];
-   }
+    public function toArray(Request $request): array
+    {
+        return [
+            'id' => $this->id,
+            'list_id' => $this->list_id,
+            'product_id' => $this->product_id,
+            'product' => new ProductResource($this->whenLoaded('product')),
+            'added_at' => $this->added_at,
+        ];
+    }
 }

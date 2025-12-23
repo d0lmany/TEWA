@@ -14,31 +14,18 @@ class ProductDetailFactory extends Factory
 
     public function definition(): array
     {
+        $product = Product::inRandomOrder()
+            ->first();
         $images = [];
-        for ($i = 0; $i < fake()->numberBetween(2, 6); $i++) {
-            $images[] = Utils::generateImage('product detail');
+        for ($i = 0; $i < fake()->numberBetween(2, 10); $i++) {
+            $images[] = 'products/product.png';
         }
         
         return [
-            'product_id' => Product::factory(),
-            'album' => json_encode($images),
+            'product_id' => $product->id,
+            'album' => $images,
             'description' => fake()->text(1000),
             'application' => fake()->text(500),
         ];
-    }
-
-    public function forProduct(Product $product): static
-    {
-        return $this->state(fn (array $attributes) => [
-            'product_id' => $product->id,
-        ]);
-    }
-
-    public function withMinimalInfo(): static
-    {
-        return $this->state(fn (array $attributes) => [
-            'application' => null,
-            'album' => json_encode([Utils::generateImage('only one product detail')]),
-        ]);
     }
 }

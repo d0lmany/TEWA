@@ -18,10 +18,7 @@ class UserFactory extends Factory
             'email' => fake()->unique()->safeEmail(),
             'password' => Hash::make('password'),
             'birthday' => fake()->date('Y-m-d', '-13 years'),
-            'picture' => fake()->randomElement([
-                Utils::generateImage('people'),
-                'NULL'
-            ]),
+            'picture' => fake()->randomElement(['profiles/profile.png', NULL])
         ];
     }
 

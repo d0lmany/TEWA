@@ -2,25 +2,25 @@ import type { CartItem, FavoriteLists } from "@/ts/entities/Items";
 import type { User } from "@/ts/entities/User";
 
 export interface LoginData {
-   email: string,
-   password: string,
+    email: string,
+    password: string,
 }
 
 export interface RegistrationData {
-   name: string,
-   email: string,
-   birthday: string,
-   password: string,
-   password_confirmation: string,
+    name: string,
+    email: string,
+    birthday: string,
+    password: string,
+    password_confirmation: string,
 }
 
 export interface UserResponseData {
-   cart: CartItem[],
-   favorite: FavoriteLists,
-   user: User,
-   errors: {
-      cart: string,
-      favorite: string,
-      user: string,
-   }
+    cart: CartItem[],
+    favorite: FavoriteLists,
+    user: User,
+    errors: {
+        cart: string,
+        favorite: string,
+        user: string,
+    }
 }

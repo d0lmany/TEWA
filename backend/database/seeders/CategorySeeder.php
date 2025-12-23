@@ -9,20 +9,12 @@ class CategorySeeder extends Seeder
 {
     public function run(): void
     {
-        $mainCategories = [
-            'Электроника' => ['Смартфоны', 'Ноутбуки', 'Телевизоры', 'Наушники', 'Планшеты'],
-            'Одежда' => ['Мужская', 'Женская', 'Детская', 'Обувь', 'Аксессуары'],
-            'Дом и сад' => ['Мебель', 'Текстиль', 'Посуда', 'Освещение', 'Садовый инвентарь'],
-            'Красота и здоровье' => ['Косметика', 'Парфюмерия', 'Уход за волосами', 'Витамины'],
-            'Спорт' => ['Фитнес', 'Велоспорт', 'Туризм', 'Йога', 'Тренажеры'],
-        ];
+        for ($i = 0; $i < 10; $i++) {
+            $parent = Category::create(['name' => fake()->words(fake()->numberBetween(1, 3), true)]);
 
-        foreach ($mainCategories as $mainCategory => $subcategories) {
-            $parent = Category::create(['name' => $mainCategory]);
-
-            foreach ($subcategories as $subcategory) {
+            for ($j = 0; $j < fake()->numberBetween(2, 5); $j++) {
                 Category::create([
-                    'name' => $subcategory,
+                    'name' => fake()->words(fake()->numberBetween(1, 3), true),
                     'parent_id' => $parent->id,
                 ]);
             }

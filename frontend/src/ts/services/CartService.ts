@@ -1,25 +1,27 @@
 import Repository from "@/ts/services/Repository";
 import ApiService from "@/ts/services/ApiService";
-import type ResponseResult from "@/ts/types/ResponseResult";
 import type { CartItem } from "@/ts/entities/Items";
 
 export default class CartService
 {
-   private repo: Repository;
+    private repo: Repository;
 
-   constructor(api: ApiService) {
-      this.repo = new Repository(api, 'cart');
-   }
+    constructor(api: ApiService) {
+        this.repo = new Repository(api, 'cart');
+    }
 
-   public store = async (data: CartItem): Promise<ResponseResult> => await this.repo.store({
-      url: '/cart', data
-   })
+    public index = async () => await this.repo.index()
 
-   public update = async (id: number, data: object): Promise<ResponseResult> => await this.repo.update({
-      url: `/cart/${id}`, data
-   })
+    public store = async (data: CartItem) => await this.repo.store({data})
 
-   public destroy = async (id: number): Promise<ResponseResult> => await this.repo.destroy({
-      url: `/cart/${id}`
-   })
+    public update = async (id: number, data: object) => await this.repo.update({
+        url: `/cart/${id}`, data
+    })
+
+    public destroy = async (id: number) => await this.repo.destroy({ url: `/cart/${id}` })
+
+    public destroyRange = async (range: number[]) => await this.repo.store({
+        data: { ids: range },
+        url: 'cart/destroy',
+    })
 }

@@ -61,4 +61,9 @@ class User extends Authenticatable
     {
         return $this->hasMany(Claim::class);
     }
+
+    public function addresses(): HasMany
+    {
+        return $this->hasMany(Address::class);
+    }
 }

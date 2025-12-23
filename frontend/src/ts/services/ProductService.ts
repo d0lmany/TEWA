@@ -8,24 +8,22 @@ import type { FullProduct } from "@/ts/entities/Product";
  */
 export default class ProductService
 {
-   private repo: Repository;
-   
-   constructor(api: ApiService) {
-      this.repo = new Repository(api, 'products');
-   }
+    private repo: Repository;
+    
+    constructor(api: ApiService) {
+        this.repo = new Repository(api, 'products');
+    }
 
-   public index = async (data: GetRequest): Promise<ResponseResult> => await this.repo.index(data)
+    public index = async (data: GetRequest) => await this.repo.index(data)
 
-   public show = async (id: number = 0): Promise<ResponseResult<FullProduct>> => {
-      const response = await this.repo.show({
-         url: `/products${id ? `/${id}` : ''}`,
-      });
+    public show = async (id: number): Promise<ResponseResult<FullProduct>> => {
+        const response = await this.repo.show({ url: `/products/${id}` });
 
-      return {
-         success: response.success,
-         data: response.data.data,
-         status: response.status,
-         message: response.message
-      };
-   }
+        return {
+            success: response.success,
+            data: response.data.data,
+            status: response.status,
+            message: response.message
+        };
+    }
 }

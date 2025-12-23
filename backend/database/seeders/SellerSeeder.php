@@ -29,7 +29,7 @@ class SellerSeeder extends Seeder
                 SellerVerification::create([
                     'user_id' => $user->id,
                     'passport_numbers' => fake()->numerify('#### ######'),
-                    'passport_scan' => Utils::generateImage('passport scan'),
+                    'passport_scan' => 'scans/scan.png',
                 ]);
 
                 if (fake()->boolean(80)) {
@@ -48,7 +48,7 @@ class SellerSeeder extends Seeder
             SellerVerification::create([
                 'user_id' => $seller->user_id,
                 'passport_numbers' => fake()->numerify('#### ######'),
-                'passport_scan' => Utils::generateImage('passport scan'),
+                'passport_scan' => 'scans/scan.png',
             ]);
         }
     }

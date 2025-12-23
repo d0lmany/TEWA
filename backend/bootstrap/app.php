@@ -19,7 +19,8 @@ return Application::configure(basePath: dirname(__DIR__))
         $exceptions->render(function (NotFoundHttpException $e, Request $request) {
             if ($request->is('api/*')) {
                 return response()->json([
-                    'error' => 'not found'
+                    'message' => 'Route Not Found',
+                    'data' => $e->getMessage()
                 ], 404);
             }
         });
@@ -30,4 +31,5 @@ return Application::configure(basePath: dirname(__DIR__))
             'product.owner' => ProductOwner::class,
             'adminOnly' => AdminOnly::class,
         ]);
-    })->create();
+    })
+    ->create();

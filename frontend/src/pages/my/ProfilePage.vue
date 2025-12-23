@@ -1,127 +1,150 @@
 <script setup lang="ts">
-import { /*Top, */User/*, Setting*/ } from '@element-plus/icons-vue';
-//import { View } from '@/types/view';
+import { Top, User, Location, Edit, Close } from '@element-plus/icons-vue';
+import { View } from '@/ts/types/View';
 import { useUserStore } from '@/stores/userStore';
-import { storeToRefs } from 'pinia';
-import { computed, inject/*, ref*/ } from 'vue';
-/*
-import DefaultSection from '@/components/sections/DefaultSection.vue';
-import SettingsSection from '@/components/sections/SettingsSection.vue';
+import { computed, reactive, ref, type Component } from 'vue';
+import ChangeProfileModal from '@/components/modals/ChangeProfileModal.vue';
+import ChangePasswordModal from '@/components/modals/ChangePasswordModal.vue';
+import LogoutModal from '@/components/modals/LogoutModal.vue';
 
-const currentView = ref(View.Default);
+import AddressesSection from '@/components/sections/AddressesSection.vue';
+
+const currentView = ref<View>(View.Addresses);
 const views = [
-   { type: View.Default, name: 'Главная', icon: User },
-   { type: View.Settings, name: 'Настройки', icon: Setting },
+    { type: View.Addresses, name: 'Адреса и ПВЗ', icon: Location },
 ];
-*/
+const sections: Record<View, Component> = {
+    [View.Addresses]: AddressesSection,
+};
+
 const userStore = useUserStore();
-const { user } = storeToRefs(userStore);
-const storageURL = inject('storageURL');
+const visibilities = reactive({
+    changeProfile: false,
+    changePassword: false,
+    wannaLogout: false,
+})
 
-const picturePath = computed(() => `${storageURL}/${user?.value?.picture}`);
 const age = computed(() => {
-   const today = new Date();
-   const birthday = new Date(user?.value?.birthday);
-   let ageNum = today.getFullYear() - birthday.getFullYear();
-   const monthDiff = today.getMonth() - birthday.getMonth();
-   
-   if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthday.getDate())) {
-      ageNum--;
-   }
+    const today = new Date();
+    const birthday = new Date(userStore.user?.birthday);
+    let ageNum = today.getFullYear() - birthday.getFullYear();
+    const monthDiff = today.getMonth() - birthday.getMonth();
+    
+    if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthday.getDate())) {
+        ageNum--;
+    }
 
-   const lastDigit = ageNum % 10;
-   
-   let ageSuffix = '';
-   if (ageNum >= 11 && ageNum <= 14) {
-      ageSuffix = 'лет';
-   } else {
-      switch (lastDigit) {
-         case 1: ageSuffix = 'год'; break;
-         case 2: 
-         case 3: 
-         case 4: ageSuffix = 'года'; break;
-         default: ageSuffix = 'лет';
-      }
-   }
+    const lastDigit = ageNum % 10;
+    
+    let ageSuffix = '';
+    if (ageNum >= 11 && ageNum <= 14) {
+        ageSuffix = 'лет';
+    } else {
+        switch (lastDigit) {
+            case 1: ageSuffix = 'год'; break;
+            case 2: 
+            case 3: 
+            case 4: ageSuffix = 'года'; break;
+            default: ageSuffix = 'лет';
+        }
+    }
 
-   return `${ageNum} ${ageSuffix}`;
+    return `${ageNum} ${ageSuffix}`;
 });
 </script>
 <template>
-   <div class="container">
-      <aside>
-         <h1 class="section-header">Профиль</h1>
-         <figure>
+<div class="container">
+    <aside>
+        <h1 class="section-header">Профиль</h1>
+        <figure>
             <el-avatar
-               size="large"
-               shape="square"
-               :src="picturePath"
-               style="width: 200px; height: 200px;"
+                size="large"
+                shape="square"
+                :src="userStore.user.picture"
+                style="width: 200px; height: 200px;"
             ><el-icon :size="48"><User/></el-icon></el-avatar>
-            <figcaption>{{ user.name }}<br>{{ age }}</figcaption>
-         </figure>
-         <!--el-button-group class="buttons">
-            <el-button
-               v-for="view in views"
-               @click="currentView = view.type"
-               :key="view.type"
-               :type="currentView === view.type ? 'primary' : ''"
+            <figcaption>{{ userStore.user.name }}, {{ age }}</figcaption>
+        </figure>
+        <el-button-group class="buttons">
+            <el-button text
+                v-for="view in views"
+                @click="currentView = view.type"
+                :key="view.type"
+                :type="currentView === view.type ? 'primary' : ''"
             >
-               <el-icon class="el-icon--left">
-                  <component :is="view.icon"/>
-               </el-icon>
-               {{ view.name }}
+                <el-icon class="el-icon--left" :size="20">
+                    <component :is="view.icon"/>
+                </el-icon>
+                {{ view.name }}
             </el-button>
-         </!el-button-group-->
-      </aside>
-      <!--main>
-         <article class="section-header">
-            <h3 align="center">Здесь пока ничего нет.</h3>
-            <--default-section v-if="currentView === View.Default" />
-            <settings-section v-if="currentView === View.Settings" /->
-         </article>
-         <el-backtop>
+            <el-button
+                text
+                @click="visibilities.changeProfile = true"
+            >
+                <el-icon class="el-icon--left" :size="20"><Edit/></el-icon>
+                Изменить данные
+            </el-button>
+            <el-button
+                text
+                type="danger"
+                @click="visibilities.wannaLogout = true"
+            >
+                <el-icon class="el-icon--left" :size="20"><Close/></el-icon>
+                Выйти из аккаунта
+            </el-button>
+        </el-button-group>
+    </aside>
+    <main>
+        <article>
+            <component :is="sections[currentView]"/>
+        </article>
+        <el-backtop>
             <el-icon :size="24"><Top/></el-icon>
-         </el-backtop>
-      </main-->
-   </div>
+        </el-backtop>
+    </main>
+    <change-profile-modal
+        v-model="visibilities.changeProfile"
+        @open-change-password="visibilities.changePassword = true"
+    />
+    <change-password-modal v-model="visibilities.changePassword"/>
+    <logout-modal v-model="visibilities.wannaLogout"/>
+</div>
 </template>
 <style scoped>
 .container {
-   display: grid;
-   grid-template-columns:/* 300px */1fr;
-   margin-bottom: 1rem;
-   margin-inline: 1rem;
-   gap: 1rem;
+    display: grid;
+    grid-template-columns: 280px 1fr;
+    margin-bottom: 1rem;
+    margin-inline: 1rem;
+    gap: 1rem;
 }
 aside, article {
-   background: var(--el-color-primary-light-9);
-   border-radius: 1rem;
-   padding: 1rem;
+    background: var(--el-color-primary-light-9);
+    border-radius: 1rem;
+    padding: 1rem;
+    height: min-content;
 }
 .buttons {
-   display: flex;
-   flex-direction: column;
-   border-radius: .5rem;
-}
-.buttons .el-button:first-child {
-   border-radius: .5rem .5rem 0 0 !important;
-}
-.buttons .el-button:last-child {
-   border-radius: 0 0 .5rem .5rem !important;
+    display: flex;
+    flex-direction: column;
+    border-radius: .5rem;
 }
 .buttons .el-button {
-   font-size: 1rem;
-   padding-block: 1.1rem;
-   width: 100%;
+    font-size: 1rem;
+    padding-block: 1.1rem;
+    width: 100%;
+    justify-content: start;
+}
+.buttons .el-button:not(:first-child) {
+    border-top: solid 2px var(--el-border-color);
 }
 figure {
-   margin: 1rem auto 0;
-   width: fit-content;
+    margin: 1rem auto;
+    width: fit-content;
 }
 figcaption {
-   font-size: 1.25rem;
-   text-align: center;
-   padding-top: 1rem;
+    font-size: 1.25rem;
+    text-align: center;
+    padding-top: 1rem;
 }
 </style>

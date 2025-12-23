@@ -1,5 +1,5 @@
 export default interface LocalizedString {
-   [phrase: string]: {
-      [languageCode: string]: string,
-   }
+    [phrase: string]: {
+        [languageCode: string]: string,
+    }
 }

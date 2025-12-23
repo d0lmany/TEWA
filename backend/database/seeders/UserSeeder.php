@@ -12,7 +12,7 @@ class UserSeeder extends Seeder
 
     public function run(): void
     {
-        User::factory()->count(20)->create();
+        User::factory()->count(70)->create();
 
         User::create([
             'name' => 'Джонни Гэт',
@@ -27,6 +27,13 @@ class UserSeeder extends Seeder
             'email' => 'AlinaMalevich01@mail.com',
             'password' => Hash::make('498t3598tyigh3oGLea!'),
             'birthday' => '2002-07-12',
+        ]);
+
+        User::create([
+            'name' => 'Уэйн',
+            'email' => 'waynemccallow@memphis.com',
+            'password' => Hash::make('fwefwJBI69##;'),
+            'birthday' => '1996-05-05',
         ]);
     }
 }

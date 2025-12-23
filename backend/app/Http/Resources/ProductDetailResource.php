@@ -7,19 +7,18 @@ use Illuminate\Http\Resources\Json\JsonResource;
 
 class ProductDetailResource extends JsonResource
 {
-   public function toArray(Request $request): array
-   {
-      return [
-         'id' => $this->id,
-         'product_id' => $this->product_id,
-         'album' => $this->album 
-            ? array_map(
-               fn($path) => url('storage/products/' . $path), 
-               $this->album ?? []
-               )
-            : [],
-         'description' => $this->description,
-         'application' => $this->application,
-      ];
-   }
+    public function toArray(Request $request): array
+    {
+        $albumUrls = collect($this->album ?? [])
+            ->map(fn($path) => url('storage/' . $path))
+            ->toArray();
+
+        return [
+            'id' => $this->id,
+            'product_id' => $this->product_id,
+            'album' => $albumUrls,
+            'description' => $this->description,
+            'application' => $this->application,
+        ];
+    }
 }

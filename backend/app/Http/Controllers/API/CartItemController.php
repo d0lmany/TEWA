@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\DestroyRangeCartItemsRequest;
 use App\Http\Requests\StoreCartItemRequest;
 use App\Http\Resources\CartResource;
 use App\Models\CartItem;
@@ -12,98 +13,111 @@ use Illuminate\Support\Facades\Auth;
 
 class CartItemController extends Controller
 {
-   public function index() {
-      $userId = Auth::id();
-      $cart = CartItem::where('user_id', $userId)
-         ->with('product')
-         ->get();
+    public function index() {
+        $userId = Auth::id();
+        $cart = CartItem::where('user_id', $userId)
+            ->with('product.attributes')
+            ->get();
 
-      return CartResource::collection($cart);
-   }
+        return CartResource::collection($cart);
+    }
 
-   public function indexBg() {
-      $userId = Auth::id();
-      $cart = CartItem::where('user_id', $userId)->get();
+    public function indexBg() {
+        $userId = Auth::id();
+        $cart = CartItem::where('user_id', $userId)
+            ->get();
 
-      return CartResource::collection($cart);
-   }
+        return CartResource::collection($cart);
+    }
 
-   public function store(StoreCartItemRequest $request): JsonResponse {
+    public function store(StoreCartItemRequest $request): JsonResponse {
 
-      $cartItemData = $request->validated();
+        $cartItemData = $request->validated();
 
-      $userId = Auth::id();
-      $productId = $cartItemData['product_id'];
-      $quantityToAdd = $cartItemData['quantity'] ?? 1;
-      $attributes = $cartItemData['product_attributes'] ?? [];
-      sort($attributes);
+        $userId = Auth::id();
+        $productId = $cartItemData['product_id'];
+        $quantityToAdd = $cartItemData['quantity'] ?? 1;
+        $attributes = $cartItemData['product_attributes'] ?? [];
+        sort($attributes);
 
-      $cartItems = CartItem::where('user_id', $userId)
-         ->where('product_id', $productId)
-         ->get();
+        $cartItems = CartItem::where('user_id', $userId)
+            ->where('product_id', $productId)
+            ->get();
 
-      $cartItem = $cartItems->first(function ($item) use ($attributes) {
-         $itemAttributes = $item->product_attributes ?? [];
-         sort($itemAttributes);
-         return $itemAttributes == $attributes;
-      });
+        $cartItem = $cartItems->first(function ($item) use ($attributes) {
+            $itemAttributes = $item->product_attributes ?? [];
+            sort($itemAttributes);
+            return $itemAttributes == $attributes;
+        });
 
-      if ($cartItem) {
-         $cartItem->quantity += $quantityToAdd;
-         $cartItem->save();
-      } else {
-         $cartItem = CartItem::create([
-            'user_id' => $userId,
-            'product_id' => $productId,
-            'quantity' => $quantityToAdd,
-            'product_attributes' => $attributes
-         ]);
-      }
+        if ($cartItem) {
+            $cartItem->quantity += $quantityToAdd;
+            $cartItem->save();
+        } else {
+            $cartItem = CartItem::create([
+                'user_id' => $userId,
+                'product_id' => $productId,
+                'quantity' => $quantityToAdd,
+                'product_attributes' => $attributes
+            ]);
+        }
 
-      return response()->json([
-         'message' => $cartItem->wasRecentlyCreated ? 'created' : 'updated',
-         'data' => $cartItem
-      ], 201);
-   }
+        return response()->json([
+            'message' => $cartItem->wasRecentlyCreated ? 'created' : 'updated',
+            'data' => $cartItem
+        ], 201);
+    }
 
-   public function update(Request $request, $id): JsonResponse {
-      $validated = $request->validate([
-         'quantity' => 'required|integer|min:1'
-      ]);
+    public function update(Request $request, $id): JsonResponse {
+        $validated = $request->validate([
+            'quantity' => 'required|integer|min:1'
+        ]);
 
-      $cartItem = CartItem::where([
-         'id' => $id,
-         'user_id' => Auth::id()
-      ])->first();
+        $cartItem = CartItem::where([
+            'id' => $id,
+            'user_id' => Auth::id()
+        ])->first();
 
-      if (!$cartItem) {
-         return response()->json(['message' => 'Cart item not found'], 404);
-      }
+        if (!$cartItem) {
+            return response()->json(['message' => 'Cart item not found'], 404);
+        }
 
-      $cartItem->quantity = $validated['quantity'];
-      $cartItem->save();
+        $cartItem->quantity = $validated['quantity'];
+        $cartItem->save();
 
-      return response()->json([
-         'message' => 'updated',
-         'data' => $cartItem->fresh()
-      ]);
-   }
+        return response()->json([
+            'message' => 'updated',
+            'data' => $cartItem->fresh()
+        ]);
+    }
 
-   public function destroy($id): JsonResponse
-   {
-      $cartItem = CartItem::where([
-         'id' => $id,
-         'user_id' => Auth::id()
-      ])->first();
+    public function destroy($id): JsonResponse
+    {
+        $cartItem = CartItem::where([
+            'id' => $id,
+            'user_id' => Auth::id()
+        ])->first();
 
-      if (!$cartItem) {
-         return response()->json([
-            'message' => 'Cart item not found'
-         ], 404);
-      }
+        if (!$cartItem) {
+            return response()->json([
+                'message' => 'Cart item not found'
+            ], 404);
+        }
 
-      $cartItem->delete();
+        $cartItem->delete();
 
-      return response()->json([], 204);
-   }
+        return response()->json([], 204);
+    }
+
+    public function destroyRange(DestroyRangeCartItemsRequest $request) {
+        $data = $request->validated();
+
+        $deleteCount = CartItem::where('user_id', Auth::id())
+            ->whereIn('id', $data['ids'])
+            ->delete();
+
+        return response()->json([
+            'message' => $deleteCount ? "delete count: {$deleteCount}" : "Nothing for delete"
+        ]);
+    }
 }

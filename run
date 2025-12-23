@@ -1,9 +1,9 @@
 #!/bin/bash
 
 cleanup() {
-   echo "stopping processes..."
-   kill $BACKEND_PID $FRONTEND_PID 2>/dev/null
-   exit 0
+    echo "stopping processes..."
+    kill $BACKEND_PID $FRONTEND_PID 2>/dev/null
+    exit 0
 }
 
 trap cleanup INT TERM
@@ -20,17 +20,9 @@ cd ../frontend
 npm run dev &
 FRONTEND_PID=$!
 
-sleep 2
-
-echo "running placeholders..."
-cd ../placeholders
-node index.js
-PLACEHOLDERS_PID=$!
-
 echo "========================================"
 echo "backend PID: $BACKEND_PID"
 echo "frontend PID: $FRONTEND_PID"
-echo "placeholders PID: $PLACEHOLDERS_PID"
 echo "========================================"
 
 wait

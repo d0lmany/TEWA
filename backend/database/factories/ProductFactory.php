@@ -8,7 +8,6 @@ use App\Models\Product;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use App\Models\ProductAttribute;
 use App\Models\ProductDetail;
-use App\Utils\Utils;
 
 class ProductFactory extends Factory
 {
@@ -23,7 +22,7 @@ class ProductFactory extends Factory
             'name' => $name,
             'quantity' => fake()->numberBetween(0, 1000),
             'base_price' => fake()->randomFloat(2, 10, 100000),
-            'photo' => Utils::generateImage($name),
+            'photo' => 'products/product.png',
             'category_id' => Category::whereNotNull('parent_id')->inRandomOrder()->value('id'),
             'tags' => json_encode(fake()->randomElements($tags, fake()->randomDigit())),
             'discount' => fake()->randomFloat(2, 0, 100),
@@ -32,62 +31,5 @@ class ProductFactory extends Factory
             'created_at' => fake()->dateTimeBetween('-1 year', 'now'),
             'updated_at' => fake()->dateTimeBetween('-1 year', 'now'),
         ];
-    }
-
-    public function draft(): static
-    {
-        return $this->state(fn (array $attributes) => [
-            'status' => 'draft',
-        ]);
-    }
-
-    public function withCategory(Category $category): static
-    {
-        return $this->state(fn (array $attributes) => [
-            'category_id' => $category->id,
-        ]);
-    }
-
-    public function withShop(Shop $shop): static
-    {
-        return $this->state(fn (array $attributes) => [
-            'shop_id' => $shop->id,
-        ]);
-    }
-
-    public function withAttributes($count = 3): static
-    {
-        return $this->afterCreating(function (Product $product) use ($count) {
-            ProductAttribute::factory($count)->create(['product_id' => $product->id]);
-        });
-    }
-
-    public function withDetails(): static
-    {
-        return $this->afterCreating(function (Product $product) {
-            ProductDetail::factory()->create(['product_id' => $product->id]);
-        });
-    }
-
-        public function active(): static
-    {
-        return $this->state(fn (array $attributes) => [
-            'status' => 'on',
-            'quantity' => fake()->numberBetween(1, 100),
-        ]);
-    }
-
-    public function outOfStock(): static
-    {
-        return $this->state(fn (array $attributes) => [
-            'quantity' => 0,
-        ]);
-    }
-
-    public function withDiscount($percent): static
-    {
-        return $this->state(fn (array $attributes) => [
-            'discount' => $percent,
-        ]);
     }
 }

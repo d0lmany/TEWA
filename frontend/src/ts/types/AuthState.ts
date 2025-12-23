@@ -1,3 +1,3 @@
 export enum AuthState {
-   Accept, Reject, NotTry
+    Accept, Reject, NotTry
 }

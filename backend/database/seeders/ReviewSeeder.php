@@ -12,7 +12,7 @@ class ReviewSeeder extends Seeder
 {
     public function run(): void
     {
-        $products = Product::active()->get();
+        $products = Product::all();
         $users = User::all();
 
         foreach ($products as $product) {
@@ -28,7 +28,7 @@ class ReviewSeeder extends Seeder
             $this->updateProductRating($product);
         }
 
-        $popularProducts = $products->random(10);
+        $popularProducts = $products->random(25);
         foreach ($popularProducts as $product) {
             Review::factory(fake()->numberBetween(5, 15))->create([
                 'product_id' => $product->id,

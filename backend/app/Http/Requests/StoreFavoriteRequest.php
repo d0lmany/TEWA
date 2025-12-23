@@ -4,7 +4,6 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Validation\Rule;
 
 class StoreFavoriteRequest extends FormRequest
 {
@@ -17,11 +16,7 @@ class StoreFavoriteRequest extends FormRequest
     {
         return [
             'product_id' => ['required', 'integer', 'exists:products,id'],
-            'list_id' => [
-                'sometimes',
-                'string',
-                Rule::exists('favorite_lists', 'id')
-                    ->where('user_id', $this->user()->id)]
+            'list_id' => ['sometimes', 'integer']
         ];
     }
 }

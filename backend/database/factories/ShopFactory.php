@@ -3,7 +3,6 @@
 namespace Database\Factories;
 
 use App\Models\Shop;
-use App\Utils\Utils;
 use App\Models\Seller;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
@@ -13,20 +12,11 @@ class ShopFactory extends Factory
 
     public function definition(): array
     {
-        $name = fake()->company() . ' ' . fake()->randomElement(['Store', 'Shop', 'Market', 'Outlet']);
-
         return [
-            'name' => $name,
-            'picture' => Utils::generateImage("{$name} logo"),
+            'name' => fake()->company(),
+            'picture' => 'shops/shop.png',
             'description' => fake()->text(300),
             'seller_id' => Seller::factory(),
         ];
-    }
-
-    public function withProducts($count): static
-    {
-        return $this->afterCreating(function (Shop $shop) use ($count) {
-            \App\Models\Product::factory($count)->create(['shop_id' => $shop->id]);
-        });
     }
 }

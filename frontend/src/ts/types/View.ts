@@ -1,8 +1,7 @@
 export enum View {
-   Default,
-   Settings,
+    Addresses,
 };
 
 export enum LegalView {
-   TermsOfService
+    TermsOfService
 };

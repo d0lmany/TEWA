@@ -16,6 +16,11 @@ class DatabaseSeeder extends Seeder
             ProductSeeder::class,
             ReviewSeeder::class,
             ClaimSeeder::class, 
+            PickupSeeder::class,
+            AddressSeeder::class,
+            CartItemSeeder::class,
+            FavoriteListSeeder::class,
+            FavoriteListItemSeeder::class,
         ]);
     }
 }
