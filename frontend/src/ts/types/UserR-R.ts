@@ -1,4 +1,4 @@
-import type { CartItem, FavoriteLists } from "@/ts/entities/Items";
+import type { CartItem, FavoriteList } from "@/ts/entities/Items";
 import type { User } from "@/ts/entities/User";
 
 export interface LoginData {
@@ -16,7 +16,7 @@ export interface RegistrationData {
 
 export interface UserResponseData {
     cart: CartItem[],
-    favorite: FavoriteLists,
+    favorite: FavoriteList[],
     user: User,
     errors: {
         cart: string,

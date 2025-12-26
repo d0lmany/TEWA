@@ -1,5 +1,7 @@
 import Repository from "@/ts/services/Repository";
 import ApiService from "@/ts/services/ApiService";
+import type ResponseResult from "@/ts/types/ResponseResult";
+import type { FavoriteList } from "../entities/Items";
 
 export default class FavoriteService
 {
@@ -9,7 +11,7 @@ export default class FavoriteService
         this.repo = new Repository(api, 'favorite');
     }
 
-    public index = async () => await this.repo.index()
+    public index = async (): Promise<ResponseResult<FavoriteList[]>> => await this.repo.index()
     
     public store = async (data: object) => await this.repo.store({data})
     
@@ -25,7 +27,7 @@ export default class FavoriteService
 
         return {
             success: response.status === 200 || response.status === 201,
-            data: response.data.data,
+            data: response.data,
             status: response.status,
             message: response.data.action || response.message
         };

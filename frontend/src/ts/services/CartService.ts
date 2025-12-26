@@ -1,6 +1,7 @@
 import Repository from "@/ts/services/Repository";
 import ApiService from "@/ts/services/ApiService";
-import type { CartItem } from "@/ts/entities/Items";
+import type { CartProduct, CartItem } from "@/ts/entities/Items";
+import type ResponseResult from "@/ts/types/ResponseResult";
 
 export default class CartService
 {
@@ -10,7 +11,7 @@ export default class CartService
         this.repo = new Repository(api, 'cart');
     }
 
-    public index = async () => await this.repo.index()
+    public index = async (): Promise<ResponseResult<CartProduct[]>> => await this.repo.index()
 
     public store = async (data: CartItem) => await this.repo.store({data})
 

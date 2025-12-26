@@ -63,6 +63,9 @@ export const useUserStore = defineStore('userData', {
             }
             return item;
         },
+        getListNameById (listId: number): string | undefined {
+            return this.favorite.find(list => list.id === listId)?.name
+        },
         addToFavorite (item: FavoriteListItem, listName: string = '__favorite__') {
             this.favorite.find(list => list.name === listName)?.items.push(item);
         },
@@ -72,6 +75,16 @@ export const useUserStore = defineStore('userData', {
             if (!favoriteList?.items) return;
 
             const index = favoriteList.items.findIndex(item => item.id === favItemId);
+            if (index !== -1) {
+                favoriteList.items.splice(index, 1);
+            }
+        },
+        removeFromFavoriteByProductId (productId: number, listName: string = '__favorite__') {
+            const favoriteList = this.favorite.find(list => list.name === listName);
+
+            if (!favoriteList?.items) return;
+
+            const index = favoriteList.items.findIndex(item => item.product?.id === productId);
             if (index !== -1) {
                 favoriteList.items.splice(index, 1);
             }

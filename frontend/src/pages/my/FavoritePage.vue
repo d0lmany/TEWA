@@ -56,7 +56,7 @@ const loadLists = async () => {
 
         if (response.success && response.data) {
             lists.splice(0);
-            lists.push(...response.data.data);
+            lists.push(...response.data);
             const mainList = lists.find(list => list.name == '__favorite__');
             if (mainList) {
                 mainList.name = 'Основной раздел'
@@ -277,7 +277,10 @@ loadLists();
                 <search-filters
                     v-model="filters"
                 />
-                <el-button @click="(Object.keys(filters) as Array<keyof typeof filters>).forEach(filter => delete filters[filter])">Сбросить фильтры</el-button>
+                <el-button @click="(Object.keys(filters) as Array<keyof typeof filters>).forEach(filter => delete filters[filter])">
+                    <el-icon class="el-icon--left"><refresh/></el-icon>
+                    Сбросить фильтры
+                </el-button>
             </aside>
         </div>
         <main>
@@ -309,7 +312,6 @@ loadLists();
             v-model="visibilities.listEditorModal"
             center
             width="40%"
-            style="border-radius: 1rem"
             :show-close="false"
         >
             <section>
@@ -365,7 +367,6 @@ loadLists();
             v-model="visibilities.formForName"
             center
             width="20%"
-            style="border-radius: 1rem"
             :show-close="false"
             @closed="form.name = ''"
         >
@@ -399,7 +400,6 @@ loadLists();
             v-model="visibilities.changeList"
             center
             width="30%"
-            style="border-radius: 1rem"
             :show-close="false"
         >
             <section class="lists">

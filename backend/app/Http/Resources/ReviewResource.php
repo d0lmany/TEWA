@@ -11,9 +11,7 @@ class ReviewResource extends JsonResource
     {
         $review = [
             'id' => $this->id,
-            'user' => $this->when($this->relationLoaded('user') && $this->user, function () {
-                return new UserResource($this->user);
-            }),
+            'user' => $this->whenLoaded('user', fn () => new UserResource($this->user)),
             'text' => $this->text,
             'evaluation' => $this->evaluation,
             'created_at' => $this->created_at,

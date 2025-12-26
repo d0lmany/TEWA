@@ -84,8 +84,7 @@ class FavoriteController extends Controller
             if ($existingItem) {
                 $existingItem->delete();
                 return response()->json([
-                    'message' => 'Product removed from favorites',
-                    'action' => 'removed'
+                    'message' => 'removed',
                 ], 200);
             }
 
@@ -95,8 +94,7 @@ class FavoriteController extends Controller
             ]);
 
             return response()->json([
-                'message' => 'Product added to favorites',
-                'action' => 'added',
+                'message' => 'added',
                 'data' => new FavoriteListItemResource($favoriteItem)
             ], 201);
 

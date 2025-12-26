@@ -28,8 +28,8 @@ const count = ref<number>(0);
 const cartLoading = ref<boolean>(false);
 const favoriteLoading = ref<boolean>(false);
 const cartItem = ref<CartItem>();
-const favoriteItem = ref<FavoriteListItem>();
-const claimFormVisible = ref<boolean>(false);
+const favoriteItem = ref<FavoriteListItem & { list?: string }>();
+const claimFormVisible = ref(false);
 
 const album = computed(() => {
     if (!product?.details) return [mainPhoto.value];
@@ -58,11 +58,11 @@ const getAttributes = (isVariant = false): Record<string, ProductAttribute[]> =>
 
     return result;
 }
-const createNonVariantAttrs = (obj: Record<string, ProductAttribute[]>): Record<string, string | number> => {
+const createNonVariantAttrs = (obj: Record<string, ProductAttribute[]>): Record<string, string> => {
     return Object.entries(obj).reduce((acc, [type, attributes]) => {
         acc[type] = attributes[0]?.attr_value || '';
         return acc;
-    }, {} as Record<string, string | number>);
+    }, {} as Record<string, string>);
 }
 const addToCart = async () => { 
     cartLoading.value = true;
@@ -249,6 +249,8 @@ const setProductCount = () => {
 const defineFavorite = () => {
     if (userStore.isAuth && product.id) {
         favoriteItem.value = userStore.getFavoriteItem(product.id);
+        if (favoriteItem.value)
+        favoriteItem.value.list = userStore.getListNameById(favoriteItem.value?.list_id);
     }
 }
 const toggleFavorite = async () => {
@@ -257,14 +259,14 @@ const toggleFavorite = async () => {
         const response = await FavoriteService.toggle(product.id);
 
         if (response.success) {
-            if (response.message === 'added') {
-                ElMessage.success('Добавлено в избранное!');
-                userStore.addToFavorite(response.data);
-                favoriteItem.value = response.data;
-            } else {
+            if (response.message === 'removed') {
                 ElMessage.success('Удалено из избранного!');
                 userStore.removeFromFavorite(favoriteItem.value?.id || 0);
                 favoriteItem.value = undefined;
+            } else {
+                ElMessage.success('Добавлено в избранное!');
+                userStore.addToFavorite(response.data);
+                favoriteItem.value = response.data;
             }
         } else {
             ElMessage.error(`Не удалось добавить товар в избранное: ${response.message}`);
@@ -383,10 +385,10 @@ onUnmounted(() => {
                             show-progress
                             lazy
                         />
-                        <div class="hero-content">
+                        <div class="hero-content gap">
                             <div class="flex gap">
-                                <h1 class="section-header">{{product.name}}</h1>
-                                <div class="rating">
+                                <h1 class="section-header">{{ product.name }}</h1>
+                                <div class="rating flex">
                                     <el-icon
                                         v-if="product?.feedbacks?.rating"
                                         :size="24"
@@ -409,15 +411,16 @@ onUnmounted(() => {
                                         size="large"
                                         type="info"
                                     >
-                                        <el-text>{{ translate(key) + ':' }}</el-text>
+                                        <el-text size="large">{{ translate(key) + ':' }}</el-text>
                                     </el-tag>
                                     <el-radio-group v-model="checkedAttributes[key]">
                                         <el-radio-button
                                             v-for="attr in value"
                                             :value="attr.attr_value"
                                             :key="attr.id"
+                                            class="hideBorders"
                                         >
-                                            {{ attr.attr_value }}
+                                            {{ translate(attr.attr_value) }}
                                         </el-radio-button>
                                     </el-radio-group>
                                 </div>
@@ -432,9 +435,9 @@ onUnmounted(() => {
                                         size="large"
                                         type="info"
                                     >
-                                        <el-text size="large">{{ translate(key) + ':' }}</el-text>
+                                        <el-text>{{ translate(key) + ':' }}</el-text>
                                     </el-tag>
-                                    <el-text size="large">{{ value }}</el-text>
+                                    <el-text size="large">{{ translate(value) }}</el-text>
                                 </div>
                             </div>
                             <div class="tags">
@@ -501,11 +504,10 @@ onUnmounted(() => {
                             />
                             <el-text v-else size="large">Нет оценок</el-text>
                         </div>
-                        <!--el-button round @click="$router.push({ name: 'Shop', params: {id: product?.shop.id}})"
-                        >
+                        <el-button round @click="$router.push({ name: 'Shop', params: { id: product?.shop?.id || 0}})">
                             <el-icon class="el-icon--left"><Shop/></el-icon>
                             Перейти
-                        </el-button-->
+                        </el-button>
                     </div>
                 </template>
             </el-skeleton>
@@ -647,20 +649,27 @@ onUnmounted(() => {
                                 aria-label="Увеличить количество на 1"
                             />
                         </div>
-                        <el-button
-                            round
-                            @click="toggleFavorite"
-                            :loading="favoriteLoading"
+                        <el-popover
+                            :disabled="favoriteItem?.list === '__favorite__'"
                         >
-                        <div class="contents" v-if="favoriteItem">
-                            <el-icon class="el-icon--left"><star-filled/></el-icon>
-                            В избранном
-                        </div>
-                        <div class="contents" v-else>
-                            <el-icon class="el-icon--left"><Star/></el-icon>
-                            В избранное
-                        </div>
-                        </el-button>
+                            <div style="text-align: center">Добавлен в лист '{{ favoriteItem?.list }}'</div>
+                            <template #reference>
+                            <el-button
+                                round
+                                @click="toggleFavorite"
+                                :loading="favoriteLoading"
+                            >
+                            <div class="contents" v-if="favoriteItem">
+                                <el-icon class="el-icon--left"><star-filled/></el-icon>
+                                В избранном
+                            </div>
+                            <div class="contents" v-else>
+                                <el-icon class="el-icon--left"><Star/></el-icon>
+                                В избранное
+                            </div>
+                            </el-button>
+                            </template>
+                        </el-popover>
                         </div>
                         <hr v-if="userStore.isAuth" style="margin-block: 1rem; color: var(--el-card-border-color);">
                         <div v-if="userStore.isAuth">
@@ -720,7 +729,6 @@ onUnmounted(() => {
         </el-card>
     </aside>
     <claim-modal
-        v-if="product"
         v-model="claimFormVisible"
         entity="product"
         :entity_id="product.id"
@@ -769,20 +777,37 @@ aside {
     height: 75px;
     flex-shrink: 0;
 }
-.attributes, .rating, .hero-content {
+.hero-content, .attributes {
+    width: 100%;
     display: flex;
     flex-direction: column;
-    gap: .5rem;
-    font-size: 1.25rem;
+}
+.hero-content .section-header {
+    margin: 0
 }
 .rating {
-    flex-direction: row;
+    gap: .5rem;
+    font-size: 1.25rem;
 }
 .tags {
     display: flex;
     flex-wrap: wrap;
     gap: .5rem;
-    max-width: 75%;
+}
+.el-tag {
+    border-radius: 1rem;
+}
+.el-radio-group {
+    border-radius: 1rem;
+    overflow: hidden;
+    border: var(--el-border);
+}
+.hideBorders:deep(.el-radio-button__inner) {
+    border: none;
+    border-left: var(--el-border);
+}
+.attributes {
+    gap: .5rem;
 }
 .shop {
     display: flex;

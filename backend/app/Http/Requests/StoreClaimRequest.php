@@ -16,7 +16,7 @@ class StoreClaimRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'entity' => ['required', 'string', Rule::in(['product'])],
+            'entity' => ['required', 'string', Rule::in(['product', 'shop'])],
             'entity_id' => ['required', 'integer', 'min:1'],
             'topic' => ['required', 'string', 'min:5', 'max:255'],
             'text' => ['required', 'string', 'min:15']

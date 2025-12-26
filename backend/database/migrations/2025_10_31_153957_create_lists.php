@@ -37,10 +37,10 @@ return new class extends Migration
                 ->constrained()
                 ->cascadeOnDelete();
             $table->foreignIdFor(Product::class)
-                ->nullable()
                 ->constrained()
-                ->nullOnDelete();
-            $table->timestamp('added_at')->useCurrent();
+                ->cascadeOnDelete();
+            $table->timestamp('added_at')
+                ->useCurrent();
         });
 
         Schema::create('cart_items', function (Blueprint $table) {
@@ -49,9 +49,8 @@ return new class extends Migration
                 ->constrained()
                 ->cascadeOnDelete();
             $table->foreignIdFor(Product::class)
-                ->nullable()
                 ->constrained()
-                ->nullOnDelete();
+                ->cascadeOnDelete();
             $table->unsignedInteger('quantity');
             $table->text('product_attributes');
         });

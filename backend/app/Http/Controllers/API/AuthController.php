@@ -25,10 +25,11 @@ class AuthController extends Controller
                 $data = $request->validated();
                 
                 $user = User::create($data);
-                $token = $this->createAuthToken($user);
 
                 return response()->json([
-                    'token' => $token,
+                    'data' => [
+                        'token' => $this->createAuthToken($user),
+                    ]
                 ], 201);
             });
         } catch (\Exception $e) {
@@ -51,10 +52,10 @@ class AuthController extends Controller
             ], 401);
         }
 
-        $token = $this->createAuthToken($user);
-        
         return response()->json([
-            'token' => $token,
+            'data' => [
+                'token' => $this->createAuthToken($user)
+            ]
         ]);
     }
 
@@ -103,7 +104,7 @@ class AuthController extends Controller
     public function changePassword(UpdatePasswordUserRequest $request): JsonResponse
     {
         $data = $request->validated();
-        /** @var \App\Models\User $user */
+        /** @var \App\Models\User */
         $user = Auth::user();
 
         if (!Hash::check($data['old_password'], $user->password)) {
@@ -116,20 +117,48 @@ class AuthController extends Controller
             'password' => Hash::make($data['password']),
         ]);
 
-        $user->currentAccessToken()->delete();
+        /** @var TToken */
+        $token = $user->currentAccessToken();
+        
+        $token->delete();
 
         return response()->json([
-            'token' => $this->createAuthToken($user)
+            'data' => [
+                'token' => $this->createAuthToken($user)
+            ]
         ]);
     }
 
     public function logout(): JsonResponse 
     {
         try {
-            Auth::user()?->currentAccessToken()->delete();
+            /** @var \App\Models\User */
+            $user = Auth::user();
+            /** @var TToken */
+            $token = $user->currentAccessToken();
+
+            $token->delete();
             
             return response()->json([], 204);
         } catch (\Exception $e) {
+            return response()->json([
+                'message' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+    public function destroy(): JsonResponse {
+        try {
+            /** @var \App\Models\User $user */
+            $user = Auth::user();
+            $user->tokens()
+                ->delete();
+            $user->delete();
+
+            return response()->json([
+                'message' => 'Bye bye!'
+            ]);
+        } catch (Exception $e) {
             return response()->json([
                 'message' => $e->getMessage()
             ], 500);

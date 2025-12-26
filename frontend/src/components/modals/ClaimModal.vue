@@ -10,7 +10,7 @@ const visible = defineModel({
     required: true,
 })
 const props = defineProps<{
-    entity: 'product',
+    entity: 'product' | 'shop',
     entity_id?: number,
 }>();
 const formData = reactive({
@@ -73,7 +73,6 @@ const handleSubmit = async () => {
     v-model="visible"
     center
     width="30%"
-    style="border-radius: 1rem"
     :show-close="false"
 >
     <el-form

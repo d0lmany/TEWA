@@ -13,9 +13,8 @@ return new class extends Migration
             $table->id();
             $table->string('full_name', 300);
             $table->foreignIdFor(User::class)
-                ->nullable()
                 ->constrained()
-                ->nullOnDelete();
+                ->cascadeOnDelete();
             $table->string('code', 50);
             $table->enum('type', ['individual', 'LLC', 'self-employed']);
             $table->text('payment_account')
@@ -28,12 +27,12 @@ return new class extends Migration
         Schema::create('seller_verifications', function (Blueprint $table) {
             $table->id();
             $table->foreignIdFor(User::class)
-                ->nullable()
                 ->constrained()
-                ->nullOnDelete();
+                ->cascadeOnDelete();
             $table->text('passport_numbers');
             $table->text('passport_scan');
-            $table->timestamp('created_at')->useCurrent();
+            $table->timestamp('created_at')
+                ->useCurrent();
         });
     }
 

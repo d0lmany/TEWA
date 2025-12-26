@@ -65,7 +65,7 @@ const handleSubmit = async () => {
                 loadUser()
                     .then(state => {
                         if (state === AuthState.Reject) {
-                            ElMessage.warning('Не загрузить данные вашего профиля');
+                            ElMessage.warning('Не удалось загрузить данные вашего профиля');
                         } else {
                             ElMessage.success('Вход выполнен!');
                             visible.value = false;
@@ -93,7 +93,6 @@ const handleSubmit = async () => {
     center
     align-center
     width="25%"
-    style="border-radius: 1rem"
     :show-close="false"
 >
     <el-form

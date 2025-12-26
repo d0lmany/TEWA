@@ -19,7 +19,7 @@ const loading = ref(false);
 
 const logout = async () => {
     try {
-        visible.value = true;
+        loading.value = true;
         const response = await UserService.logout();
 
         if (response.success) {
@@ -27,6 +27,7 @@ const logout = async () => {
             userStore.logout();
             ElMessage.success('Выхожу...');
             router.push({ name: 'Home' });
+            visible.value = false;
         } else {
             console.error(response);
             throw new Error(response.message);
@@ -34,7 +35,7 @@ const logout = async () => {
     } catch (error) {
         ElMessage.error(error instanceof Error ? error.message : 'Не удалось выйти из аккаунта');
     } finally {
-        visible.value = false;
+        loading.value = false;
     }
 }
 </script>
@@ -45,7 +46,6 @@ const logout = async () => {
     center
     align-center
     width="20%"
-    style="border-radius: 1rem"
     :show-close="false"
 >
 <el-text size="large" style="display: block; text-align: center">Хотим убедиться, что вы нажали не случайно 😄</el-text>

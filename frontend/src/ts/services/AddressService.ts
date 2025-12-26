@@ -1,6 +1,7 @@
 import Repository from "@/ts/services/Repository";
 import type ApiService from "@/ts/services/ApiService";
 import type { Address } from "@/ts/entities/Addresses";
+import type ResponseResult from "@/ts/types/ResponseResult";
 /**
  * Address management service
  */
@@ -12,7 +13,7 @@ export default class AddressService
         this.repo = new Repository(api, 'addresses');
     }
 
-    public index = async () => await this.repo.index()
+    public index = async (): Promise<ResponseResult<Address[]>> => await this.repo.index()
 
     public store = async (data: Omit<Address, 'id'>) => await this.repo.store({ data })
 

@@ -137,7 +137,6 @@ watch(visible, () => {
     v-model="visible"
     center
     width="30%"
-    style="border-radius: 1rem"
     :show-close="false"
 >
     <el-form

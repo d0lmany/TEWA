@@ -28,7 +28,7 @@ export default class CategoryService
 
         try {
             const grouped = Object.groupBy(raw.data, category => 
-                category.parent_id?.toString() ?? 'parent'
+                category.parent?.id.toString() ?? 'parent'
             );
 
             const result: GroupedCategories = {};

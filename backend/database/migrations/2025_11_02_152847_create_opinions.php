@@ -19,10 +19,14 @@ return new class extends Migration
             $table->foreignIdFor(Product::class)
                 ->constrained()
                 ->cascadeOnDelete();
-            $table->text('text')->nullable();
-            $table->tinyInteger('evaluation')->unsigned();
-            $table->timestamp('created_at')->useCurrent();
-            $table->timestamp('updated_at')->useCurrent();
+            $table->text('text')
+                ->nullable();
+            $table->tinyInteger('evaluation')
+                ->unsigned();
+            $table->timestamp('created_at')
+                ->useCurrent();
+            $table->timestamp('updated_at')
+                ->useCurrent();
         });
 
         Schema::create('claims', function (Blueprint $table) {
@@ -35,7 +39,8 @@ return new class extends Migration
             $table->string('entity_id');
             $table->string('topic');
             $table->text('text');
-            $table->timestamp('created_at')->useCurrent();
+            $table->timestamp('created_at')
+                ->useCurrent();
         });
     }
 

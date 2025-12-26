@@ -138,7 +138,6 @@ class ProductController extends Controller
             'shop.seller',
             'reviews.user'
         ])
-        ->loadCount('reviews')
         ->loadAvg('reviews as rating', 'evaluation');
         
         return new ProductResource($product);

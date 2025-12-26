@@ -7,13 +7,13 @@ use Illuminate\Http\Resources\Json\JsonResource;
 
 class FavoriteListResource extends JsonResource
 {
-   public function toArray(Request $request): array
-   {
-      return [
-         'id' => $this->id,
-         'name' => $this->name,
-         'items' => FavoriteListItemResource::collection($this->whenLoaded('favoriteListItems')),
-         'created_at' => $this->created_at,
-      ];
-   }
+    public function toArray(Request $request): array
+    {
+        return [
+            'id' => $this->id,
+            'name' => $this->name,
+            'items' => FavoriteListItemResource::collection($this->whenLoaded('favoriteListItems')),
+            'created_at' => $this->created_at,
+        ];
+    }
 }

@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Factories\Factory;
 use App\Models\User;
 use App\Models\Product;
 use App\Models\Claim;
+use App\Models\Shop;
 
 class ClaimFactory extends Factory
 {
@@ -13,25 +14,16 @@ class ClaimFactory extends Factory
 
     public function definition(): array
     {
-        $product = Product::inRandomOrder()
-            ->first();
-        $user = User::inRandomOrder()
-            ->first();
+        $entity = fake()->randomElement(['product', 'shop']);
         
         return [
-            'user_id' => $user->id,
-            'entity' => 'product',
-            'entity_id' => (string) $product->id,
-            'topic' => fake()->randomElement([
-                'Несоответствие описанию',
-                'Проблемы с качеством',
-                'Не доставлен товар',
-                'Обман с ценой', 
-                'Неправильный размер',
-                'Поврежденный товар',
-                'Поддельный товар',
-                'Навязывание услуг',
-            ]),
+            'user_id' => User::inRandomOrder()->first()->id,
+            'entity' => $entity,
+            'entity_id' => (string) match ($entity) {
+                'product' => Product::inRandomOrder()->first()->id,
+                'shop' => Shop::inRandomOrder()->first()->id,
+            },
+            'topic' => fake()->words(fake()->numberBetween(1, 3), true),
             'text' => fake()->text(300),
             'created_at' => fake()->dateTimeBetween('-6 months', 'now'),
         ];

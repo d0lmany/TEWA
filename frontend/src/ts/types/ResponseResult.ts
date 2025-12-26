@@ -4,3 +4,4 @@ export default interface ResponseResult<T = any> {
     data?: T;
     message: string;
 }
+export type PaginatedResult<T = any> = ResponseResult<T> & { last_page: number }

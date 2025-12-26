@@ -115,7 +115,7 @@ const loadPickups = async () => {
         });
 
         if (response.success && response.data) {
-            const { data, last_page }: { data: Pickup[], last_page: number } = response.data;
+            const { data, last_page } = response;
 
             pickups.push(...data);
 
@@ -214,7 +214,6 @@ onUnmounted(() => {
     v-model="visible"
     center
     width="40%"
-    style="border-radius: 1rem"
     :show-close="false"
 >
     <el-form

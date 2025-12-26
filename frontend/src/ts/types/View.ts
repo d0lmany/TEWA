@@ -3,5 +3,6 @@ export enum View {
 };
 
 export enum LegalView {
-    TermsOfService
+    TermsOfService,
+    PersonalDataPolicy,
 };

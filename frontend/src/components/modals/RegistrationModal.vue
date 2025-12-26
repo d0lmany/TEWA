@@ -173,7 +173,6 @@ const handleSubmit = async () => {
         center
         align-center
         width="30%"
-        style="border-radius: 1rem"
         :show-close="false"
     >
         <el-form

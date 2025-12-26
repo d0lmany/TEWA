@@ -45,6 +45,104 @@ const active = ref<LegalView>(LegalView.TermsOfService);
                 <p><strong>6.2.</strong> Все споры, вытекающие из настоящего Соглашения, подлежат разрешению в судебных органах по месту нахождения Владельца платформы TEWA, если иное не предусмотрено императивными нормами права.</p>
             </article>
         </el-tab-pane>
+        <el-tab-pane label="Хранение персональный данных (Personal Data Policy)" :name="LegalView.PersonalDataPolicy">
+            <h1>Политика обработки персональных данных</h1>
+            <p>Вся информация хранится постоянно и удаляется немедленно после удаления аккаунта.</p>
+            <h3>1.1. Все пользователи</h3>
+            <table>
+            <thead>
+            <tr>
+            <th>Данные</th>
+            <th>Тип</th>
+            <th>Цель сбора</th>
+            <th>Шифрование</th>
+            </tr>
+            </thead>
+            <tbody><tr>
+            <td><strong>Обязательные</strong></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            </tr>
+            <tr>
+            <td>Email</td>
+            <td>string</td>
+            <td>Аутентификация</td>
+            <td>AES-256</td>
+            </tr>
+            <tr>
+            <td>Имя</td>
+            <td>string</td>
+            <td>Оформление заказов, доставка</td>
+            <td>-</td>
+            </tr>
+            <tr>
+            <td>Пароль (hash)</td>
+            <td>string</td>
+            <td>Безопасность</td>
+            <td>bcrypt</td>
+            </tr>
+            <tr>
+            <td>Дата рождения</td>
+            <td>date</td>
+            <td>Персонализация, безопасность</td>
+            <td>-</td>
+            </tr>
+            <tr>
+            <td><strong>Опциональные</strong></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            </tr>
+            <tr>
+            <td>Аватар</td>
+            <td>file</td>
+            <td>Профиль</td>
+            <td>-</td>
+            </tr>
+            <tr>
+            <td>Адреса доставки</td>
+            <td>json</td>
+            <td>Оформление заказов, доставка</td>
+            <td>-</td>
+            </tr>
+            </tbody></table>
+            <h3>1.2. Продавцы</h3>
+            <table>
+            <thead>
+            <tr>
+            <th>Данные</th>
+            <th>Тип</th>
+            <th>Цель</th>
+            </tr>
+            </thead>
+            <tbody><tr>
+            <td>ФИО</td>
+            <td>string</td>
+            <td>Выплаты, договор</td>
+            </tr>
+            <tr>
+            <td>Реквизиты компании</td>
+            <td>string</td>
+            <td>Выплаты, договор</td>
+            </tr>
+            <tr>
+            <td>ИНН/ОГРН</td>
+            <td>string</td>
+            <td>Проверка</td>
+            </tr>
+            <tr>
+            <td>Паспортные данные</td>
+            <td>string</td>
+            <td>Верификация</td>
+            </tr>
+            <tr>
+            <td>Банковские реквизиты</td>
+            <td>string</td>
+            <td>Выплаты</td>
+            </tr>
+            </tbody></table>
+        </el-tab-pane>
     </el-tabs>
 </main>
 </template>
@@ -68,5 +166,18 @@ p, ul {
 }
 article:last-child p {
     margin-bottom: 0;
+}
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 25px 0;
+    border-radius: .5rem;
+    overflow: hidden;
+}
+table, td, tr {
+    border: 1px solid var(--el-border-color);
+}
+td {
+    padding: .5rem;
 }
 </style>

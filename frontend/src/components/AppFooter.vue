@@ -3,10 +3,14 @@ import type { UI } from '@/ts/types/Provides';
 import { Moon, Sunny } from '@element-plus/icons-vue';
 import { inject } from 'vue';
 
+const { visible } = defineProps<{
+    visible?: Boolean
+}>();
+
 const ui = inject('ui') as UI;
 </script>
 <template>
-<footer>
+<footer :style="{opacity: visible ? 1 : 0}">
     <div class="flex gap">
         <router-link class="logo" :to="{name: 'Home'}">
             TEWA
@@ -39,6 +43,15 @@ footer {
     gap: 1rem;
     display: flex;
     justify-content: space-between;
+
+    position: fixed;
+    width: 100%;
+    box-sizing: border-box;
+    bottom: 0;
+    transition: ease-out .25s;
+}
+footer:hover {
+    opacity: 1 !important;
 }
 .links {
     width: 100%;

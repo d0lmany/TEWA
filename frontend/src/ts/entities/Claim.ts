@@ -1,5 +1,5 @@
 export default interface Claim {
-    entity: 'product',
+    entity: 'product' | 'shop',
     entity_id: number,
     topic: string,
     text: string

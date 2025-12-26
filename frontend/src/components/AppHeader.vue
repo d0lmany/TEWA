@@ -108,7 +108,7 @@ onMounted(() => loadCategories())
             </el-button>
         </nav>
     </header>
-    <el-dialog title="Категории" v-model="dialogVisibility" style="border-radius: 1rem" width="75%" top="5vh" center>
+    <el-dialog title="Категории" v-model="dialogVisibility" width="75%" top="5vh" center>
         <div class="categoriesDialog">
             <ul class="categories" v-for="(subs, name, i) in categories" :key="i">
                 <li>{{ name }}</li>

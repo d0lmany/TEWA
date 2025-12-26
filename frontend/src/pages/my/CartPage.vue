@@ -13,7 +13,7 @@ const {
     favorite: FavoriteService,
 } = inject('services') as Services;
 const userStore = useUserStore();
-const loading = ref<boolean>(true);
+const loading = ref<boolean>(false);
 const cart = reactive<CartProduct[]>([]);
 const cartForbidden = reactive<CartProduct[]>([]);
 const checkedCartItems = computed<CartProduct[]>(() => cart.filter(item => item.checked));
@@ -33,8 +33,8 @@ const loadCart = async () => {
             cart.splice(0);
             cartForbidden.splice(0);
 
-            cart.push(...response.data.data.filter((cartItem: CartProduct) => cartItem.product.quantity > 0 && cartItem.product.status === 'on'));
-            cartForbidden.push(...response.data.data.filter((cartItem: CartProduct) => cartItem.product.quantity === 0 || cartItem.product.status !== 'on'))
+            cart.push(...response.data.filter((cartItem: CartProduct) => cartItem.product.quantity > 0 && cartItem.product.status === 'on'));
+            cartForbidden.push(...response.data.filter((cartItem: CartProduct) => cartItem.product.quantity === 0 || cartItem.product.status !== 'on'))
 
             checkFavorites();
         } else {
@@ -67,14 +67,14 @@ const increase = async (item: CartProduct) => {
         }
     }
 }
-const deleteItem = async (item: CartProduct) => {
+const deleteItem = async (item: CartProduct, forForbiddenCart: boolean = false) => {
     try {
         const response = await CartService.destroy(item.id || 0);
         if (response.success) {
             ElMessage.success(`${item.product.name} - удалён из корзины`);
             userStore.removeCartItem(item.id || 0);
-            const index = cart.findIndex(cartItem => cartItem.id === item.id);
-            if (index) cart.splice(index, 1);
+            const index = (forForbiddenCart ? cartForbidden : cart).findIndex(cartItem => cartItem.id === item.id);
+            if (index) (forForbiddenCart ? cartForbidden : cart).splice(index, 1);
         } else {
             console.error(response);
             throw new Error('Не удалось удалить товар из корзины');
@@ -108,12 +108,13 @@ const decrease = async (item: CartProduct) => {
     }
 }
 const checkFavorites = () => {
+    // TODO: как сделаем отдельный cart/favorite store - пусть подсвечивается и добавляется в каком списке хранится товар
     cart.forEach(item => item.isFavorite = !!userStore.getFavoriteItem(item.product.id))
     cartForbidden.forEach(item => item.isFavorite = !!userStore.getFavoriteItem(item.product.id))
 }
 const toggleFavorite = async (item: CartProduct) => {
     try {
-        const response = await FavoriteService.toggle(item.id || 0);
+        const response = await FavoriteService.toggle(item.product.id || 0);
 
         if (response.success) {
             if (response.message === 'added') {
@@ -121,8 +122,11 @@ const toggleFavorite = async (item: CartProduct) => {
                 userStore.addToFavorite(response.data);
                 item.isFavorite = true;
             } else {
+                // TODO: некорректно удаляется товар из избранного
+                // решение?: по нажатию на кнопку, будет вызываться метод, который уберёт товар из ВСЕХ списков
+                // либо хранить в карточке товара ещё и то в каком списке он лежит
                 ElMessage.success(`${item.product.name} - удалено из избранного`);
-                userStore.removeFromFavorite(item.product.id);
+                userStore.removeFromFavoriteByProductId(item.product.id);
                 item.isFavorite = false;
             }
         } else {
@@ -181,6 +185,10 @@ loadCart();
             v-if="loading"
             description="Загружаю..."
         />
+        <el-empty
+            v-else-if="!cart.length && !cartForbidden.length"
+            description="Корзина пуста"
+        />
         <div class="contents" v-else>
             <div class="flex low gap" v-if="cart.length">
                 <h2 class="section-header">Можно заказать</h2>
@@ -215,7 +223,7 @@ loadCart();
                     v-for="cartItem in cartForbidden"
                     :key="cartItem.id"
                     :item="cartItem"
-                    @delete="deleteItem(cartItem)"
+                    @delete="deleteItem(cartItem, true)"
                     @toggle-favorite="toggleFavorite(cartItem)"
                 />
             </section>
@@ -229,7 +237,6 @@ loadCart();
             <el-text size="large">Товары ({{ checkedCartItems.length }})</el-text>
             <el-text size="large">{{ formatter.format(totalCheckedCartItems) }}</el-text>
         </div>
-        <!-- TODO: Оформление заказа -->
         <el-button
             size="large"
             type="success"

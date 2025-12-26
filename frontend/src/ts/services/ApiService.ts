@@ -85,8 +85,8 @@ export default class ApiService
         return {
             success: response.status < 400,
             status: response.status,
-            data: response?.data,
-            message: this.msg[response.status] ?? 'Unexpected error',
+            data: response?.data?.data ?? response?.data,
+            message: response?.data?.message ?? this.msg[response.status] ?? 'Unexpected error',
         }
     }
 

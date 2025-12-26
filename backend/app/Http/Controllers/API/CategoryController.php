@@ -13,19 +13,13 @@ class CategoryController extends Controller
 {
     public function index()
     {
-        return Category::all();
+        return CategoryResource::collection(Category::with('parent')->get());
     }
 
     public function store(StoreCategoryRequest $request): JsonResponse
     {
         $category = Category::create($request->validated());
         return response()->json(['id' => $category->id], 201);
-    }
-
-    public function show(Category $category): CategoryResource
-    {
-        $category->load('parent');
-        return new CategoryResource($category);
     }
 
     public function update(UpdateCategoryRequest $request, Category $category): Category

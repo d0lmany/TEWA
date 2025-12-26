@@ -1,6 +1,6 @@
 <script setup lang="ts">
 // imports
-import { onMounted, provide, reactive, watch } from 'vue';
+import { onMounted, onUnmounted, provide, reactive, ref, watch } from 'vue';
 // extra
 const backendURL = `http://127.0.0.1:8000/api/v1`;
 // components
@@ -20,6 +20,7 @@ import FavoriteService from '@/ts/services/FavoriteService';
 import ClaimService from '@/ts/services/ClaimService';
 import AddressService from "@/ts/services/AddressService";
 import PickupService from "@/ts/services/PickupService";
+import ShopService from "@/ts/services/ShopService";
 
 const createServices = (): Services => {
     const api = new ApiService(backendURL);
@@ -32,12 +33,13 @@ const createServices = (): Services => {
     const claim = new ClaimService(api);
     const address = new AddressService(api);
     const pickup = new PickupService(api);
+    const shop = new ShopService(api);
 
     return {
         api, user, category,
         product, i18n, cart,
         favorite, claim, address,
-        pickup,
+        pickup, shop,
     }
 }
 const services = createServices();
@@ -66,8 +68,12 @@ const ui = reactive<UI>({
     currencyFormatter,
     dateFormatter,
 });
+const footerVisible = ref(false);
+const routerViewRef = ref<HTMLElement>();
+let observer: ResizeObserver | null = null;
 // methods
 import { AuthState } from '@/ts/types/AuthState';
+import type { User } from '@/ts/entities/User';
 const uiMethods = {
     callReg: () => {
         ui.loginVisible = false;
@@ -85,19 +91,21 @@ const uiMethods = {
  */
 const loadUser = async (): Promise<AuthState> => {
     services.api.authToken = UserService.storedToken;
-    if (await services.user.isAuthenticated()) {
-
+    const userCondition = await services.user.isAuthenticated();
+    if (userCondition) {
         try {
-            const userData = await services.user.loadUserData();
+            const userData = await services.user.loadUserData({
+                loadUser: false,
+            });
 
             if (userData.success && userData.data) {
-                const {cart, favorite, user, errors} = userData.data;
-                if (!cart || !favorite || !user) {
-                    ElMessage.warning([errors.cart, errors.favorite, errors.user].join('. '));
-                    console.error(errors.cart, errors.favorite, errors.user)
+                const {cart, favorite, errors} = userData.data;
+                if (!cart || !favorite) {
+                    ElMessage.warning([errors.cart, errors.favorite].join('. '));
+                    console.error(errors.cart, errors.favorite)
                 }
 
-                userStore.login(user);
+                userStore.login(userCondition as User)
                 userStore.setCart(cart);
                 userStore.setFavorite(favorite);
 
@@ -112,6 +120,14 @@ const loadUser = async (): Promise<AuthState> => {
     }
 
     return AuthState.NotTry;
+}
+const checkHeight = () => {
+    if (!routerViewRef.value) return
+    
+    const routerViewHeight = routerViewRef.value.scrollHeight
+    const windowHeight = window.innerHeight
+    
+    footerVisible.value = routerViewHeight < windowHeight
 }
 // provides
 const provides: {
@@ -152,14 +168,31 @@ onMounted(() => {
             console.error('Unexpected error in loadUser:', error);
             ElMessage.error('Произошла непредвиденная ошибка');
         });
+
+    observer = new ResizeObserver(checkHeight)
+    
+    if (routerViewRef.value && observer) {
+        observer.observe(routerViewRef.value)
+    }
+
+    window.addEventListener('resize', checkHeight)
+
+    checkHeight()
+})
+
+onUnmounted(() => {
+    if (observer) {
+        observer.disconnect()
+    }
+    window.removeEventListener('resize', checkHeight)
 })
 </script>
 <template>
     <app-header/>
-    <div class="view">
+    <div class="view" ref="routerViewRef">
         <router-view/>
     </div>
-    <app-footer/>
+    <app-footer :visible="footerVisible"/>
     <log-modal
         v-model="ui.loginVisible"
         @callReg="uiMethods.callReg"

@@ -32,8 +32,7 @@ return new class extends Migration
             $table->foreignIdFor(Pickup::class)
                 ->nullable()
                 ->constrained()
-                ->nullOnDelete()
-                ->cascadeOnUpdate();
+                ->nullOnDelete();
             $table->text('address')
                 ->nullable();
             $table->boolean('is_default')
@@ -43,7 +42,8 @@ return new class extends Migration
             $table->index('pickup_id');
             
             $table->unique(['user_id', 'pickup_id']);
-            $table->unique(['user_id', 'address'])->whereNotNull('address');
+            $table->unique(['user_id', 'address'])
+                ->whereNotNull('address');
         });
     }
 

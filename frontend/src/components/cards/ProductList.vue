@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, inject, onMounted, nextTick, onUnmounted, watch, computed } from 'vue';
+import { ref, inject, onMounted, nextTick, onUnmounted, watch, reactive } from 'vue';
 import ProductCard from '@/components/cards/ProductCard.vue';
 import { ElMessage } from 'element-plus';
 import type Services from '@/ts/types/Services';
@@ -25,8 +25,8 @@ const props = defineProps({
 });
 
 const ProductService = (inject('services') as Services).product;
-const products = ref<Product[]>([]);
-const paginate = ref<{
+const products = reactive<Product[]>([]);
+const paginate = reactive<{
     observer: IntersectionObserver | null,
     page: number,
     loading: boolean,
@@ -38,37 +38,36 @@ const paginate = ref<{
     hasMore: true,
 });
 const sentinel = ref(null);
-const haveProducts = computed(() => !!products.value.length);
 
 const fetchProducts = async () => {
-    if (paginate.value.loading || !paginate.value.hasMore) return;
+    if (paginate.loading || !paginate.hasMore) return;
     
-    paginate.value.loading = true;
+    paginate.loading = true;
+    
     try {
         const params = { ...props.params };
 
         if (!params.q) delete params.q;
-
         if (!params.min_rating) delete params.min_rating;
 
         const result = await ProductService.index({
             params: {
                 ...params,
-                page: paginate.value.page,
+                page: paginate.page,
             }
         });
 
         if (result.success && result.data) {
-            const { data, meta }: { data: Product[], meta: { last_page: number } } = result.data;
+            const { data, last_page } = result;
 
-            products.value.push(...data);
+            products.push(...data);
 
-            if (props.lastPage && paginate.value.page >= props.lastPage) {
-                paginate.value.hasMore = false;
-            } else if (paginate.value.page >= meta.last_page) {
-                paginate.value.hasMore = false;
+            if (props.lastPage && paginate.page >= props.lastPage) {
+                paginate.hasMore = false;
+            } else if (paginate.page >= last_page) {
+                paginate.hasMore = false;
             } else {
-                paginate.value.page++;
+                paginate.page++;
             }
         } else {
             console.error(result);
@@ -77,61 +76,65 @@ const fetchProducts = async () => {
     } catch (error) {
         ElMessage.error(error instanceof Error ? error.message : 'Произошла ошибка при загрузке каталога');
     } finally {
-        paginate.value.loading = false;
+        paginate.loading = false;
     }
 }
 
 watch(() => [props.params, props.firstPage, props.lastPage], () => {
-    products.value = [];
-    paginate.value.page = props.firstPage;
-    paginate.value.hasMore = true;
+    products.splice(0);
+    paginate.page = props.firstPage;
+    paginate.hasMore = true;
+    paginate.loading = false;
+    if (paginate.observer) {
+        paginate.observer.disconnect();
+        paginate.observer = null;
+    }
     fetchProducts();
 }, { deep: true });
 
 onMounted(() => {
     fetchProducts();
 
-    paginate.value.observer = new IntersectionObserver((entries: IntersectionObserverEntry[]) => {
-        if (!paginate.value.observer && !entries.length) return;
-
-        if (!paginate.value.loading && !paginate.value.hasMore) return;
-
+    paginate.observer = new IntersectionObserver((entries: IntersectionObserverEntry[]) => {
+        if (!paginate.observer && !entries.length) return;
+        
+        if (paginate.loading || !paginate.hasMore) return;
+        
         fetchProducts();
     }, { threshold: 0.1 });
 
     nextTick(() => {
-        if (sentinel.value && paginate.value.observer) {
-            paginate.value.observer.observe(sentinel.value);
+        if (sentinel.value && paginate.observer) {
+            paginate.observer.observe(sentinel.value);
         }
     });
 });
 
 onUnmounted(() => {
-    if (paginate.value.observer) {
-        paginate.value.observer.disconnect();
+    if (paginate.observer) {
+        paginate.observer.disconnect();
     }
 });
 </script>
 <template>
     <section
         :class="{
-            'empty': !haveProducts
+            'empty': !products.length,
+            'loading-initial': paginate.loading
         }"
         :style="{
             'min-height': bigPage ? '75vh': 'max-content'
         }"
     >
-        <div
-            class="contents"
-            v-if="haveProducts">
-                <product-card
-                    v-for="product in products"
-                    :product="product"
-                    :key="product.id"
-                />
-            </div>
-        <el-empty v-else description="Каталог пуст"/>
-        <div ref="sentinel" style="height:1px"></div>
+        <el-empty v-if="!products.length" :description="paginate.loading ? 'Загружаю...' : 'Каталог пуст'"/>
+        <div class="contents">
+            <product-card
+                v-for="product in products"
+                :product="product"
+                :key="product.id"
+            />
+            <div ref="sentinel" style="height:1px"></div>
+        </div>
     </section>
 </template>
 <style scoped>
@@ -141,7 +144,10 @@ section {
     grid-template-columns: repeat(auto-fit, minmax(clamp(200px, 25%, 250px), 1fr));
     content-visibility: auto;
     contain-intrinsic-size: auto 750px;
+    position: relative;
+    min-height: 300px;
 }
+
 section.empty {
     display: flex;
     justify-content: center;

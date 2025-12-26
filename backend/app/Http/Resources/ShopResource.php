@@ -14,10 +14,10 @@ class ShopResource extends JsonResource
             'name' => $this->name,
             'picture' => $this->picture ? url('storage/' . $this->picture) : null,
             'description' => $this->description,
-            'seller' => $this->when($this->relationLoaded('seller') && $this->seller, function() {
-                return new SellerResource($this->seller);
-            }),
-            'rating' => $this->when(isset($this->rating), $this->rating),
+            'seller' => new SellerResource($this->whenLoaded('seller')),
+            'rating' => $this->when($this->rating, $this->rating),
+            'products' => ProductResource::collection($this->whenLoaded('products')),
+            'reviewsCount' => $this->when($this->reviewsCount, $this->reviewsCount)
         ];
 
         return $shop;

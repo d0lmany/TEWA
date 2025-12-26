@@ -3,11 +3,9 @@ import { createRouter, createWebHistory } from 'vue-router'
 import Index from '@/pages/IndexPage.vue';
 import MyCart from '@/pages/my/CartPage.vue';
 import MyFavorite from '@/pages/my/FavoritePage.vue';
-import MyOrders from '@/pages/my/OrdersPage.vue';
 import My from '@/pages/my/ProfilePage.vue';
 import Search from '@/pages/SearchPage.vue';
 import Product from '@/pages/ProductPage.vue';
-import Shop from '@/pages/ShopPage.vue';
 
 const router = createRouter({
     history: createWebHistory(import.meta.env.BASE_URL),
@@ -27,11 +25,6 @@ const router = createRouter({
             meta: {
                 title: 'Профиль'
             }
-        },
-        {
-            path: '/my/orders', 
-            name: 'Orders',
-            component: MyOrders
         },
         {
             path: '/my/favorite', 
@@ -70,7 +63,7 @@ const router = createRouter({
         {
             name: 'Shop',
             path: '/shop/:id',
-            component: Shop,
+            component: () => import('@/pages/ShopPage.vue'),
         },
         {
             name: 'AboutTEWA',

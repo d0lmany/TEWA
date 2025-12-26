@@ -21,8 +21,8 @@ const loadAddresses = async () => {
     try {
         const response = await AddressService.index();
 
-        if (response.success && response.data?.data) {
-            addresses.push(...response.data.data);
+        if (response.success && response.data) {
+            addresses.push(...response.data);
         } else {
             console.error(response);
             throw new Error(response.message);
@@ -95,13 +95,19 @@ onMounted(() => {
     <h2 class="section-header">Адреса и ПВЗ</h2>
     <section>
         <div class="addresses">
-            <address-card
-                v-for="address in addresses"
-                :key="address.id"
-                :address="address"
-                :class="{ 'supreme': address.is_default }"
-                @make-default="updateAddress(address.id)"
-                @delete="deleteAddress(address.id)"
+            <div class="contents" v-if="addresses.length">
+                <address-card
+                    v-for="address in addresses"
+                    :key="address.id"
+                    :address="address"
+                    :class="{ 'supreme': address.is_default }"
+                    @make-default="updateAddress(address.id)"
+                    @delete="deleteAddress(address.id)"
+                />
+            </div>
+            <el-empty
+                description="Вы не сохраняли адреса"
+                v-else
             />
         </div>
         <div class="flex gap" style="margin-top: 1rem">

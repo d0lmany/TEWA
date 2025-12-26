@@ -6,6 +6,7 @@ import { computed, reactive, ref, type Component } from 'vue';
 import ChangeProfileModal from '@/components/modals/ChangeProfileModal.vue';
 import ChangePasswordModal from '@/components/modals/ChangePasswordModal.vue';
 import LogoutModal from '@/components/modals/LogoutModal.vue';
+import DeleteAccountModal from '@/components/modals/DeleteAccountModal.vue';
 
 import AddressesSection from '@/components/sections/AddressesSection.vue';
 
@@ -22,6 +23,7 @@ const visibilities = reactive({
     changeProfile: false,
     changePassword: false,
     wannaLogout: false,
+    accountDeleting: false,
 })
 
 const age = computed(() => {
@@ -105,9 +107,11 @@ const age = computed(() => {
     <change-profile-modal
         v-model="visibilities.changeProfile"
         @open-change-password="visibilities.changePassword = true"
+        @delete-account="visibilities.accountDeleting = true"
     />
     <change-password-modal v-model="visibilities.changePassword"/>
     <logout-modal v-model="visibilities.wannaLogout"/>
+    <delete-account-modal v-model="visibilities.accountDeleting"/>
 </div>
 </template>
 <style scoped>

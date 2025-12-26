@@ -112,7 +112,7 @@ const handleSubmit = async () => {
 
 const imageUrl = computed<string>(() => (selectedFile.value ? URL.createObjectURL(selectedFile.value) : form.picture) ?? '')
 
-const emit = defineEmits(['openChangePassword']);
+const emit = defineEmits(['openChangePassword', 'deleteAccount']);
 </script>
 <template>
 <el-dialog
@@ -120,7 +120,6 @@ const emit = defineEmits(['openChangePassword']);
     v-model="visible"
     center
     width="30%"
-    style="border-radius: 1rem"
     :show-close="false"
 >
     <el-form
@@ -171,7 +170,14 @@ const emit = defineEmits(['openChangePassword']);
             />
         </el-form-item>
         <el-form-item label="Действия" style="margin-bottom: 0">
-            <el-button @click="emit('openChangePassword')">Изменить пароль</el-button>
+            <el-button-group>
+                <el-button @click="emit('openChangePassword')">Изменить пароль</el-button>
+                <el-button
+                    @click="emit('deleteAccount')"
+                    type="danger"
+                    plain
+                >Удалить аккаунт</el-button>
+            </el-button-group>
         </el-form-item>
     </el-form>
     <template #footer>

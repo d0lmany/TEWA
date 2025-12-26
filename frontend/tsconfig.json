@@ -1,14 +1,14 @@
 {
-   "extends": "@vue/tsconfig/tsconfig.dom.json",
-   "include": ["env.d.ts", "src/**/*", "src/**/*.vue"],
-   "exclude": ["src/**/__tests__/*"],
-   "compilerOptions": {
-      "composite": true,
-      "baseUrl": ".",
-      "paths": {  
-         "@/*": ["./src/*"]
-      },
-      "target": "ES2024",
-      "lib": ["ES2024", "DOM", "DOM.Iterable"]
-   }
+    "extends": "@vue/tsconfig/tsconfig.dom.json",
+    "include": ["env.d.ts", "src/**/*", "src/**/*.vue"],
+    "exclude": ["src/**/__tests__/*"],
+    "compilerOptions": {
+        "composite": true,
+        "baseUrl": ".",
+        "paths": {  
+            "@/*": ["./src/*"]
+        },
+        "target": "ES2024",
+        "lib": ["ES2024", "DOM", "DOM.Iterable"]
+    }
 }
