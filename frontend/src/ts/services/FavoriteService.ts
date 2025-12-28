@@ -2,7 +2,9 @@ import Repository from "@/ts/services/Repository";
 import ApiService from "@/ts/services/ApiService";
 import type ResponseResult from "@/ts/types/ResponseResult";
 import type { FavoriteList } from "../entities/Items";
-
+/**
+ * Favorite lists and favorite list items management service
+ */
 export default class FavoriteService
 {
     private repo: Repository;

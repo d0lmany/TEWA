@@ -19,14 +19,6 @@ const router = createRouter({
             }
         },
         {
-            path: '/my', 
-            name: 'Profile',
-            component: My,
-            meta: {
-                title: 'Профиль'
-            }
-        },
-        {
             path: '/my/favorite', 
             name: 'Favorite',
             component: MyFavorite,
@@ -41,6 +33,14 @@ const router = createRouter({
             meta: {
                 title: 'Корзина'
             }
+        },
+        {
+            path: '/my/:pathMatch(.*)*', 
+            name: 'Profile',
+            component: My,
+            meta: {
+                title: 'Профиль'
+            },
         },
         {
             path: '/search',
@@ -66,7 +66,7 @@ const router = createRouter({
             component: () => import('@/pages/ShopPage.vue'),
         },
         {
-            name: 'AboutTEWA',
+            name: 'About',
             path: '/legal/about',
             component: () => import('@/pages/legal/AboutPage.vue'),
         },

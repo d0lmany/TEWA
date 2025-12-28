@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { ref, inject, onMounted, computed } from 'vue';
-import { Menu, Search, ShoppingCart,Star,/*  MessageBox, */User } from '@element-plus/icons-vue';
+import { ref, inject, onMounted } from 'vue';
+import { Menu, Search, ShoppingCart, Star, User } from '@element-plus/icons-vue';
 import { ElButton, ElMessage } from 'element-plus';
 import { useRouter, type Router } from 'vue-router';
 import { useUserStore } from '@/stores/userStore';
@@ -94,12 +94,6 @@ onMounted(() => loadCategories())
                     Корзина
                 </el-button>
             </el-badge>
-                <!--el-button @click="goto('Orders')">
-                    <el-icon class="el-icon--left" :size="22">
-                        <MessageBox/>
-                    </el-icon>
-                    Заказы
-                </el-button-->
             <el-button @click="goto('Profile')">
                 <el-icon class="el-icon--left" :size="22">
                     <User />

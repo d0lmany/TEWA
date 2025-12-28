@@ -2,7 +2,9 @@ import Repository from "@/ts/services/Repository";
 import ApiService from "@/ts/services/ApiService";
 import type { CartProduct, CartItem } from "@/ts/entities/Items";
 import type ResponseResult from "@/ts/types/ResponseResult";
-
+/**
+ * Cart items management service
+ */
 export default class CartService
 {
     private repo: Repository;

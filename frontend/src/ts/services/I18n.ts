@@ -1,5 +1,7 @@
 import type LocalizedString from "@/ts/types/LocalizedString";
-
+/**
+ * Localization management service
+ */
 export default class I18n
 {
     private currentLang: string;
@@ -33,6 +35,7 @@ export default class I18n
 
     public translate(phrase: string, lang: string = this.currentLang): string {
         this.initialized;
+        // TODO: игнорировать строки по типу XL, 500g и т. д.
 
         const target = phrase.trim().toLocaleLowerCase();
 

@@ -10,6 +10,7 @@ use App\Http\Controllers\API\ProductController;
 use App\Http\Controllers\API\CartItemController;
 use App\Http\Controllers\API\CategoryController;
 use App\Http\Controllers\API\FavoriteController;
+use App\Http\Controllers\API\OrderController;
 use App\Http\Controllers\API\ShopController;
 
 Route::get('/', fn () => response()->json(['message' => 'Hello, World!']));
@@ -52,6 +53,9 @@ Route::prefix('v1')->middleware('throttle:75,1')->group(function () {
         // адреса и ПВЗ
         Route::apiResource('addresses', AddressController::class)->except('show');
         Route::get('pickups', [PickupController::class, 'index']);
+        // заказы
+        Route::get('orders', [OrderController::class, 'index']);
+        Route::post('orders', [OrderController::class, 'store']);
         // маршруты для админа
         Route::middleware('adminOnly')->group(function () {
             Route::apiResource('categories', CategoryController::class)->except(['index', 'show']);

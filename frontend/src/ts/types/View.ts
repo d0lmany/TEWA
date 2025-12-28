@@ -1,5 +1,6 @@
 export enum View {
     Addresses,
+    Orders,
 };
 
 export enum LegalView {

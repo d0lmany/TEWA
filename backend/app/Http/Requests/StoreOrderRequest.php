@@ -17,7 +17,8 @@ class StoreOrderRequest extends FormRequest
             'destination_pickup_id' => ['sometimes', 'integer', 'min:1'],
             'destination_address_id' => ['sometimes', 'integer', 'min:1'],
             'is_hidden' => ['sometimes', 'boolean'],
-            'products' => ['required', 'array'], // as { product_id: 1, product_attributes: [1, 2, 3] }
+            'cart_items' => ['required', 'array', 'min:1'],
+            'cart_items.*' => ['integer'/*, 'exists:cart_items,id'*/],
         ];
     }
 }

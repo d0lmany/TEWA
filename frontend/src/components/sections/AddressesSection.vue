@@ -3,7 +3,7 @@ import AddressCard from '@/components/cards/AddressCard.vue';
 import type { Address } from '@/ts/entities/Addresses';
 import type Services from '@/ts/types/Services';
 import { ElMessage } from 'element-plus';
-import { inject, onMounted, reactive } from 'vue';
+import { inject, onMounted, reactive, ref } from 'vue';
 import AddAddressOrPickupModal from '@/components/modals/AddAddressOrPickupModal.vue';
 import { TakeawayBox, MapLocation } from '@element-plus/icons-vue';
 
@@ -16,9 +16,11 @@ const addressModal = reactive<{
     visible: false,
     type: 'address'
 });
+const loading = ref(false);
 
 const loadAddresses = async () => {
     try {
+        loading.value = true;
         const response = await AddressService.index();
 
         if (response.success && response.data) {
@@ -29,6 +31,8 @@ const loadAddresses = async () => {
         }
     } catch (error) {
         ElMessage.error(error instanceof Error ? error.message : 'Не удалось загрузить сохранённые адреса');
+    } finally {
+        loading.value = false;
     }
 }
 const storeAddress = (address: Address) => {
@@ -106,7 +110,7 @@ onMounted(() => {
                 />
             </div>
             <el-empty
-                description="Вы не сохраняли адреса"
+                :description="loading ? 'Адреса загружаются...' : 'Вы не сохраняли адреса'"
                 v-else
             />
         </div>
@@ -133,10 +137,10 @@ onMounted(() => {
     display: flex;
     flex-direction: column;
     gap: .5rem;
-    max-height: 500px;
+    max-height: 65vh;
     overflow-y: scroll;
 }
-.addresses > div {
+.addresses div > * {
     order: 2;
 }
 .supreme {

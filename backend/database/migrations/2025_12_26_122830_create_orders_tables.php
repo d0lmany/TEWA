@@ -62,15 +62,15 @@ return new class extends Migration
             $table->foreignIdFor(Order::class)
                 ->constrained()
                 ->cascadeOnDelete();
-            // pickup, address
+            // pickup, address, warehouse
             $table->string('location_type', 20); 
             $table->string('location_id');
             $table->text('notes')
                 ->nullable();
-            $table->timestamp('arrived_at');
+            $table->timestamp('arrived_at')
+                ->useCurrent();
             $table->timestamp('left_at')
                 ->nullable();
-            $table->timestamps();
 
             $table->index(['order_id', 'arrived_at']);
             $table->index(['location_type', 'location_id']);

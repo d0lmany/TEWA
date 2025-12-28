@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ArrowRight, StarFilled, Shop, InfoFilled, ShoppingCart, Star, Service, Top, Plus, Minus } from '@element-plus/icons-vue';
-import { computed, inject, onMounted, onUnmounted, ref, reactive } from 'vue';
+import { computed, inject, onMounted, onUnmounted, ref, reactive, watch } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
 import { ElMessage } from 'element-plus';
 import ReviewCard from '@/components/cards/ReviewCard.vue';
@@ -77,7 +77,7 @@ const addToCart = async () => {
         const response = await CartService.store(item);
         if (response.success) {
             ElMessage.success('Добавлено в корзину!');
-            item.id = response.data.data.id;
+            item.id = response.data.id;
             userStore.addToCart(item);
         } else {
             ElMessage.error(`Не удалось добавить товар в корзину: ${response.message}`);
@@ -146,7 +146,7 @@ const copy = async (target: string) => {
         await navigator.clipboard.writeText(target);
         ElMessage.success(`Успешно скопировано!`);
     } catch (e) {
-        ElMessage.error(`Не удалось скопировать "${target}": ${e}`);
+        ElMessage.error(`Не удалось скопировать "${target}": ${e instanceof Error ? e.message : 'Неизвестная ошибка'}`);
     }
 }
 const mainPhoto = computed(() => product.photo ?? '');
@@ -293,6 +293,15 @@ onMounted(() => {
 onUnmounted(() => {
     loading.value = true;
 })
+
+watch(
+    () => userStore.favorite.length,
+    () => defineFavorite()
+)
+watch(
+    () => userStore.cart.length,
+    () => setProductCount()
+)
 </script>
 <template>
 <main>
@@ -393,7 +402,7 @@ onUnmounted(() => {
                                         v-if="product?.feedbacks?.rating"
                                         :size="24"
                                         color="#F7BA2A"
-                                    ><StarFilled/></el-icon>
+                                    ><star-filled/></el-icon>
                                     {{product?.feedbacks?.rating ? product?.feedbacks?.rating.toFixed(1) : 'Нет оценок'}}
                                 </div>
                                 <el-text
@@ -614,10 +623,7 @@ onUnmounted(() => {
                             v-if="userStore.isAuth"
                             class="flex"
                         >
-                        <el-popover
-                            :disabled="(product.quantity || 0) > 0"
-                            content="К сожалению, этот товар закончился 😥"
-                        >
+                        <el-popover :disabled="(product.quantity || 0) > 0">
                         <template #reference>
                             <el-button
                                 :disabled="(product.quantity || 0) < 1"
@@ -631,6 +637,7 @@ onUnmounted(() => {
                                 В корзину
                             </el-button>
                         </template>
+                        <div style="text-align: center">К сожалению, этот товар закончился 😥</div>
                         </el-popover>
                         <div class="count-container" v-if="cartItem">
                             <el-button
@@ -650,7 +657,7 @@ onUnmounted(() => {
                             />
                         </div>
                         <el-popover
-                            :disabled="favoriteItem?.list === '__favorite__'"
+                            :disabled="favoriteItem?.list === '__favorite__' || !favoriteItem"
                         >
                             <div style="text-align: center">Добавлен в лист '{{ favoriteItem?.list }}'</div>
                             <template #reference>

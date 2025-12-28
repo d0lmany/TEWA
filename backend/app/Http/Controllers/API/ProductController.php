@@ -131,14 +131,17 @@ class ProductController extends Controller
 
     public function show(Product $product): ProductResource
     {
-        $product->load([
+        $product->loadMissing([
             'category.parent',
             'productDetail', 
             'attributes',
             'shop.seller',
             'reviews.user'
-        ])
-        ->loadAvg('reviews as rating', 'evaluation');
+        ]);
+        
+        if (!$product->relationLoaded('rating')) {
+            $product->loadAvg('reviews as rating', 'evaluation');
+        }
         
         return new ProductResource($product);
     }

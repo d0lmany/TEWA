@@ -7,6 +7,7 @@ import { ElMessage } from 'element-plus';
 import { InfoFilled, ShoppingBag, Top } from '@element-plus/icons-vue';
 import { inject, reactive, ref, watch, computed } from 'vue';
 import type { UI } from '@/ts/types/Provides';
+import ProcessOrderModal from '@/components/modals/ProcessOrderModal.vue';
 
 const {
     cart: CartService,
@@ -20,6 +21,7 @@ const checkedCartItems = computed<CartProduct[]>(() => cart.filter(item => item.
 const totalCheckedCartItems = computed<number>(() => checkedCartItems.value.reduce((total: number, item: CartProduct) => total + ((item.product.price.total || item.product.price.final_price) * item.quantity), 0));
 const formatter = (inject('ui') as UI).currencyFormatter;
 const isAllChecked = computed<boolean>(() => checkedCartItems.value.length === cart.length);
+const orderVisible = ref(false);
 
 const loadCart = async () => {
     if (userStore.cart.length === cart.length + cartForbidden.length) return;
@@ -241,13 +243,17 @@ loadCart();
             size="large"
             type="success"
             :disabled="checkedCartItems.length < 1"
-            v-unimplemented="'Оформление заказа'"
+            @click="orderVisible = true"
         >
             <el-icon :size="18" class="el-icon--left"><shopping-bag/></el-icon>
             Перейти к оформлению
         </el-button>
         <el-text style="display: block; text-align: justify">Доступные способы доставки и другие параметры можно выбрать при оформлении заказа</el-text>
     </aside>
+    <process-order-modal
+        v-model="orderVisible"
+        :items="checkedCartItems"
+    />
 </div>
 </template>
 <style scoped>

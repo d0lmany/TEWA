@@ -21,6 +21,7 @@ import ClaimService from '@/ts/services/ClaimService';
 import AddressService from "@/ts/services/AddressService";
 import PickupService from "@/ts/services/PickupService";
 import ShopService from "@/ts/services/ShopService";
+import OrderService from '@/ts/services/OrderService';
 
 const createServices = (): Services => {
     const api = new ApiService(backendURL);
@@ -34,12 +35,13 @@ const createServices = (): Services => {
     const address = new AddressService(api);
     const pickup = new PickupService(api);
     const shop = new ShopService(api);
+    const order = new OrderService(api);
 
     return {
         api, user, category,
         product, i18n, cart,
         favorite, claim, address,
-        pickup, shop,
+        pickup, shop, order,
     }
 }
 const services = createServices();

@@ -5,27 +5,24 @@ import vue from '@vitejs/plugin-vue'
 import vueDevTools from 'vite-plugin-vue-devtools'
 
 export default defineConfig({
-   plugins: [
-      vue(),
-      vueDevTools(),
-   ],
-   resolve: {
-      alias: {
-         '@': fileURLToPath(new URL('./src', import.meta.url))
-      },
-   },
-   build: {
-      rollupOptions: {
-         output: {
-            manualChunks: { 
-               vendor: ['vue', 'vue-router', 'pinia'],
-               ui: ['element-plus'],
-               utils: ['axios']
+    plugins: [
+        vue(),
+        vueDevTools(),
+    ],
+    resolve: {
+        alias: {
+            '@': fileURLToPath(new URL('./src', import.meta.url))
+        },
+    },
+    build: {
+        rollupOptions: {
+            output: {
+                manualChunks: { 
+                    vendor: ['vue', 'vue-router', 'pinia'],
+                    ui: ['element-plus'],
+                    utils: ['axios']
+                }
             }
-         }
-      }
-   },
-   optimizeDeps: {
-      include: ['@vueuse/head']
-   }
+        }
+    }
 })

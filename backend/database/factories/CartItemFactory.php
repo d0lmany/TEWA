@@ -14,9 +14,11 @@ class CartItemFactory extends Factory
         $user = User::inRandomOrder()
             ->first();
         $product = Product::inRandomOrder()
+            ->where('status', 'on')
+            ->where('quantity', '>', '0')
             ->first();
         $attrs = ProductAttribute::where('product_id', $product->id)
-            ->where('is_variant', 0)
+            ->where('is_variant', 1)
             ->pluck('id')
             ->toArray();
         $count = fake()->numberBetween(0, min(3, count($attrs)));
@@ -24,7 +26,7 @@ class CartItemFactory extends Factory
         return [
             'user_id' => $user->id,
             'product_id' => $product->id,
-            'quantity' => fake()->numberBetween(0, $product->quantity),
+            'quantity' => fake()->numberBetween(0, $product->quantity / 10),
             'product_attributes' => fake()->randomElements($attrs, $count)
         ];
     }

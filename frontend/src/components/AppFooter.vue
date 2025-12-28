@@ -10,7 +10,7 @@ const { visible } = defineProps<{
 const ui = inject('ui') as UI;
 </script>
 <template>
-<footer :style="{opacity: visible ? 1 : 0}">
+<footer :style="{ opacity: visible ? 1 : 0, bottom: visible ? 0 : '-2rem' }">
     <div class="flex gap">
         <router-link class="logo" :to="{name: 'Home'}">
             TEWA
@@ -23,7 +23,7 @@ const ui = inject('ui') as UI;
     </div>
     <div class="links">
         <div @click="ui.loginVisible = true">Вход</div>
-        <div @click="$router.push({name: 'AboutTEWA'})">О проекте</div>
+        <div @click="$router.push({name: 'About'})">О проекте</div>
         <div @click="ui.regVisible = true">Регистрация</div>
         <!--div>О маркетплейсе</div-->
         <!--div>Стать продавцом</div-->
@@ -47,11 +47,12 @@ footer {
     position: fixed;
     width: 100%;
     box-sizing: border-box;
-    bottom: 0;
-    transition: ease-out .25s;
+    bottom: -2rem;
+    transition: ease-out .25s opacity, ease .2s bottom;
 }
 footer:hover {
     opacity: 1 !important;
+    bottom: 0 !important;
 }
 .links {
     width: 100%;

@@ -1,30 +1,34 @@
 <script setup lang="ts">
-import { Top, User, Location, Edit, Close } from '@element-plus/icons-vue';
+import { Top, User, Location, Edit, Close, Memo } from '@element-plus/icons-vue';
 import { View } from '@/ts/types/View';
 import { useUserStore } from '@/stores/userStore';
-import { computed, reactive, ref, type Component } from 'vue';
+import { computed, onMounted, reactive, ref, watch, type Component } from 'vue';
 import ChangeProfileModal from '@/components/modals/ChangeProfileModal.vue';
 import ChangePasswordModal from '@/components/modals/ChangePasswordModal.vue';
 import LogoutModal from '@/components/modals/LogoutModal.vue';
 import DeleteAccountModal from '@/components/modals/DeleteAccountModal.vue';
 
 import AddressesSection from '@/components/sections/AddressesSection.vue';
+import OrdersSection from '@/components/sections/OrdersSection.vue';
+import { useRoute } from 'vue-router';
 
 const currentView = ref<View>(View.Addresses);
 const views = [
     { type: View.Addresses, name: 'Адреса и ПВЗ', icon: Location },
+    { type: View.Orders, name: 'Заказы', icon: Memo },
 ];
 const sections: Record<View, Component> = {
     [View.Addresses]: AddressesSection,
+    [View.Orders]: OrdersSection,
 };
-
 const userStore = useUserStore();
 const visibilities = reactive({
     changeProfile: false,
     changePassword: false,
     wannaLogout: false,
     accountDeleting: false,
-})
+});
+const route = useRoute();
 
 const age = computed(() => {
     const today = new Date();
@@ -53,6 +57,24 @@ const age = computed(() => {
 
     return `${ageNum} ${ageSuffix}`;
 });
+
+watch(
+    () => route.path,
+    () => {
+        const section = route.path.replace('/my/', '').replace('/', '');
+        switch (section) {
+            case 'addresses':
+                currentView.value = View.Addresses;
+                break;
+            case 'orders':
+                currentView.value = View.Orders;
+                break;
+        }
+    },
+    {
+        immediate: true
+    }
+)
 </script>
 <template>
 <div class="container">

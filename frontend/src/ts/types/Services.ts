@@ -9,6 +9,7 @@ import type ClaimService from "@/ts/services/ClaimService";
 import type AddressService from "@/ts/services/AddressService";
 import type PickupService from "@/ts/services/PickupService";
 import type ShopService from "@/ts/services/ShopService";
+import type OrderService from "@/ts/services/OrderService";
 
 export default interface Services {
     api: ApiService,
@@ -21,5 +22,6 @@ export default interface Services {
     claim: ClaimService,
     address: AddressService,
     pickup: PickupService,
-    shop: ShopService
+    shop: ShopService,
+    order: OrderService,
 }
