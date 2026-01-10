@@ -11,7 +11,8 @@ const loading = ref(false);
 const preparedRules = reactive({
     status: null,
     hidden: false,
-    sort: 'updated_at'
+    sort: 'updated_at',
+    actual: true,
 });
 
 const loadOrders = async () => {
@@ -54,6 +55,9 @@ const preparedOrders = computed(() => orders.filter(order => {
 
     if (order.is_hidden && !preparedRules.hidden) return false;
 
+    if ((order.status === OrderStatus.Cancelled || order.status === OrderStatus.Completed)
+        && preparedRules.actual) return false;
+
     return true;
 }).toSorted((a, b) => {
     switch (preparedRules.sort) {
@@ -91,7 +95,7 @@ onMounted(() => {
                 </div>
             </div>
         </h2>
-        <div class="flex gap low" style="margin-bottom: 1rem">
+        <div class="options">
             <el-text size="large">Опции:</el-text>
             <el-select placeholder="Фильтрация по статусу" v-model="preparedRules.status" clearable style="width: 15rem">
                 <el-option :value="OrderStatus.Pending" label="Ожидает оплаты"/>
@@ -102,11 +106,13 @@ onMounted(() => {
                 <el-option :value="OrderStatus.Cancelled" label="Отменён"/>
                 <el-option :value="OrderStatus.Completed" label="Получен"/>
             </el-select>
+            <div class="divider"></div>
             <el-text>Показать скрытые</el-text>
             <el-radio-group v-model="preparedRules.hidden">
                 <el-radio :value="true" label="Да"/>
                 <el-radio :value="false" label="Нет"/>
             </el-radio-group>
+            <div class="divider"></div>
             <el-text>Фильтрация</el-text>
             <el-select v-model="preparedRules.sort" style="width: 15rem">
                 <el-option value="updated_at" label="По дате изменения"/>
@@ -114,6 +120,10 @@ onMounted(() => {
                 <el-option value="total" label="По итоговой сумме"/>
                 <el-option value="count" label="По количеству позиций"/>
             </el-select>
+            <el-radio-group v-model="preparedRules.actual" style="margin-left: auto">
+                <el-radio-button :value="true" label="Актуальные"/>
+                <el-radio-button :value="false" label="Завершённые"/>
+            </el-radio-group>
         </div>
         <section>
             <div class="orders" v-if="preparedOrders.length">
@@ -142,5 +152,18 @@ onMounted(() => {
     font-weight: 400;
     font-size: .8rem;
     border-radius: .5rem;
+}
+.options {
+    margin-bottom: 1rem;
+    align-items: center;
+    display: flex;
+    gap: .5rem;
+}
+.divider {
+    border-left: 1px solid var(--el-border-color);
+    align-self: stretch;
+}
+.options .el-radio {
+    margin-right: .5rem;
 }
 </style>

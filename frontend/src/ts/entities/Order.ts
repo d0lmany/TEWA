@@ -52,3 +52,9 @@ export enum OrderStatus {
     Cancelled = 'cancelled',
     Completed = 'completed',
 }
+export interface OrderRequest {
+    destination_pickup_id?: number,
+    destination_address_id?: number,
+    is_hidden: boolean,
+    cart_items: number[],
+}

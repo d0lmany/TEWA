@@ -66,6 +66,7 @@ const set = () => {
     appliedFilters.value = cleanFilters;
     appliedSorts.value = { ...sorts.value };
 }
+// TODO: если поиск на той же странице - перенаправления не происходит!
 </script>
 <template>
 <el-container>

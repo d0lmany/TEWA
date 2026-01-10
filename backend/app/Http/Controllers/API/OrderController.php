@@ -74,13 +74,11 @@ class OrderController extends Controller
             
             $this->clearCartItems($validated['cart_items'], $userId);
             
+            $orderWithRelations = $order->fresh(['items.product', 'locations', 'statusHistory']);
+                    
             return response()->json([
                 'message' => 'Order created',
-                'order' => new OrderResource($order->with([
-                    'items.product', 
-                    'locations',
-                    'statusHistory'
-                ])),
+                'order' => new OrderResource($orderWithRelations),
             ], 201);
         }, 5);
     }

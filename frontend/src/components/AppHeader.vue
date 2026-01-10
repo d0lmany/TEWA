@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { ref, inject, onMounted } from 'vue';
-import { Menu, Search, ShoppingCart, Star, User } from '@element-plus/icons-vue';
+import { ref, inject, onMounted, reactive } from 'vue';
+import { Menu, Search, ShoppingCart, Star, User, Close } from '@element-plus/icons-vue';
 import { ElButton, ElMessage } from 'element-plus';
 import { useRouter, type Router } from 'vue-router';
 import { useUserStore } from '@/stores/userStore';
@@ -16,17 +16,20 @@ const router: Router = useRouter();
 const CategoryService: CS = (inject('services') as Services).category;
 const userStore = useUserStore();
 const ui = inject('ui') as UI;
+const searchHistory = reactive<string[]>([]);
 
 const search = () => {
     const target = searchQuery.value.trim();
-    if (target !== '') {
+    if (target) {
         const article = parseInt(target);
-        if (article && article > 0) {
+        if (article) {
             router.push({
                 name: 'Product',
                 params: { id: article }
             });
         } else {
+            searchHistory.push(target);
+            localStorage.setItem(`searchStr-${searchHistory.length - 1}`, target);
             router.push({
                 name: 'Search',
                 query: { q: target }
@@ -54,8 +57,22 @@ const loadCategories = async () => {
         ElMessage.error(error instanceof Error ? error.message : 'Произошла ошибка при загрузке категорий');
     }
 }
+const loadHistory = () => {
+    for (let i = 0; i < 10; i++) {
+        const searchStr = localStorage.getItem(`searchStr-${i}`);
+        if (searchStr) searchHistory.push(searchStr);
+        localStorage.removeItem(`searchStr-${i}`);
+    }
+}
+const deleteHistoryItem = (index: number) => {
+    searchHistory.splice(index, 1);
+    localStorage.removeItem(`searchStr-${index}`);
+}
 
-onMounted(() => loadCategories())
+onMounted(() => {
+    loadCategories();
+    loadHistory();
+})
 </script>
 <template>
     <header>
@@ -68,15 +85,36 @@ onMounted(() => loadCategories())
             </el-icon>
             Категории
         </el-button>
-        <el-input class="input" v-model="searchQuery" clearable placeholder="Искать в TEWA" @keyup.enter="search">
-            <template #append>
-                <el-button @click="search">
-                    <el-icon>
-                        <Search />
-                    </el-icon>
-                </el-button>
+        <el-popover
+            placement="bottom"
+            :show-arrow="false"
+            :disabled="!searchHistory.length"
+            :offset="8"
+            width="max-content"
+        >
+            <template #reference>
+            <!-- TODO: пусть плейсхолдер иногда содержит другие строки как пример того, что можно поискать -->
+            <el-input class="input" v-model="searchQuery" clearable placeholder="Искать в TEWA" @keyup.enter="search">
+                <template #append>
+                    <el-button @click="search">
+                        <el-icon>
+                            <Search />
+                        </el-icon>
+                    </el-button>
+                </template>
+            </el-input>
             </template>
-        </el-input>
+            <div class="history-section">
+                <div
+                    v-for="(item, i) in searchHistory"
+                    @click="searchQuery = item"
+                    class="flex"
+                >
+                    <span>{{ item }}</span>
+                    <el-icon role="button" @click="deleteHistoryItem(i)"><Close /></el-icon>
+                </div>
+            </div>
+        </el-popover>
         <nav>
             <el-badge :value="userStore.getFavoriteTotalLength()" color="#fe4e7f">
                 <el-button @click="goto('Favorite')">
@@ -190,6 +228,24 @@ header :deep(.el-link__inner) {
 }
 .categories li a:hover {
     color: var(--el-color-primary) !important;
+}
+.history-section {
+    display: flex;
+    flex-direction: column;
+}
+.history-section > div {
+    transition: .1s ease-in;
+    font-size: 1rem;
+    cursor: pointer;
+    padding: .25rem .5rem;
+    min-width: 250px;
+    border-radius: .25rem;
+}
+.history-section > div > span {
+    min-width: 100px;
+}
+.history-section > div:hover {
+    background: var(--el-border-color);
 }
 @media (max-width: 1250px) {
     header {

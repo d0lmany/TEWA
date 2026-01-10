@@ -49,8 +49,8 @@ export const useUserStore = defineStore('userData', {
 
             if (item) item.quantity = newQuantity;
         },
-        removeCartItem (id: number) {
-            this.cart = this.cart.filter(item => item.id !== id);
+        removeCartItem (itemId: number) {
+            this.cart = this.cart.filter(item => item.id !== itemId);
         },
         getFavoriteItem (productId: number): FavoriteListItem | undefined {
             let item = undefined;
