@@ -2,7 +2,6 @@ import type { CartItem, FavoriteList } from "@/ts/entities/Items";
 
 export interface UserData {
     isAuth: boolean;
-    cart: CartItem[];
     favorite: FavoriteList[],
     user: User;
 }

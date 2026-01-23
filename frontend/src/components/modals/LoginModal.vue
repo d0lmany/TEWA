@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { inject, reactive, ref } from 'vue';
 import { useUserStore } from '@/stores/userStore';
+import { useCartStore } from '@/stores/cartStore';
 import { ElMessage } from 'element-plus';
 import type { LoginData } from '@/ts/types/UserR-R';
 import { default as US } from '@/ts/services/UserService';
@@ -10,6 +11,7 @@ import { AuthState } from '@/ts/types/AuthState';
 import { createRequiredRule, type Rules } from '@/ts/utils/FormRules';
 
 const userStore = useUserStore();
+const cartStore = useCartStore();
 const formRef = ref();
 const form: LoginData = reactive<LoginData>({
     email: '', password: ''
@@ -40,7 +42,7 @@ const loadUser = async (): Promise<AuthState> => {
             }
 
             userStore.login(user);
-            userStore.setCart(cart);
+            cartStore.set(cart);
             userStore.setFavorite(favorite);
 
             return AuthState.Accept;

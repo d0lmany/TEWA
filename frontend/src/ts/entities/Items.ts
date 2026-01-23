@@ -2,7 +2,7 @@ import type { FullProduct, Product } from "@/ts/entities/Product"
 import type { Category } from "./Category"
 
 export interface CartItem {
-    id?: number,
+    id: number,
     quantity: number,
     product_id: number,
     product_attributes?: number[],

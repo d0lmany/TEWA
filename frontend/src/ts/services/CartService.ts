@@ -15,7 +15,7 @@ export default class CartService
 
     public index = async (): Promise<ResponseResult<CartProduct[]>> => await this.repo.index()
 
-    public store = async (data: CartItem) => await this.repo.store({data})
+    public store = async (data: CartItem): Promise<ResponseResult<CartItem>> => await this.repo.store({data})
 
     public update = async (id: number, data: object) => await this.repo.update({
         url: `/cart/${id}`, data

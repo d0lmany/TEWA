@@ -6,6 +6,7 @@ import { ElMessage } from 'element-plus';
 import ReviewCard from '@/components/cards/ReviewCard.vue';
 import ClaimModal from '@/components/modals/ClaimModal.vue';
 import { useUserStore } from '@/stores/userStore';
+import { useCartStore } from '@/stores/cartStore';
 import type { UI } from '@/ts/types/Provides';
 import type { FullProduct, ProductAttribute } from '@/ts/entities/Product';
 import type Services from '@/ts/types/Services';
@@ -24,6 +25,7 @@ const {
 const checkedAttributes = reactive<Record<string, string>>({});
 const formatter = (inject('ui') as UI).currencyFormatter;
 const userStore = useUserStore();
+const cartStore = useCartStore();
 const count = ref<number>(0);
 const cartLoading = ref<boolean>(false);
 const favoriteLoading = ref<boolean>(false);
@@ -69,6 +71,7 @@ const addToCart = async () => {
 
     if (userStore.isAuth) {
         const item: CartItem = {
+            id: 0,
             product_id: product.id || 0,
             quantity: 1,
             product_attributes: collectCheckedAttrs.value,
@@ -77,8 +80,10 @@ const addToCart = async () => {
         const response = await CartService.store(item);
         if (response.success) {
             ElMessage.success('Добавлено в корзину!');
-            item.id = response.data.id;
-            userStore.addToCart(item);
+            if (response.data) {
+                item.id = response.data.id;
+                cartStore.addItem(item);
+            }
         } else {
             ElMessage.error(`Не удалось добавить товар в корзину: ${response.message}`);
             console.error(response);
@@ -192,7 +197,7 @@ const increase = async () => {
                 });
 
                 if (response.success) {
-                    userStore.updateCartItem(cartItem.value.id, count.value);
+                    cartStore.updateItem(cartItem.value.id, count.value);
                 } else {
                     console.error(response);
                     throw new Error(`Не удалось обновить количество товара: ${response.message}`)
@@ -215,7 +220,7 @@ const decrease = async () => {
             const response = await CartService.destroy(cartItem.value.id);
             if (response.success) {
                 ElMessage.success(`${product.name} - удалён из корзины`);
-                userStore.removeCartItem(cartItem.value.id);
+                cartStore.removeItem(cartItem.value.id);
                 cartItem.value = undefined;
             } else {
                 console.error(response);
@@ -227,7 +232,7 @@ const decrease = async () => {
             });
 
             if (response.success) {
-                userStore.updateCartItem(cartItem.value.id, count.value);
+                cartStore.updateItem(cartItem.value.id, count.value);
             } else {
                 console.error(response);
                 throw new Error(`Не удалось обновить количество товара: ${response.message}`)
@@ -240,7 +245,8 @@ const decrease = async () => {
 }
 const setProductCount = () => {
     if (userStore.isAuth && product.id) {
-        cartItem.value = userStore.getProductFromCart(product.id, collectCheckedAttrs.value);
+        cartItem.value = cartStore.getItemByProductId(product.id, collectCheckedAttrs.value);
+
         if (cartItem.value) {
             count.value = cartItem.value.quantity;
         }
@@ -299,7 +305,7 @@ watch(
     () => defineFavorite()
 )
 watch(
-    () => userStore.cart.length,
+    () => cartStore.length,
     () => setProductCount()
 )
 </script>

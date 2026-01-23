@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { CartProduct } from '@/ts/entities/Items';
-import { useUserStore } from '@/stores/userStore';
+import { useCartStore } from '@/stores/cartStore';
 import type Services from '@/ts/types/Services';
 import { computed, inject, onMounted, reactive, ref, watch } from 'vue';
 import type { Address } from '@/ts/entities/Addresses';
@@ -10,7 +10,7 @@ import type { UI } from '@/ts/types/Provides';
 import { InfoFilled, ShoppingBag } from '@element-plus/icons-vue';
 
 const visible = defineModel<boolean>();
-const userStore = useUserStore();
+const cartStore = useCartStore();
 const { items } = defineProps<{
     items: CartProduct[]
 }>();
@@ -56,8 +56,9 @@ const submit = async () => {
 
         if (response.success) {
             ElMessage.success('Заказ оформлен!');
+            // here, item is id of cart item
             order.cart_items.forEach(item => [
-                userStore.removeCartItem(item)
+                cartStore.removeItem(item)
             ]);
             visible.value = false;
         } else {

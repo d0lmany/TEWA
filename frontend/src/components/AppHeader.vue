@@ -4,6 +4,7 @@ import { Menu, Search, ShoppingCart, Star, User, Close } from '@element-plus/ico
 import { ElButton, ElMessage } from 'element-plus';
 import { useRouter, type Router } from 'vue-router';
 import { useUserStore } from '@/stores/userStore';
+import { useCartStore } from '@/stores/cartStore';
 import type { default as CS } from '@/ts/services/CategoryService';
 import type Services from '@/ts/types/Services';
 import type { UI } from '@/ts/types/Provides';
@@ -15,6 +16,7 @@ const categories = ref<GroupedCategories>({});
 const router: Router = useRouter();
 const CategoryService: CS = (inject('services') as Services).category;
 const userStore = useUserStore();
+const cartStore = useCartStore();
 const ui = inject('ui') as UI;
 const searchHistory = reactive<string[]>([]);
 
@@ -116,7 +118,7 @@ onMounted(() => {
             </div>
         </el-popover>
         <nav>
-            <el-badge :value="userStore.getFavoriteTotalLength()" color="#fe4e7f">
+            <el-badge :hidden="!userStore.getFavoriteTotalLength()" :value="userStore.getFavoriteTotalLength()" color="#fe4e7f">
                 <el-button @click="goto('Favorite')">
                     <el-icon class="el-icon--left" :size="22">
                         <star/>
@@ -124,7 +126,7 @@ onMounted(() => {
                     Избранное
                 </el-button>
             </el-badge>
-            <el-badge type="primary" :value="userStore.cart.length">
+            <el-badge :hidden="!cartStore.length" type="primary" :value="cartStore.length">
                 <el-button @click="goto('Cart')">
                     <el-icon class="el-icon--left" :size="22">
                         <shopping-cart/>

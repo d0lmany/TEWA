@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import CartProductCard from '@/components/cards/CartProductCard.vue';
 import { useUserStore } from '@/stores/userStore';
+import { useCartStore } from '@/stores/cartStore';
 import type { CartProduct } from '@/ts/entities/Items';
 import type Services from '@/ts/types/Services';
 import { ElMessage } from 'element-plus';
@@ -14,6 +15,7 @@ const {
     favorite: FavoriteService,
 } = inject('services') as Services;
 const userStore = useUserStore();
+const cartStore = useCartStore();
 const loading = ref<boolean>(false);
 const cart = reactive<CartProduct[]>([]);
 const cartForbidden = reactive<CartProduct[]>([]);
@@ -24,7 +26,7 @@ const isAllChecked = computed<boolean>(() => checkedCartItems.value.length === c
 const orderVisible = ref(false);
 
 const loadCart = async () => {
-    if (userStore.cart.length === cart.length + cartForbidden.length) return;
+    if (cartStore.length === cart.length + cartForbidden.length) return;
 
     try {
         loading.value = true;
@@ -53,12 +55,12 @@ const increase = async (item: CartProduct) => {
     if (item.quantity < (item.product.quantity || 0)) {
         item.quantity++;
         try {
-            const response = await CartService.update(item.id || 0, {
+            const response = await CartService.update(item.id, {
                 quantity: item.quantity
             });
 
             if (response.success) {
-                userStore.updateCartItem(item.id || 0, item.quantity);
+                cartStore.updateItem(item.id, item.quantity);
             } else {
                 item.quantity--;
                 console.error(response);
@@ -71,10 +73,10 @@ const increase = async (item: CartProduct) => {
 }
 const deleteItem = async (item: CartProduct, forForbiddenCart: boolean = false) => {
     try {
-        const response = await CartService.destroy(item.id || 0);
+        const response = await CartService.destroy(item.id);
         if (response.success) {
             ElMessage.success(`${item.product.name} - удалён из корзины`);
-            userStore.removeCartItem(item.id || 0);
+            cartStore.removeItem(item.id);
             const index = (forForbiddenCart ? cartForbidden : cart).findIndex(cartItem => cartItem.id === item.id);
             if (index) (forForbiddenCart ? cartForbidden : cart).splice(index, 1);
         } else {
@@ -93,12 +95,12 @@ const decrease = async (item: CartProduct) => {
         if (item.quantity === 0) {
             await deleteItem(item);
         } else {
-            const response = await CartService.update(item.id || 0, {
+            const response = await CartService.update(item.id, {
                 quantity: item.quantity
             });
 
             if (response.success) {
-                userStore.updateCartItem(item.id || 0, item.quantity);
+                cartStore.updateItem(item.id, item.quantity);
             } else {
                 console.error(response);
                 throw new Error(`Не удалось обновить количество товара: ${response.message}`);
@@ -142,7 +144,7 @@ const toggleFavorite = async (item: CartProduct) => {
 const setCheckedForAll = (definition: boolean) => cart.forEach(item => item.checked = definition);
 const destroyRange = async () => {
     try {
-        const items = checkedCartItems.value.map(item => item.id || 0);
+        const items = checkedCartItems.value.map(item => item.id);
         const response = await CartService.destroyRange(items);
 
         if (response.success) {
@@ -165,7 +167,7 @@ watch(
     checkFavorites
 )
 watch(
-    () => userStore.cart.length,
+    () => cartStore.length,
     async () => await loadCart()
 )
 
@@ -177,7 +179,7 @@ loadCart();
         <div class="flex">
             <h1 class="section-header">Корзина</h1>
             <div class="flex gap">
-                <el-text size="large">Товаров всего: {{ userStore.cart.length }}</el-text>
+                <el-text size="large">Товаров всего: {{ cartStore.length }}</el-text>
                 <el-button v-if="!isAllChecked" @click="setCheckedForAll(true)">Выбрать все</el-button>
                 <el-button v-else @click="setCheckedForAll(false)">Убрать все</el-button>
                 <el-button @click="destroyRange">Удалить выбранные</el-button>

@@ -2,7 +2,7 @@
 import { Top, User, Location, Edit, Close, Memo } from '@element-plus/icons-vue';
 import { View } from '@/ts/types/View';
 import { useUserStore } from '@/stores/userStore';
-import { computed, onMounted, reactive, ref, watch, type Component } from 'vue';
+import { computed, reactive, ref, watch, type Component } from 'vue';
 import ChangeProfileModal from '@/components/modals/ChangeProfileModal.vue';
 import ChangePasswordModal from '@/components/modals/ChangePasswordModal.vue';
 import LogoutModal from '@/components/modals/LogoutModal.vue';

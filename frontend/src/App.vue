@@ -47,7 +47,9 @@ const createServices = (): Services => {
 const services = createServices();
 // stores
 import { useUserStore } from '@/stores/userStore';
+import { useCartStore } from '@/stores/cartStore';
 const userStore = useUserStore();
+const cartStore = useCartStore();
 // UI
 import { ElMessage, ElNotification } from 'element-plus';
 import type { UI } from '@/ts/types/Provides';
@@ -108,7 +110,7 @@ const loadUser = async (): Promise<AuthState> => {
                 }
 
                 userStore.login(userCondition as User)
-                userStore.setCart(cart);
+                cartStore.set(cart);
                 userStore.setFavorite(favorite);
 
                 return AuthState.Accept;

@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ElMessage } from 'element-plus';
 import { useUserStore } from '@/stores/userStore';
+import { useCartStore } from '@/stores/cartStore';
 import { ref, inject, reactive } from 'vue';
 import type { RegistrationData } from '@/ts/types/UserR-R';
 import type { default as US } from '@/ts/services/UserService';
@@ -10,6 +11,7 @@ import { AuthState } from '@/ts/types/AuthState';
 import { createMaxRule, createMinRule, createRequiredRule, createTypeRule, type Rules } from '@/ts/utils/FormRules';
 
 const userStore = useUserStore();
+const cartStore = useCartStore();
 const formRef = ref();
 const UserService: US = (inject('services') as Services).user;
 const ApiService: AS = (inject('services') as Services).api;
@@ -117,7 +119,7 @@ const loadUser = async (): Promise<AuthState> => {
             }
 
             userStore.login(user);
-            userStore.setCart(cart);
+            cartStore.set(cart);
             userStore.setFavorite(favorite);
 
             return AuthState.Accept;
