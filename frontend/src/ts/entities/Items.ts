@@ -1,5 +1,5 @@
 import type { FullProduct, Product } from "@/ts/entities/Product"
-import type { Category } from "./Category"
+import type { Category, Tag } from "./Category"
 
 export interface CartItem {
     id: number,
@@ -27,6 +27,7 @@ export interface FavoriteListItem {
     product_id: number,
     product?: Product & {
         category: Category;
+        tags: Tag[]
     };
     added_at: string
 }

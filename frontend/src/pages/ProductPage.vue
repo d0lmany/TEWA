@@ -458,9 +458,9 @@ watch(
                             <div class="tags">
                                 <el-tag
                                     size="large"
-                                    v-for="tag in JSON.parse(product.tags || '[]')"
-                                    :key="tag"
-                                >{{tag}}</el-tag>
+                                    v-for="tag in product.tags"
+                                    :key="tag.id"
+                                >{{tag.name}}</el-tag>
                             </div>
                         </div>
                     </template>

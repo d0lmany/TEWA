@@ -8,6 +8,7 @@ export interface Category {
 export type GroupedCategories = Record<string, Category[]>
 
 export interface Tag {
-    title: string,
-    about: string
+    id: number,
+    name: string,
+    description: string
 }

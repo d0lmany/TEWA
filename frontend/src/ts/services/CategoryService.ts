@@ -8,15 +8,28 @@ import type ResponseResult from "@/ts/types/ResponseResult";
 export default class CategoryService
 {
     private repo: Repository;
+    private cached: ResponseResult<Category[]> | null = null;
 
     constructor(api: ApiService) {
         this.repo = new Repository(api, 'categories');
     }
 
-    public index = async (): Promise<ResponseResult<Category[]>> => await this.repo.index()
+    public index = async (): Promise<ResponseResult<Category[]>> => {
+        if (this.cached) {
+            return this.cached;
+        } else {
+            const response = await this.repo.index();
+
+            if (response.success && response.data) {
+                this.cached = response;
+            }
+            
+            return response;
+        }
+    }
 
     public async preparedIndex(): Promise<ResponseResult<GroupedCategories>> {
-        const raw = await this.index();
+        const raw = this.cached ?? await this.index();
         
         if (!raw.success || !raw.data) {
             return {
@@ -51,14 +64,6 @@ export default class CategoryService
                 status: 500,
                 message: 'Failed to group categories'
             };
-        }
-    }
-
-    public loadOptions = async (): Promise<ResponseResult> => {
-        const response = await this.repo.file(`${window.location.origin}/assets/json/tags.json`, 'json');
-        return {
-            ...response,
-            data: response.data.tags
         }
     }
 }

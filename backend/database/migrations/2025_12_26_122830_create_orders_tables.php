@@ -19,7 +19,7 @@ return new class extends Migration
                 ->nullable()
                 ->constrained()
                 ->nullOnDelete();
-            // pending, paid, processing, shipped, delivered, cancelled, completed
+            // pending, paid, processing, shipped, delivered, cancelled, part-cancelled, completed
             $table->string('status', 30)
                 ->default('pending');
             $table->decimal('total', 12, 2);

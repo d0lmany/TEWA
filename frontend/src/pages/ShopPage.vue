@@ -64,7 +64,7 @@ const filteredItems = computed(() => {
     return shop.products.filter(product => {
         const rating = product.feedbacks?.rating || 0;
         const price = product.price?.final_price || 0;
-        const tags = JSON.parse(product.tags || '[]');
+        const tags = product.tags || [];
         
         if (rating <= (filters.min_rating || 0)) return false;
         
@@ -74,7 +74,8 @@ const filteredItems = computed(() => {
         if (filters.category_id && product.category?.id !== filters.category_id) return false;
         
         if (filters.tags?.length) {
-            const hasTag = filters.tags.some(tag => tags.includes(tag));
+            const tagNames = new Set(tags.map(t => t.name));
+            const hasTag = filters.tags.some(tag => tagNames.has(tag));
             if (!hasTag) return false;
         }
         

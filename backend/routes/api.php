@@ -12,6 +12,7 @@ use App\Http\Controllers\API\CategoryController;
 use App\Http\Controllers\API\FavoriteController;
 use App\Http\Controllers\API\OrderController;
 use App\Http\Controllers\API\ShopController;
+use App\Http\Controllers\API\TagController;
 
 Route::get('/', fn () => response()->json(['message' => 'Hello, World!']));
 Route::prefix('v1')->middleware('throttle:75,1')->group(function () {
@@ -21,6 +22,8 @@ Route::prefix('v1')->middleware('throttle:75,1')->group(function () {
     Route::post('auth', [AuthController::class, 'register']);
     
     Route::apiResource('categories', CategoryController::class)->only(['index']);
+    Route::get('tags', [TagController::class, 'index']);
+    
     Route::apiResource('products', ProductController::class)->only(['index', 'show']);
     Route::get('shops/{shop}', [ShopController::class, 'show']);
     

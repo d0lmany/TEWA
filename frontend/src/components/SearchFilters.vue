@@ -5,11 +5,14 @@ import { InfoFilled } from '@element-plus/icons-vue';
 import type Services from '@/ts/types/Services';
 import type { GroupedCategories, Tag } from '@/ts/entities/Category';
 import type Filters from '@/ts/types/Filters';
-
-const CategoryService = (inject('services') as Services).category;
+// TODO пусть кнопка для сброса фильтров будет принадлежать компоненту
+const {
+    category: CategoryService,
+    tag: TagService,
+} = inject('services') as Services;
 const categories = ref<GroupedCategories>({});
 const tags = ref<Tag[]>([]);
-const filters = defineModel<Filters>({});
+const filters = defineModel<Filters>({ required: true });
 
 const handleNumericInput = (field: 'min_price' | 'max_price') => {
     if (!filters.value) return;
@@ -30,12 +33,13 @@ const setCategories = async () => {
 };
 const setTags = async () => {
     try {
-        const data = await CategoryService.loadOptions();
+        const response = await TagService.index();
 
-        if (data.success) {
-            tags.value = data.data;
+        if (response.success && response.data) {
+            tags.value = response.data;
         } else {
-            throw data.message;
+            console.error(response);
+            throw new Error(response.message);
         }
     } catch (e) {
         ElMessage.error(`Произошла ошибка при загрузке тегов: ${e instanceof Error ? e.message : e}`);
@@ -46,7 +50,6 @@ onMounted(() => {
     setCategories();
     setTags();
 });
-// ignore __VLS_ctx.filters errors
 </script>
 <template>
 <el-space direction="vertical" alignment="flex-start" class="container-filters">
@@ -99,17 +102,17 @@ onMounted(() => {
     >
         <el-option
             v-for="tag in tags"
-            :key="tag.title"
-            :value="tag.title"
+            :key="tag.id"
+            :value="tag.name"
         >
         <div class="flex">
-            <span>{{ tag.title }}</span>
-            <el-tooltip placement="right">
-            <template #content>
-                <div style="max-width:12rem">{{ tag.about }}</div>
-            </template>
-            <el-icon><info-filled/></el-icon>
-            </el-tooltip>
+            <span>{{ tag.name }}</span>
+            <el-popover width="200">
+                <div style="text-align: justify">{{ tag.description }}</div>
+                <template #reference>
+                    <el-icon><info-filled/></el-icon>
+                </template>
+            </el-popover>
         </div>
         </el-option>
     </el-select>

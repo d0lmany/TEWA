@@ -1,6 +1,6 @@
 import type { Seller } from "@/ts/entities/User"
 import type { Product } from "@/ts/entities/Product";
-import type { Category } from '@/ts/entities/Category';
+import type { Category, Tag } from '@/ts/entities/Category';
 
 export interface Shop {
     id: number,
@@ -9,6 +9,6 @@ export interface Shop {
     description?: string,
     seller: Seller,
     rating: number,
-    products?: (Product & { category: Category })[],
+    products?: (Product & { category: Category, tags: Tag[] })[],
     reviewsCount?: number
 }

@@ -2,14 +2,15 @@
 
 namespace App\Http\Controllers\API;
 
+use App\Models\Tag;
+use App\Models\Product;
+use App\Models\Category;
+use Illuminate\Http\Request;
+use Illuminate\Http\JsonResponse;
 use App\Http\Controllers\Controller;
+use App\Http\Resources\ProductResource;
 use App\Http\Requests\StoreProductRequest;
 use App\Http\Requests\UpdateProductRequest;
-use App\Http\Resources\ProductResource;
-use App\Models\Category;
-use App\Models\Product;
-use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
 
 class ProductController extends Controller
 {
@@ -52,26 +53,22 @@ class ProductController extends Controller
             });
         }
 
-        if ($request->has('tags')) {
-            $tags = $this->normalizeTags($request->tags);
-            
-            if (!empty($tags)) {
-                if (config('database.default') === 'pgsql') {
-                    $query->whereJsonContainsAll('tags', $tags);
-                } else {
-                    foreach ($tags as $tag) {
-                        $query->whereJsonContains('tags', $tag);
-                    }
-                }
+        if ($request->has('tags') && is_array($request->tags)) {
+            $tagIds = array_filter(array_map('intval', $request->tags));
+
+            if (!empty($tagIds)) {
+                $query->whereHas('tags', function ($q) use ($tagIds) {
+                    $q->whereIn('tags.id', $tagIds);
+                });
             }
         }
 
-        if ($request->filled('q') && $request->q !== 'null') {
-            $target = $request->q;
-            $query->where(function($q) use ($target) {
-                $q->where('name', 'LIKE', "%{$target}%")
-                ->orWhereJsonContains('tags', $target);
-            });
+        if ($request->filled('q')) {
+            $search = trim($request->q);
+            if ($search && $search !== 'null' && strlen($search) > 2) {
+                $search = str_replace(['%', '_'], ['\%', '\_'], $search);
+                $query->where('name', 'LIKE', "%{$search}%");
+            }
         }
 
         $sortField = $request->get('sort', 'reviews_count');
@@ -113,15 +110,22 @@ class ProductController extends Controller
             ], 422);
         }
 
-        if (isset($productData['tags']) && is_array($productData['tags'])) {
-            $productData['tags'] = json_encode($productData['tags']);
-        }
-
         if (!isset($productData['status'])) {
             $productData['status'] = 'draft';
         }
 
         $product = Product::create($productData);
+
+        if (isset($productData['tags']) && is_array($productData['tags'])) {
+            $tagIds = array_filter(
+                array_map('intval', $productData['tags']),
+                fn($id) => $id > 0
+            );
+
+            if (!empty($tagIds)) {
+                $product->tags()->attach($tagIds);
+            }
+        }
 
         return response()->json([
             'id' => $product->id,
@@ -129,20 +133,20 @@ class ProductController extends Controller
         ], 201);
     }
 
-    public function show(Product $product): ProductResource
+    public function show(Product $product)
     {
         $product->loadMissing([
             'category.parent',
             'productDetail', 
             'attributes',
             'shop.seller',
-            'reviews.user'
+            'reviews.user',
+            'tags'
         ]);
         
         if (!$product->relationLoaded('rating')) {
             $product->loadAvg('reviews as rating', 'evaluation');
         }
-        
         return new ProductResource($product);
     }
 

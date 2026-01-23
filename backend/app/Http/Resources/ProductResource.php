@@ -2,9 +2,10 @@
 
 namespace App\Http\Resources;
 
-use Illuminate\Http\Request;
-use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Support\Arr;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Http\Resources\Json\JsonResource;
 
 class ProductResource extends JsonResource
 {
@@ -21,7 +22,14 @@ class ProductResource extends JsonResource
                 'base_price' => floatval($this->base_price),
                 'final_price' => floatval($this->final_price),
             ],
-            'tags' => $this->tags,
+            'tags' => $this->whenLoaded('tags',
+                $this->tags
+                    ->map(fn($tag) => [
+                        'id' => $tag->id,
+                        'name' => $tag->name,
+                        'description' => $tag->description,
+                    ])
+            ),
             'feedbacks' => [
                 'rating' => $this->rating,
                 'reviews' => ReviewResource::collection($this->whenLoaded('reviews')),

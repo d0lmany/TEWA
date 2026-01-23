@@ -1,4 +1,4 @@
-import type { Category } from "@/ts/entities/Category"
+import type { Category, Tag } from "@/ts/entities/Category"
 import type { Review } from "@/ts/entities/Review"
 import type { Shop } from "@/ts/entities/Shop"
 
@@ -13,7 +13,6 @@ export interface Product {
         final_price: number,
         total?: number
     },
-    tags: string,
     feedbacks: {
         rating: number,
         reviews?: Review[],
@@ -32,6 +31,7 @@ export interface FullProduct extends Product {
     },
     attributes?: Record<string, ProductAttribute[]>,
     shop: Shop,
+    tags: Tag[],
 }
 
 export interface ProductAttribute {

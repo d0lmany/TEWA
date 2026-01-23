@@ -10,6 +10,7 @@ import type AddressService from "@/ts/services/AddressService";
 import type PickupService from "@/ts/services/PickupService";
 import type ShopService from "@/ts/services/ShopService";
 import type OrderService from "@/ts/services/OrderService";
+import type TagService from "@/ts/services/TagService";
 
 export default interface Services {
     api: ApiService,
@@ -24,4 +25,5 @@ export default interface Services {
     pickup: PickupService,
     shop: ShopService,
     order: OrderService,
+    tag: TagService,
 }

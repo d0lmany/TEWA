@@ -23,7 +23,8 @@ export interface OrderItem {
     unit_price: number,
     total: number,
     product?: Product,
-    attributes?: string,
+    attributes?: string | number[],
+    status: OrderItemStatus,
 }
 export interface OrderLocation {
     id: number,
@@ -57,4 +58,9 @@ export interface OrderRequest {
     destination_address_id?: number,
     is_hidden: boolean,
     cart_items: number[],
+}
+export enum OrderItemStatus {
+    Waited = 'waited',
+    Cancelled = 'cancelled',
+    Completed = 'completed',
 }

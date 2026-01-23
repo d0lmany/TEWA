@@ -22,6 +22,7 @@ class DatabaseSeeder extends Seeder
             FavoriteListSeeder::class,
             FavoriteListItemSeeder::class,
             OrderSeeder::class,
+            TagSeeder::class,
         ]);
     }
 }

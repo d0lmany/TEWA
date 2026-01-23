@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 class Product extends Model
 {
@@ -15,13 +16,11 @@ class Product extends Model
     protected $fillable = [
         'name', 'quantity',
         'base_price', 'photo',
-        'category_id', 'tags',
-        'discount', 'status',
-        'shop_id',
+        'category_id', 'discount',
+        'status', 'shop_id',
     ];
 
     protected $casts = [
-        'tags' => 'array',
         'base_price' => 'decimal:2',
         'final_price' => 'decimal:2',
         'discount' => 'decimal:2',
@@ -31,10 +30,6 @@ class Product extends Model
     protected $appends = [
         'rating',
         'reviews_count',
-    ];
-
-    protected $attributes = [
-        'tags' => '[]',
     ];
 
     public function category(): BelongsTo
@@ -96,5 +91,10 @@ class Product extends Model
     {
         return $query->where('status', 'on')
                     ->where('quantity', '>', 0);
+    }
+
+    public function tags()
+    {
+        return $this->belongsToMany(Tag::class);
     }
 }

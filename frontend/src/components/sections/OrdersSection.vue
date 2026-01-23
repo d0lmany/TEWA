@@ -55,8 +55,13 @@ const preparedOrders = computed(() => orders.filter(order => {
 
     if (order.is_hidden && !preparedRules.hidden) return false;
 
-    if ((order.status === OrderStatus.Cancelled || order.status === OrderStatus.Completed)
-        && preparedRules.actual) return false;
+    const isArchived = (order.status === OrderStatus.Cancelled || order.status === OrderStatus.Completed);
+
+    if (preparedRules.actual === false) {
+        if (!isArchived) return false;
+    } else {
+        if (isArchived) return false;
+    }
 
     return true;
 }).toSorted((a, b) => {
