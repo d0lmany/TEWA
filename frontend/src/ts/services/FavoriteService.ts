@@ -1,7 +1,7 @@
 import Repository from "@/ts/services/Repository";
 import ApiService from "@/ts/services/ApiService";
 import type ResponseResult from "@/ts/types/ResponseResult";
-import type { FavoriteList } from "../entities/Items";
+import type { FavoriteList, FavoriteListItem } from "@/ts//entities/Items";
 /**
  * Favorite lists and favorite list items management service
  */
@@ -21,7 +21,7 @@ export default class FavoriteService
         url: `/favorite/${id}`, data
     })
 
-    public toggle = async (product_id: number, list_id: number = 0) => {
+    public toggle = async (product_id: number, list_id: number = 0): Promise<ResponseResult<FavoriteListItem>> => {
         const response = await this.repo.store({
             data: { product_id, list_id },
             url: '/favorite/toggle'

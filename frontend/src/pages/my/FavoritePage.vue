@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type Services from '@/ts/types/Services';
 import { computed, inject, reactive, ref, watch } from 'vue';
-import { useUserStore } from '@/stores/userStore';
+import { useFavoriteStore } from '@/stores/favoriteStore';
 import type { FavoriteList, FavoriteListItem } from '@/ts/entities/Items';
 import { ElMessage } from 'element-plus';
 import { Delete, EditPen, Refresh, Top, Box } from '@element-plus/icons-vue';
@@ -15,7 +15,7 @@ import type { UI } from '@/ts/types/Provides';
 const filters = reactive<Filters>({});
 const FavoriteService = (inject('services') as Services).favorite;
 const lists = reactive<FavoriteList[]>([]);
-const userStore = useUserStore();
+const favoriteStore = useFavoriteStore();
 const activeList = reactive<FavoriteList>({
     id: 0,
     items: [],
@@ -179,9 +179,7 @@ const deleteItem = async (item: FavoriteListItem) => {
 
         if (response.success) {
             ElMessage.success('Удалено из избранного');
-            userStore.removeFromFavorite(item.id,
-                activeList.name === 'Основной раздел' ?
-                '__favorite__' : activeList.name);
+            favoriteStore.removeItem(item.id, item.list_id);
             const itemIndex = activeList.items.findIndex(item => item.id === item.id);
             if (itemIndex !== -1) activeList.items.splice(itemIndex, 1);
         } else {
@@ -192,18 +190,17 @@ const deleteItem = async (item: FavoriteListItem) => {
         ElMessage.error(error instanceof Error ? error.message : 'Не удалось удалить товар из избранного');
     }
 }
-const changeList = async (list_id: number, list_name: string) => {
+const changeList = async (listId: number) => {
     try {
-        const response = await FavoriteService.changeList(chosenItem.value?.id || 0, list_id);
+        const response = await FavoriteService.changeList(chosenItem.value?.id || 0, listId);
 
         if (response.success && chosenItem.value) {
-            const listName = activeList.name === 'Основной раздел' ? '__favorite__' : activeList.name;
             ElMessage.success('Успешно перемещено');
-            userStore.removeFromFavorite(chosenItem.value.id, listName);
-            userStore.addToFavorite(chosenItem.value, list_name);
+            favoriteStore.removeItem(chosenItem.value.id, activeList.id);
+            favoriteStore.addItem(chosenItem.value, listId);
             const itemIndex = activeList.items.findIndex(item => item.id === chosenItem.value?.id);
             activeList.items.splice(itemIndex, 1);
-            const targetList = lists.find(list => list.id === list_id);
+            const targetList = lists.find(list => list.id === listId);
             targetList?.items.push(chosenItem.value);
 
             chosenItem.value = undefined;
@@ -248,7 +245,7 @@ const filteredItems = computed(() => {
 });
 
 watch(
-    () => userStore.getFavoriteTotalLength(),
+    () => favoriteStore.length,
     async () => await loadLists()
 )
 
@@ -411,7 +408,7 @@ loadLists();
                     <el-text size="large">{{ list.name }}</el-text>
                     <el-button
                         text
-                        @click="changeList(list.id, list.name)"
+                        @click="changeList(list.id)"
                     >
                         <el-icon class="el-icon--left" :size="18"><box/></el-icon>
                         Переместить

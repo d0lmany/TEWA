@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import CartProductCard from '@/components/cards/CartProductCard.vue';
-import { useUserStore } from '@/stores/userStore';
 import { useCartStore } from '@/stores/cartStore';
+import { useFavoriteStore } from '@/stores/favoriteStore';
 import type { CartProduct } from '@/ts/entities/Items';
 import type Services from '@/ts/types/Services';
 import { ElMessage } from 'element-plus';
@@ -14,8 +14,8 @@ const {
     cart: CartService,
     favorite: FavoriteService,
 } = inject('services') as Services;
-const userStore = useUserStore();
-const cartStore = useCartStore();
+const [cartStore, favoriteStore]
+= [useCartStore(), useFavoriteStore()];
 const loading = ref<boolean>(false);
 const cart = reactive<CartProduct[]>([]);
 const cartForbidden = reactive<CartProduct[]>([]);
@@ -113,24 +113,24 @@ const decrease = async (item: CartProduct) => {
 }
 const checkFavorites = () => {
     // TODO: как сделаем отдельный cart/favorite store - пусть подсвечивается и добавляется в каком списке хранится товар
-    cart.forEach(item => item.isFavorite = !!userStore.getFavoriteItem(item.product.id))
-    cartForbidden.forEach(item => item.isFavorite = !!userStore.getFavoriteItem(item.product.id))
+    cart.forEach(item => item.isFavorite = !!favoriteStore.getItemByProductId(item.product.id));
+    cartForbidden.forEach(item => item.isFavorite = !!favoriteStore.getItemByProductId(item.product.id));
 }
 const toggleFavorite = async (item: CartProduct) => {
     try {
         const response = await FavoriteService.toggle(item.product.id || 0);
 
         if (response.success) {
-            if (response.message === 'added') {
+            if (response.message === 'added' && response.data) {
                 ElMessage.success(`${item.product.name} - добавлено в избранное`);
-                userStore.addToFavorite(response.data);
+                favoriteStore.addItem(response.data, response.data?.list_id);
                 item.isFavorite = true;
             } else {
-                // TODO: некорректно удаляется товар из избранного
+                // TODO: некорректно удаляется товар из избранного (учитывает только основной список, а должен все)
                 // решение?: по нажатию на кнопку, будет вызываться метод, который уберёт товар из ВСЕХ списков
                 // либо хранить в карточке товара ещё и то в каком списке он лежит
                 ElMessage.success(`${item.product.name} - удалено из избранного`);
-                userStore.removeFromFavoriteByProductId(item.product.id);
+                favoriteStore.removeItemByProductId(item.product.id)
                 item.isFavorite = false;
             }
         } else {
@@ -163,7 +163,7 @@ const destroyRange = async () => {
 }
 
 watch(
-    () => Object.keys(userStore.favorite).length,
+    () => favoriteStore.length,
     checkFavorites
 )
 watch(

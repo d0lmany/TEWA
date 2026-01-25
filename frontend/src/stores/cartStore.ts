@@ -78,7 +78,7 @@ export const useCartStore = defineStore('cart', {
         }
     },
     getters: {
-        length: (state) => state.cart.size,
-        asArray: (state) => state.cart.values(),
+        length: state => state.cart.size,
+        asArray: state => state.cart.values(),
     }
 });

@@ -7,6 +7,7 @@ import ReviewCard from '@/components/cards/ReviewCard.vue';
 import ClaimModal from '@/components/modals/ClaimModal.vue';
 import { useUserStore } from '@/stores/userStore';
 import { useCartStore } from '@/stores/cartStore';
+import { useFavoriteStore } from '@/stores/favoriteStore';
 import type { UI } from '@/ts/types/Provides';
 import type { FullProduct, ProductAttribute } from '@/ts/entities/Product';
 import type Services from '@/ts/types/Services';
@@ -24,8 +25,8 @@ const {
 } = inject('services') as Services;
 const checkedAttributes = reactive<Record<string, string>>({});
 const formatter = (inject('ui') as UI).currencyFormatter;
-const userStore = useUserStore();
-const cartStore = useCartStore();
+const [userStore, cartStore, favoriteStore]
+= [useUserStore(), useCartStore(), useFavoriteStore()];
 const count = ref<number>(0);
 const cartLoading = ref<boolean>(false);
 const favoriteLoading = ref<boolean>(false);
@@ -254,9 +255,9 @@ const setProductCount = () => {
 }
 const defineFavorite = () => {
     if (userStore.isAuth && product.id) {
-        favoriteItem.value = userStore.getFavoriteItem(product.id);
+        favoriteItem.value = favoriteStore.getItemByProductId(product.id);
         if (favoriteItem.value)
-        favoriteItem.value.list = userStore.getListNameById(favoriteItem.value?.list_id);
+        favoriteItem.value.list = favoriteStore.getList(favoriteItem.value?.list_id)?.name
     }
 }
 const toggleFavorite = async () => {
@@ -267,11 +268,11 @@ const toggleFavorite = async () => {
         if (response.success) {
             if (response.message === 'removed') {
                 ElMessage.success('Удалено из избранного!');
-                userStore.removeFromFavorite(favoriteItem.value?.id || 0);
+                favoriteStore.removeItem(favoriteItem.value?.id || 0, favoriteItem.value?.list_id || 0);
                 favoriteItem.value = undefined;
-            } else {
+            } else if (response.data) {
                 ElMessage.success('Добавлено в избранное!');
-                userStore.addToFavorite(response.data);
+                favoriteStore.addItem(response.data, response.data.list_id);
                 favoriteItem.value = response.data;
             }
         } else {
@@ -301,7 +302,7 @@ onUnmounted(() => {
 })
 
 watch(
-    () => userStore.favorite.length,
+    () => favoriteStore.length,
     () => defineFavorite()
 )
 watch(

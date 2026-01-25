@@ -5,6 +5,7 @@ import { ElButton, ElMessage } from 'element-plus';
 import { useRouter, type Router } from 'vue-router';
 import { useUserStore } from '@/stores/userStore';
 import { useCartStore } from '@/stores/cartStore';
+import { useFavoriteStore } from '@/stores/favoriteStore';
 import type { default as CS } from '@/ts/services/CategoryService';
 import type Services from '@/ts/types/Services';
 import type { UI } from '@/ts/types/Provides';
@@ -15,8 +16,8 @@ const dialogVisibility = ref<boolean>(false);
 const categories = ref<GroupedCategories>({});
 const router: Router = useRouter();
 const CategoryService: CS = (inject('services') as Services).category;
-const userStore = useUserStore();
-const cartStore = useCartStore();
+const [userStore, cartStore, favoriteStore]
+= [useUserStore(), useCartStore(), useFavoriteStore()];
 const ui = inject('ui') as UI;
 const searchHistory = reactive<string[]>([]);
 
@@ -118,7 +119,7 @@ onMounted(() => {
             </div>
         </el-popover>
         <nav>
-            <el-badge :hidden="!userStore.getFavoriteTotalLength()" :value="userStore.getFavoriteTotalLength()" color="#fe4e7f">
+            <el-badge :hidden="!favoriteStore.length" :value="favoriteStore.length" color="#fe4e7f">
                 <el-button @click="goto('Favorite')">
                     <el-icon class="el-icon--left" :size="22">
                         <star/>

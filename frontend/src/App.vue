@@ -51,8 +51,9 @@ const services = createServices();
 // stores
 import { useUserStore } from '@/stores/userStore';
 import { useCartStore } from '@/stores/cartStore';
-const userStore = useUserStore();
-const cartStore = useCartStore();
+import { useFavoriteStore } from '@/stores/favoriteStore';
+const [userStore, cartStore, favoriteStore]
+= [useUserStore(), useCartStore(), useFavoriteStore()];
 // UI
 import { ElMessage, ElNotification } from 'element-plus';
 import type { UI } from '@/ts/types/Provides';
@@ -114,7 +115,7 @@ const loadUser = async (): Promise<AuthState> => {
 
                 userStore.login(userCondition as User)
                 cartStore.set(cart);
-                userStore.setFavorite(favorite);
+                favoriteStore.set(favorite);
 
                 return AuthState.Accept;
             }
