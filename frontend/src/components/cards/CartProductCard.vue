@@ -32,7 +32,7 @@ const collectedAttrs = () => {
             }
         }
     });
-    item.product.price.total = item.product.price.final_price + impactPrice;
+    item.total = item.product.price.final_price + impactPrice;
 }
 const translate = (phrase: string) => i18n.translate(phrase);
 
@@ -69,7 +69,7 @@ collectedAttrs();
         </div>
     </div>
     <div class="text">
-        <h3 style="text-align: center">{{ formatter.format(item.quantity * (item.product.price.total || item.product.price.final_price)) }}</h3>
+        <h3 style="text-align: center">{{ formatter.format(item.quantity * (item.total || item.product.price.final_price)) }}</h3>
         <div class="count-container" v-if="allowCheck">
             <el-button
                 circle
@@ -88,8 +88,8 @@ collectedAttrs();
             />
         </div>
         <div class="flex">
-            <el-popover placement="top">
-                <div style="text-align: center; user-select: none">{{ item.isFavorite ? 'Удалить из избранного' : 'Добавить в избранное' }}</div>
+            <el-popover placement="top" :disabled="!item.isFavorite">
+                <div style="text-align: center; user-select: none">{{ item.list === '__favorite__' ? 'В избранном' : `"${item.list}"` }}</div>
                 <template #reference>
                     <el-button
                         circle

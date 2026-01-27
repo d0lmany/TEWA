@@ -35,13 +35,20 @@ export default class I18n
 
     public translate(phrase: string, lang: string = this.currentLang): string {
         this.initialized;
-        // TODO: игнорировать строки по типу XL, 500g и т. д.
 
         const target = phrase.trim().toLocaleLowerCase();
 
         if (!Object.keys(this.dictionary).length) {
             console.warn('Dictionary is empty');
             return target;
+        }
+
+        if (/\d/.test(target) || target.includes(';')) {
+            return phrase;
+        }
+
+        if (target.length < 3) {
+            return phrase;
         }
 
         if (!this.dictionary[target]) {

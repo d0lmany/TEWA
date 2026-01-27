@@ -1,11 +1,13 @@
 <script setup lang="ts">
 import { inject, onMounted, ref } from 'vue';
 import { ElMessage } from 'element-plus';
-import { InfoFilled } from '@element-plus/icons-vue';
+import { InfoFilled, Refresh } from '@element-plus/icons-vue';
 import type Services from '@/ts/types/Services';
 import type { GroupedCategories, Tag } from '@/ts/entities/Category';
 import type Filters from '@/ts/types/Filters';
-// TODO пусть кнопка для сброса фильтров будет принадлежать компоненту
+
+defineProps<{ showReset?: boolean }>()
+
 const {
     category: CategoryService,
     tag: TagService,
@@ -116,13 +118,21 @@ onMounted(() => {
         </div>
         </el-option>
     </el-select>
+    <el-button
+        v-if="showReset"
+        style="margin-top: .75rem"
+        @click="(Object.keys(filters) as Array<keyof typeof filters>).forEach(filter => delete filters[filter])"
+    >
+        <el-icon class="el-icon--left"><refresh/></el-icon>
+        Сбросить фильтры
+    </el-button>
 </el-space>
 </template>
 <style scoped>
 .container-filters {
     width: 100%;
 }
-.container-filters :deep(.el-space__item):is(:last-child, :nth-child(6)) {
+.container-filters :deep(.el-space__item):is(:last-child, :nth-child(6), :nth-child(8)) {
     width: 100%;
 }
 </style>

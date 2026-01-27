@@ -56,7 +56,6 @@ const submit = async () => {
 
         if (response.success) {
             ElMessage.success('Заказ оформлен!');
-            // here, item is id of cart item
             order.cart_items.forEach(item => [
                 cartStore.removeItem(item)
             ]);
@@ -81,7 +80,7 @@ const setCurrentAddress = (addressIndex: number, addressId: number) => {
     }
 }
 const totalBasePrice = () => currencyFormatter.format(items.reduce((acc, item) => acc + item.product.price.base_price, 0))
-const totalPrice = () => currencyFormatter.format(items.reduce((acc, item) => acc + (item.product.price.total || item.product.price.final_price) * item.quantity, 0))
+const totalPrice = () => currencyFormatter.format(items.reduce((acc, item) => acc + (item.total || item.product.price.final_price) * item.quantity, 0))
 
 const isDoneForOrder = computed(() => {
     if (!order.cart_items.length) return false
@@ -97,7 +96,7 @@ watch(
     () => visible.value,
     () => {
         if (visible.value) {
-            order.cart_items = items.map(item => item.id || 0);
+            order.cart_items = items.map(item => item.id);
         }
     }
 )

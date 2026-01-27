@@ -17,8 +17,7 @@ const {
 } = (inject('services') as Services);
 const shop = reactive<Partial<Shop>>({});
 const loading = ref(true);
-const route = useRoute();
-const router = useRouter();
+const [route, router] = [useRoute(), useRouter()];
 const claimFormVisible = ref(false);
 const filters = reactive<Filters>({});
 const userStore = useUserStore();
@@ -164,11 +163,8 @@ onMounted(() => {
             <h2 class="section-header">Фильтры</h2>
             <search-filters
                 v-model="filters"
+                :show-reset="true"
             />
-            <el-button @click="(Object.keys(filters) as Array<keyof typeof filters>).forEach(filter => delete filters[filter])">
-                <el-icon class="el-icon--left"><refresh/></el-icon>
-                Сбросить фильтры
-            </el-button>
         </aside>
         <div class="main">
             <section v-if="filteredItems.length">

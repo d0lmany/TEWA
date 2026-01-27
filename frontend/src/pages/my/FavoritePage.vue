@@ -274,11 +274,8 @@ loadLists();
                 <h2 class="section-header">Фильтры</h2>
                 <search-filters
                     v-model="filters"
+                    :show-reset="true"
                 />
-                <el-button @click="(Object.keys(filters) as Array<keyof typeof filters>).forEach(filter => delete filters[filter])">
-                    <el-icon class="el-icon--left"><refresh/></el-icon>
-                    Сбросить фильтры
-                </el-button>
             </aside>
         </div>
         <main>

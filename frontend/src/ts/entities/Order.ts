@@ -23,7 +23,7 @@ export interface OrderItem {
     unit_price: number,
     total: number,
     product?: Product,
-    attributes?: string | number[],
+    attributes?: number[],
     status: OrderItemStatus,
 }
 export interface OrderLocation {

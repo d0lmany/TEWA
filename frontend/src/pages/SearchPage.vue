@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import SearchFilters from '@/components/SearchFilters.vue';
-import { computed, reactive, ref } from 'vue';
+import { computed, reactive, ref, watch } from 'vue';
 import { useRoute } from 'vue-router';
 import ProductList from '@/components/cards/ProductList.vue';
 import { Top } from '@element-plus/icons-vue';
@@ -66,7 +66,15 @@ const set = () => {
     appliedFilters.value = cleanFilters;
     appliedSorts.value = { ...sorts.value };
 }
-// TODO: если поиск на той же странице - перенаправления не происходит! исправить
+
+watch(
+    () => route.query.q,
+    (newQ) => {
+        if (newQ) {
+            routeQueries.query = newQ as unknown as string;
+        }
+    }
+)
 </script>
 <template>
 <el-container>

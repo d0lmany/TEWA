@@ -10,6 +10,7 @@ import type { default as CS } from '@/ts/services/CategoryService';
 import type Services from '@/ts/types/Services';
 import type { UI } from '@/ts/types/Provides';
 import type { GroupedCategories } from '@/ts/entities/Category';
+import { getRandomInt } from '@/ts/utils/Random';
 
 const searchQuery = ref<string>('');
 const dialogVisibility = ref<boolean>(false);
@@ -20,7 +21,23 @@ const [userStore, cartStore, favoriteStore]
 = [useUserStore(), useCartStore(), useFavoriteStore()];
 const ui = inject('ui') as UI;
 const searchHistory = reactive<string[]>([]);
+const suggests = [
+    "IPhone",
+    "Беспроводные наушники",
+    "Кроссовки",
+    "Кофемашина",
+    "Смарт часы",
+    "Фитнес браслет",
+    "Пуховик женский",
+    "Игровая мышь",
+    "Рюкзак мужской",
+    "Блендер погружной",
+    "Корм для кошек",
+    "Ламинат под дуб",
+    "Черная футболка"
+];
 
+const getRandomSuggest = () => suggests[getRandomInt(0, suggests.length - 1)];
 const search = () => {
     const target = searchQuery.value.trim();
     if (target) {
@@ -96,8 +113,7 @@ onMounted(() => {
             width="max-content"
         >
             <template #reference>
-            <!-- TODO: пусть плейсхолдер иногда содержит другие строки как пример того, что можно поискать -->
-            <el-input class="input" v-model="searchQuery" clearable placeholder="Искать в TEWA" @keyup.enter="search">
+            <el-input class="input" v-model="searchQuery" clearable :placeholder="getRandomSuggest()" @keyup.enter="search">
                 <template #append>
                     <el-button @click="search">
                         <el-icon>

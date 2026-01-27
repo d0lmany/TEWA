@@ -12,6 +12,9 @@ export interface CartProduct extends CartItem {
     product: FullProduct,
     checked: boolean,
     isFavorite: boolean,
+    list? : string,
+    total?: number,
+    list_id?: number,
 }
 
 export interface FavoriteList {

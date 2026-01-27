@@ -20,7 +20,7 @@ const loading = ref<boolean>(false);
 const cart = reactive<CartProduct[]>([]);
 const cartForbidden = reactive<CartProduct[]>([]);
 const checkedCartItems = computed<CartProduct[]>(() => cart.filter(item => item.checked));
-const totalCheckedCartItems = computed<number>(() => checkedCartItems.value.reduce((total: number, item: CartProduct) => total + ((item.product.price.total || item.product.price.final_price) * item.quantity), 0));
+const totalCheckedCartItems = computed<number>(() => checkedCartItems.value.reduce((total: number, item: CartProduct) => total + ((item.total || item.product.price.final_price) * item.quantity), 0));
 const formatter = (inject('ui') as UI).currencyFormatter;
 const isAllChecked = computed<boolean>(() => checkedCartItems.value.length === cart.length);
 const orderVisible = ref(false);
@@ -112,13 +112,21 @@ const decrease = async (item: CartProduct) => {
     }
 }
 const checkFavorites = () => {
-    // TODO: как сделаем отдельный cart/favorite store - пусть подсвечивается и добавляется в каком списке хранится товар
-    cart.forEach(item => item.isFavorite = !!favoriteStore.getItemByProductId(item.product.id));
-    cartForbidden.forEach(item => item.isFavorite = !!favoriteStore.getItemByProductId(item.product.id));
+    [cart, cartForbidden].forEach(items => items.forEach(item => {
+        const favItem = favoriteStore.getItemByProductId(item.product.id);
+
+        if (favItem) {
+            item.isFavorite = true;
+            item.list_id = favItem.list_id;
+            item.list = favoriteStore.getList(favItem.list_id)?.name || 'Избранное';
+        } else {
+            item.isFavorite = false;
+        }
+    }))
 }
 const toggleFavorite = async (item: CartProduct) => {
     try {
-        const response = await FavoriteService.toggle(item.product.id || 0);
+        const response = await FavoriteService.toggle(item.product.id || 0, item.list_id);
 
         if (response.success) {
             if (response.message === 'added' && response.data) {
@@ -126,9 +134,6 @@ const toggleFavorite = async (item: CartProduct) => {
                 favoriteStore.addItem(response.data, response.data?.list_id);
                 item.isFavorite = true;
             } else {
-                // TODO: некорректно удаляется товар из избранного (учитывает только основной список, а должен все)
-                // решение?: по нажатию на кнопку, будет вызываться метод, который уберёт товар из ВСЕХ списков
-                // либо хранить в карточке товара ещё и то в каком списке он лежит
                 ElMessage.success(`${item.product.name} - удалено из избранного`);
                 favoriteStore.removeItemByProductId(item.product.id)
                 item.isFavorite = false;
@@ -164,7 +169,7 @@ const destroyRange = async () => {
 
 watch(
     () => favoriteStore.length,
-    checkFavorites
+    () => checkFavorites()
 )
 watch(
     () => cartStore.length,

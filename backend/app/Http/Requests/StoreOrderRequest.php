@@ -18,7 +18,7 @@ class StoreOrderRequest extends FormRequest
             'destination_address_id' => ['sometimes', 'integer', 'min:1'],
             'is_hidden' => ['sometimes', 'boolean'],
             'cart_items' => ['required', 'array', 'min:1'],
-            'cart_items.*' => ['integer'/*, 'exists:cart_items,id'*/],
+            'cart_items.*' => ['integer'],
         ];
     }
 }

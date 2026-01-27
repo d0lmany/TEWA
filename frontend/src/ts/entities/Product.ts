@@ -11,7 +11,6 @@ export interface Product {
         discount: number,
         base_price: number,
         final_price: number,
-        total?: number
     },
     feedbacks: {
         rating: number,

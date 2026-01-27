@@ -185,7 +185,7 @@ class OrderSeeder extends Seeder
                 )->sum("price");
             }
 
-            $unitPrice = $product->base_price;
+            $unitPrice = $product->final_price;
             $itemTotal = ($unitPrice + $attributesPrice) * $cartItem->quantity;
 
             $items[] = [
@@ -231,7 +231,7 @@ class OrderSeeder extends Seeder
                 "product_id" => $item["product_id"],
                 "quantity" => $item["quantity"],
                 "product_attributes" => $item["product_attributes"]
-                    ? json_encode($item["product_attributes"])
+                    ? $item["product_attributes"]
                     : null,
                 "unit_price" => $item["unit_price"],
                 "total" => $item["total"],

@@ -12,111 +12,39 @@ import type { UI } from '@/ts/types/Provides';
 import type { FullProduct, ProductAttribute } from '@/ts/entities/Product';
 import type Services from '@/ts/types/Services';
 import type { CartItem, FavoriteListItem } from '@/ts/entities/Items';
+import { getPricesWithAttrs } from '@/ts/utils/Prices';
 
-const router = useRouter();
-const route = useRoute();
+interface Attributes {
+    checked: Record<string, string>,
+    variant: Record<string, ProductAttribute[]>,
+    nonVariant: Record<string, string>,
+}
+
 const product = reactive<Partial<FullProduct>>({});
-const loading = ref<boolean>(true);
 const {
     cart: CartService,
     product: ProductService,
     i18n,
     favorite: FavoriteService,
 } = inject('services') as Services;
-const checkedAttributes = reactive<Record<string, string>>({});
+const attributes = reactive<Attributes>({
+    checked: {},
+    variant: {},
+    nonVariant: {},
+})
+const loadings = reactive({
+    product: true,
+    cart: false,
+    favorite: false,
+})
+const claimFormVisible = ref(false);
+const [route, router] = [useRoute(), useRouter()];
 const formatter = (inject('ui') as UI).currencyFormatter;
 const [userStore, cartStore, favoriteStore]
 = [useUserStore(), useCartStore(), useFavoriteStore()];
-const count = ref<number>(0);
-const cartLoading = ref<boolean>(false);
-const favoriteLoading = ref<boolean>(false);
-const cartItem = ref<CartItem>();
-const favoriteItem = ref<FavoriteListItem & { list?: string }>();
-const claimFormVisible = ref(false);
+const cartItem = reactive<Partial<CartItem>>({});
+const favoriteItem = reactive<Partial<FavoriteListItem & { list?: string }>>({});
 
-const album = computed(() => {
-    if (!product?.details) return [mainPhoto.value];
-
-    return [
-        mainPhoto.value,
-        ...product.details.album || [],
-    ];
-});
-
-const translate = (phrase: string): string => {
-    const word = i18n.translate(phrase);
-    return word[0]?.toUpperCase() + word.slice(1);
-}
-const getAttributes = (isVariant = false): Record<string, ProductAttribute[]> => {
-    if (!product?.attributes) return {};
-
-    const attributes = product.attributes;
-    let result: Record<string, ProductAttribute[]> = {};
-    Object.keys(attributes).forEach(type => {
-        if (attributes[type]) {
-            result[type] = attributes[type].filter(attr => attr.is_variant == isVariant);
-            if (result[type].length === 0) delete result[type];
-        }
-    });
-
-    return result;
-}
-const createNonVariantAttrs = (obj: Record<string, ProductAttribute[]>): Record<string, string> => {
-    return Object.entries(obj).reduce((acc, [type, attributes]) => {
-        acc[type] = attributes[0]?.attr_value || '';
-        return acc;
-    }, {} as Record<string, string>);
-}
-const addToCart = async () => { 
-    cartLoading.value = true;
-
-    if (userStore.isAuth) {
-        const item: CartItem = {
-            id: 0,
-            product_id: product.id || 0,
-            quantity: 1,
-            product_attributes: collectCheckedAttrs.value,
-        };
-
-        const response = await CartService.store(item);
-        if (response.success) {
-            ElMessage.success('Добавлено в корзину!');
-            if (response.data) {
-                item.id = response.data.id;
-                cartStore.addItem(item);
-            }
-        } else {
-            ElMessage.error(`Не удалось добавить товар в корзину: ${response.message}`);
-            console.error(response);
-        }
-    } else {
-        ElMessage.warning('Корзина? А вы вошли в аккаунт?');
-    }
-
-    cartLoading.value = false;
-}
-
-const total = computed<number>(() => {
-    const attrs = getAttributes(true);
-    let impact: number = 0;
-
-    Object.keys(attrs).forEach((type: string) => {
-        if (attrs[type]) {
-            const selectedAttr = attrs[type].find(attr => attr.attr_value == checkedAttributes[type]);
-            if (selectedAttr) {
-                impact += parseFloat(selectedAttr.price.toString()) || 0;
-            }
-        }
-    });
-    setProductCount();
-    const basePrice = parseFloat(product?.price?.base_price?.toString() || '0');
-    return basePrice + impact;
-})
-const totalWithDisc = computed(() => {
-    if (!product.price?.discount) return total.value;
-    const discount = parseFloat(product.price.discount.toString());
-    return total.value * (1 - discount / 100);
-})
 const evaluations = computed(() => {
     const reviews = product?.feedbacks?.reviews || [];
     const result: Record<number, number> = {};
@@ -137,15 +65,163 @@ const filteredEvaluations = computed(() => {
     }
     return filtered;
 })
-const collectCheckedAttrs = computed(() => {
-    return Object.keys(checkedAttributes)
-        .map(type => {
-            const target = checkedAttributes[type];
-            const filteredItems = getAttributes(true)[type]?.filter(item => item.attr_value == target) || [];
-            return filteredItems[0]?.id;
-        })
-        .filter(id => id !== undefined);
+const total = computed(() => {
+    setCartItem();
+    return getPricesWithAttrs(
+        // @ts-ignore
+        product,
+        attributes.variant,
+        attributes.checked
+    )
 })
+const collectedCheckedIds = computed(() => {
+    return Object.keys(attributes.checked)
+        .map(type => {
+            const target = attributes.checked[type];
+            return attributes.variant[type]?.find(item => item.attr_value === target)?.id || 0;
+        })
+        .filter(id => id);
+})
+const album = computed<string[]>(() => [
+    product.photo || '',
+    ...product.details?.album || []
+])
+
+// @ts-ignore
+const clearCartItem = () => Object.keys(cartItem).forEach(key => delete cartItem[key]);
+// @ts-ignore
+const clearFavoriteItem = () => Object.keys(favoriteItem).forEach(key => delete favoriteItem[key]);
+const addToCart = async () => { 
+    loadings.cart = true;
+
+    if (userStore.isAuth) {
+        const item: CartItem = {
+            id: 0,
+            product_id: product.id || 0,
+            quantity: 1,
+            product_attributes: collectedCheckedIds.value,
+        };
+
+        const response = await CartService.store(item);
+        if (response.success) {
+            ElMessage.success('Добавлено в корзину!');
+            if (response.data) {
+                item.id = response.data.id;
+                cartStore.addItem(item);
+            }
+        } else {
+            ElMessage.error(`Не удалось добавить товар в корзину: ${response.message}`);
+            console.error(response);
+        }
+    } else {
+        ElMessage.warning('Корзина? А вы вошли в аккаунт?');
+    }
+
+    loadings.cart = false;
+}
+const increase = async () => {
+    try {
+        if (cartItem.quantity && cartItem.quantity < (product.quantity || 0)) {
+            cartItem.quantity++;
+            if (cartItem && cartItem.id) {
+                const response = await CartService.update(cartItem.id, {
+                    quantity: cartItem.quantity
+                });
+
+                if (response.success) {
+                    cartStore.updateItem(cartItem.id, cartItem.quantity);
+                } else {
+                    console.error(response);
+                    throw new Error(`Не удалось обновить количество товара: ${response.message}`)
+                }
+            }
+        }
+    } catch (error) {
+        (cartItem.quantity as number)--;
+        ElMessage.error(error instanceof Error ? error.message : 'Неизвестная ошибка');
+    }
+}
+const decrease = async () => {
+    if (cartItem.quantity && cartItem.quantity <= 0) return;
+
+    (cartItem.quantity as number)--;
+    try {
+        if (!cartItem.id) return;
+
+        if (cartItem.quantity === 0) {
+            const response = await CartService.destroy(cartItem.id);
+            if (response.success) {
+                ElMessage.success(`${product.name} - удалён из корзины`);
+                cartStore.removeItem(cartItem.id);
+                clearCartItem();
+            } else {
+                console.error(response);
+                throw new Error('Не удалось удалить товар из корзины')
+            }
+        } else {
+            const response = await CartService.update(cartItem.id, {
+                quantity: cartItem.quantity
+            });
+
+            if (response.success) {
+                cartStore.updateItem(cartItem.id, cartItem.quantity as number);
+            } else {
+                console.error(response);
+                throw new Error(`Не удалось обновить количество товара: ${response.message}`)
+            }
+        }
+    } catch (error) {
+        (cartItem.quantity as number)++;
+        ElMessage.error(error instanceof Error ? error.message : 'Неизвестная ошибка');
+    }
+}
+const toggleFavorite = async () => {
+    loadings.favorite = true;
+    if (userStore.isAuth && product.id) {
+        const response = await FavoriteService.toggle(product.id);
+
+        if (response.success) {
+            if (response.message === 'removed') {
+                ElMessage.success('Удалено из избранного!');
+                favoriteStore.removeItem(favoriteItem.id || 0, favoriteItem.list_id || 0);
+                clearFavoriteItem();
+            } else if (response.data) {
+                ElMessage.success('Добавлено в избранное!');
+                favoriteStore.addItem(response.data, response.data.list_id);
+                Object.assign(favoriteItem, response.data);
+            }
+        } else {
+            ElMessage.error(`Не удалось добавить товар в избранное: ${response.message}`);
+            console.error(response);
+        }
+    } else {
+        ElMessage.warning('Избранное? А вы вошли в аккаунт?');
+    }
+    loadings.favorite = false;
+}
+const setFavoriteItem = () => {
+    if (userStore.isAuth && product.id) {
+        const item = favoriteStore.getItemByProductId(product.id);
+        if (item) {
+            Object.assign(favoriteItem, {
+                ...item,
+                list: favoriteStore.getList(item.list_id)?.name
+            })
+        } else {
+            clearFavoriteItem();
+        }
+    }
+}
+const setCartItem = () => {
+    if (userStore.isAuth && product.id) {
+        const item = cartStore.getItemByProductId(product.id, collectedCheckedIds.value);
+        if (item) {
+            Object.assign(cartItem, item);
+        } else {
+            clearCartItem();
+        }
+    }
+}
 const copyURL = async () => await copy(window.location.href);
 const copy = async (target: string) => {
     try {
@@ -155,22 +231,56 @@ const copy = async (target: string) => {
         ElMessage.error(`Не удалось скопировать "${target}": ${e instanceof Error ? e.message : 'Неизвестная ошибка'}`);
     }
 }
-const mainPhoto = computed(() => product.photo ?? '');
+const translate = (phrase: string): string => {
+    const word = i18n.translate(phrase);
+    return word[0]?.toUpperCase() + word.slice(1);
+}
+const partitionAttributes = () => {
+    if (!product?.attributes) {
+        attributes.variant = {};
+        attributes.nonVariant = {};
+        return;
+    }
 
-const getProduct = async () => {
+    const variant: Record<string, ProductAttribute[]> = {};
+    const nonVariant: Record<string, string> = {};
+
+    for (const [type, attrs] of Object.entries(product.attributes)) {
+        if (!Array.isArray(attrs)) continue;
+
+        const vars = attrs.filter(a => a.is_variant);
+        const nonVars = attrs.filter(a => !a.is_variant);
+
+        if (vars.length) {
+            variant[type] = [...vars];
+        }
+
+        if (nonVars.length) {
+        nonVariant[type] = nonVars
+            .map(a => a.attr_value || '')
+            .filter(val => val !== '')
+            .join('; ');
+        }
+    }
+
+    attributes.variant = variant;
+    attributes.nonVariant = nonVariant;
+};
+const loadProduct = async () => {
     try {
-        const response = await ProductService.show(route.params.id as unknown as number);
+        if (!route.params.id && isNaN(Number(route.params.id))) throw new Error('Не удалось загрузить товар');
+        const response = await ProductService.show(Number(route.params.id));
 
-        if (response.success) {
+        if (response.success && response.data) {
             Object.assign(product, response.data);
 
             if (product?.attributes) {
                 Object.keys(product.attributes).forEach(type => {
                     if (product.attributes && product.attributes[type]) {
                         const defaultAttr = product.attributes[type].find(attr => attr.is_default);
-                        if (defaultAttr) checkedAttributes[type] = defaultAttr.attr_value;
+                        if (defaultAttr) attributes.checked[type] = defaultAttr.attr_value;
                     }
-                });
+                })
             }
         } else {
             console.error(response);
@@ -179,117 +289,22 @@ const getProduct = async () => {
     } catch (error) {
         if (error instanceof Error) {
             if (error.message.includes('404')) router.push({name: 'NotFound'});
-            ElMessage.error(`Ошибка: ${error}`);
+            ElMessage.error(error);
         } else {
             router.push({name: 'Home'});
-            ElMessage.error(`Ошибка: ${error}`);
+            ElMessage.error('Неизвестная ошибка');
         }
     } finally {
-        loading.value = false;
+        loadings.product = false;
     }
-}
-const increase = async () => {
-    try {
-        if (count.value < (product.quantity || 0)) {
-            count.value++;
-            if (cartItem.value && cartItem.value.id) {
-                const response = await CartService.update(cartItem.value.id, {
-                    quantity: count.value
-                });
-
-                if (response.success) {
-                    cartStore.updateItem(cartItem.value.id, count.value);
-                } else {
-                    console.error(response);
-                    throw new Error(`Не удалось обновить количество товара: ${response.message}`)
-                }
-            }
-        }
-    } catch (error) {
-        count.value--;
-        ElMessage.error(error instanceof Error ? error.message : 'Неизвестная ошибка');
-    }
-}
-const decrease = async () => {
-    if (count.value <= 0) return;
-
-    count.value--;
-    try {
-        if (!cartItem.value?.id) return;
-
-        if (count.value === 0) {
-            const response = await CartService.destroy(cartItem.value.id);
-            if (response.success) {
-                ElMessage.success(`${product.name} - удалён из корзины`);
-                cartStore.removeItem(cartItem.value.id);
-                cartItem.value = undefined;
-            } else {
-                console.error(response);
-                throw new Error('Не удалось удалить товар из корзины')
-            }
-        } else {
-            const response = await CartService.update(cartItem.value.id, {
-                quantity: count.value
-            });
-
-            if (response.success) {
-                cartStore.updateItem(cartItem.value.id, count.value);
-            } else {
-                console.error(response);
-                throw new Error(`Не удалось обновить количество товара: ${response.message}`)
-            }
-        }
-    } catch (error) {
-        count.value++;
-        ElMessage.error(error instanceof Error ? error.message : 'Неизвестная ошибка');
-    }
-}
-const setProductCount = () => {
-    if (userStore.isAuth && product.id) {
-        cartItem.value = cartStore.getItemByProductId(product.id, collectCheckedAttrs.value);
-
-        if (cartItem.value) {
-            count.value = cartItem.value.quantity;
-        }
-    }
-}
-const defineFavorite = () => {
-    if (userStore.isAuth && product.id) {
-        favoriteItem.value = favoriteStore.getItemByProductId(product.id);
-        if (favoriteItem.value)
-        favoriteItem.value.list = favoriteStore.getList(favoriteItem.value?.list_id)?.name
-    }
-}
-const toggleFavorite = async () => {
-    favoriteLoading.value = true;
-    if (userStore.isAuth && product.id) {
-        const response = await FavoriteService.toggle(product.id);
-
-        if (response.success) {
-            if (response.message === 'removed') {
-                ElMessage.success('Удалено из избранного!');
-                favoriteStore.removeItem(favoriteItem.value?.id || 0, favoriteItem.value?.list_id || 0);
-                favoriteItem.value = undefined;
-            } else if (response.data) {
-                ElMessage.success('Добавлено в избранное!');
-                favoriteStore.addItem(response.data, response.data.list_id);
-                favoriteItem.value = response.data;
-            }
-        } else {
-            ElMessage.error(`Не удалось добавить товар в избранное: ${response.message}`);
-            console.error(response);
-        }
-    } else {
-        ElMessage.warning('Избранное? А вы вошли в аккаунт?');
-    }
-    favoriteLoading.value = false;
 }
 
 onMounted(() => {
-    getProduct()
+    loadProduct()
         .then(() => {
-            setProductCount();
-            defineFavorite();
+            partitionAttributes();
+            setCartItem();
+            setFavoriteItem();
         })
         .catch(e => {
             ElMessage.error(`Ошибка: ${e}`);
@@ -298,16 +313,35 @@ onMounted(() => {
         })
 })
 onUnmounted(() => {
-    loading.value = true;
+    loadings.product = true;
 })
 
 watch(
     () => favoriteStore.length,
-    () => defineFavorite()
+    () => setFavoriteItem()
 )
 watch(
     () => cartStore.length,
-    () => setProductCount()
+    () => setCartItem()
+)
+watch(
+    () => route.params.id,
+    (newId) => {
+        if (newId) {
+            loadings.product = true;
+            loadProduct()
+                .then(() => {
+                    partitionAttributes();
+                    setCartItem();
+                    setFavoriteItem();
+                })
+                .catch(e => {
+                    ElMessage.error(`Ошибка: ${e}`);
+                    console.error(e);
+                    router.push({name: 'Home'})
+                })
+        }
+    }
 )
 </script>
 <template>
@@ -326,7 +360,7 @@ watch(
                 }"
             >{{ product?.category?.parent?.name }}</el-breadcrumb-item>
             <el-breadcrumb-item
-                v-if="!loading"
+                v-if="!loadings.product"
                 :to="{
                     name: 'Search',
                     query: {
@@ -337,7 +371,7 @@ watch(
             >
                 <el-skeleton
                     animated
-                    :loading="loading"
+                    :loading="loadings.product"
                     style="width: 50px;"
                 >
                     {{ product?.category?.name }}
@@ -349,7 +383,7 @@ watch(
             <el-breadcrumb-item>
                 <el-skeleton
                     animated
-                    :loading="loading"
+                    :loading="loadings.product"
                     style="width: 50px;"
                 >
                     {{ product.name }}
@@ -362,7 +396,7 @@ watch(
         <el-card shadow="hover">
             <div class="hero">
                 <el-skeleton
-                    :loading="loading" 
+                    :loading="loadings.product" 
                     animated
                 >
                     <template #template>
@@ -395,7 +429,7 @@ watch(
                         </div>
                         <el-image
                             :preview-src-list="album"
-                            :src="mainPhoto"
+                            :src="product.photo"
                             class="image"
                             fit="cover"
                             show-progress
@@ -419,7 +453,7 @@ watch(
                             </div>
                             <div class="attributes">
                                 <div
-                                    v-for="(value, key) in getAttributes(true)"
+                                    v-for="(value, key) in attributes.variant"
                                     class="flex gap"
                                     :key="key"
                                 >
@@ -429,7 +463,7 @@ watch(
                                     >
                                         <el-text size="large">{{ translate(key) + ':' }}</el-text>
                                     </el-tag>
-                                    <el-radio-group v-model="checkedAttributes[key]">
+                                    <el-radio-group v-model="attributes.checked[key]">
                                         <el-radio-button
                                             v-for="attr in value"
                                             :value="attr.attr_value"
@@ -443,7 +477,7 @@ watch(
                             </div>
                             <div class="attributes">
                                 <div
-                                    v-for="(value, key) in createNonVariantAttrs(getAttributes())"
+                                    v-for="(value, key) in attributes.nonVariant"
                                     class="flex gap"
                                     :key="key"
                                 >
@@ -470,7 +504,7 @@ watch(
         </el-card>
         <el-card shadow="hover" body-class="flex low gap">
             <el-skeleton
-                :loading="loading"
+                :loading="loadings.product"
                 animated
             >
                 <template #template>
@@ -529,7 +563,7 @@ watch(
             </el-skeleton>
         </el-card>
         <el-skeleton
-            :loading="loading"
+            :loading="loadings.product"
             animated
             :count="3"
         >
@@ -577,7 +611,7 @@ watch(
     <aside>
         <div class="flex">
             <el-skeleton
-                :loading="loading"
+                :loading="loadings.product"
                 animated
             >
             <template #template>
@@ -598,7 +632,7 @@ watch(
         </div>
         <el-card shadow="hover">
             <el-skeleton
-                :loading="loading"
+                :loading="loadings.product"
                 animated
             >
                 <template #template>
@@ -622,9 +656,11 @@ watch(
                             class="section-header"
                             style="text-align: center"
                         >
-                            {{ formatter.format(totalWithDisc) }}
-                            <span style="font-size:1rem" v-if="product.price?.discount">{{ `- ${parseFloat(product.price.discount.toString())}% ` }}</span>
-                            <s v-if="product.price?.discount">{{ formatter.format(total) }}</s>
+                            {{ formatter.format(total.totalWithDisc) }}
+                            <div class="contents" v-if="product.price?.discount">
+                                <span style="font-size:1rem">{{ `– ${product.price.discount}% ` }}</span>
+                                <s>{{ formatter.format(total.total) }}</s>
+                            </div>
                         </div>
                         <div
                             v-if="userStore.isAuth"
@@ -636,8 +672,8 @@ watch(
                                 :disabled="(product.quantity || 0) < 1"
                                 @click="addToCart"
                                 type="primary"
-                                v-if="!cartItem"
-                                :loading="cartLoading"
+                                v-if="Object.keys(cartItem).length === 0"
+                                :loading="loadings.cart"
                                 round
                             >
                                 <el-icon class="el-icon--left"><shopping-cart/></el-icon>
@@ -646,7 +682,7 @@ watch(
                         </template>
                         <div style="text-align: center">К сожалению, этот товар закончился 😥</div>
                         </el-popover>
-                        <div class="count-container" v-if="cartItem">
+                        <div class="count-container" v-if="Object.keys(cartItem).length > 0">
                             <el-button
                                 circle
                                 :icon="Minus"
@@ -654,7 +690,7 @@ watch(
                                 aria-label="Уменьшить количество на 1"
                             />
                             <el-button text role="text" class="count">
-                                {{ count }}
+                                {{ cartItem.quantity }}
                             </el-button>
                             <el-button
                                 circle
@@ -671,9 +707,9 @@ watch(
                             <el-button
                                 round
                                 @click="toggleFavorite"
-                                :loading="favoriteLoading"
+                                :loading="loadings.favorite"
                             >
-                            <div class="contents" v-if="favoriteItem">
+                            <div class="contents" v-if="Object.keys(favoriteItem).length > 0">
                                 <el-icon class="el-icon--left"><star-filled/></el-icon>
                                 В избранном
                             </div>
@@ -708,7 +744,7 @@ watch(
         </el-card>
         <el-card shadow="hover" v-if="product?.feedbacks?.rating">
             <el-skeleton
-                :loading="loading"
+                :loading="loadings.product"
                 animated
             >
                 <template #template>
