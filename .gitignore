@@ -1,5 +1,6 @@
 temp/
 *.drawio.bkp
+*.drawio.dtmp
 .vscode/
 todo.md
 checklists.md

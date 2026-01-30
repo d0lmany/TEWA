@@ -59,6 +59,7 @@ Route::prefix('v1')->middleware('throttle:75,1')->group(function () {
         // заказы
         Route::get('orders', [OrderController::class, 'index']);
         Route::post('orders', [OrderController::class, 'store']);
+        Route::patch('orders/{order}/cancel', [OrderController::class, 'cancelOrder']);
         // маршруты для админа
         Route::middleware('adminOnly')->group(function () {
             Route::apiResource('categories', CategoryController::class)->except(['index', 'show']);

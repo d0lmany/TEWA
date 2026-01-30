@@ -3,26 +3,17 @@ import { OrderStatus, type Order } from '@/ts/entities/Order';
 import type { UI } from '@/ts/types/Provides';
 import { inject } from 'vue';
 import { ElMessage } from 'element-plus';
+import type Services from '@/ts/types/Services';
 
 const { order } = defineProps<{
     order: Order
 }>();
 const dateFormatter = (inject('ui') as UI).dateFormatter;
 const currencyFormatter = (inject('ui') as UI).currencyFormatter;
+const OrderService = (inject('services') as Services).order;
 
 const getItems = () => order.items.map(item => item.product);
-const makeHeader = () => {
-    const statuses = {
-        [OrderStatus.Pending]: 'Ожидает оплаты',
-        [OrderStatus.Paid]: 'Оплачен',
-        [OrderStatus.Processing]: 'Собирается',
-        [OrderStatus.Shipped]: 'Передан в доставку',
-        [OrderStatus.Delivered]: 'Доставлен',
-        [OrderStatus.Cancelled]: 'Отменён',
-        [OrderStatus.Completed]: 'Получен',
-    };
-    return `${statuses[order.status] ?? 'Заказ'} от ${dateFormatter.format(new Date(order.last_status_change.created_at))}`;
-}
+const header = `${OrderService.statuses[order.status] ?? 'Заказ'} от ${dateFormatter.format(new Date(order.last_status_change.created_at))}`;
 const copy = async (target: string) => {
     try {
         await navigator.clipboard.writeText(target);
@@ -40,55 +31,80 @@ const getCurrentLocation = () => {
     };
     return `Сейчас находится ${places[order.current_location?.location_type ?? 'idk']}`;
 }
+const cancelOrder = async () => {
+    try {
+        const response = await OrderService.cancelOrder(order.id);
+
+        if (response.success) {
+            ElMessage.success('Заказ отменён');
+            order.status = OrderStatus.Cancelled;
+        } else {
+            console.error(response);
+            throw new Error(response.message);
+        }
+    } catch (e) {
+        ElMessage.error(e instanceof Error ? e.message : 'Не удалось отменить заказ');
+    }
+}
 </script>
 <template>
-    <el-card
-        shadow="hover"
-        role="article"
-        class="card"
-    >
-        <div class="flex">
-            <div class="text">
-                <h3 class="section-header" :style="{opacity: order.status === OrderStatus.Cancelled ? 0.5 : 1}">{{ makeHeader() }}</h3>
-                <div class="flex low gap">
-                    <el-text>{{ getCurrentLocation() }}</el-text>
-                    <el-button
-                        round
-                        size="small"
-                        @click="copy(order.id.toString())"
-                    >
-                        ID: {{ order.id }}
-                    </el-button>
-                </div>
-            </div>
-            <div class="images">
-                <el-popover
-                    v-for="product in getItems()"
-                    :key="product?.id"
-                    :width="185"
+<el-card
+    shadow="hover"
+    role="article"
+    class="card"
+>
+    <div class="flex">
+        <div class="text">
+            <h3 class="section-header" :style="{opacity: order.status === OrderStatus.Cancelled ? 0.5 : 1}">{{ header }}</h3>
+            <div class="flex low gap">
+                <el-text>{{ getCurrentLocation() }}</el-text>
+                <el-button
+                    round
+                    size="small"
+                    @click="cancelOrder"
+                    v-if="order.status !== OrderStatus.Cancelled && order.status !== OrderStatus.Completed"
                 >
-                    <template #reference>
-                    <el-image
-                        @click="$router.push({name: 'Product', params: { id: product?.id, slug: product?.name }})"
-                        :src="product?.photo"
-                        fit="cover"
-                        lazy
-                    />
-                    </template>
-                    <div style="text-align: center; font-size: 1rem; line-height: 1.75rem">
-                        <b>{{ product?.name }}</b>,
-                        {{ currencyFormatter.format(product?.price.final_price || 0) }}
-                    </div>
-                </el-popover>
+                    Отменить заказ
+                </el-button>
+                <el-button
+                    round
+                    size="small"
+                    @click="copy(order.id.toString())"
+                >
+                    ID: {{ order.id }}
+                </el-button>
             </div>
         </div>
-    </el-card>
+        <div class="images">
+            <el-popover
+                v-for="product in getItems()"
+                :key="product?.id"
+                :width="185"
+            >
+                <template #reference>
+                <el-image
+                    @click="$router.push({name: 'Product', params: { id: product?.id, slug: product?.name }})"
+                    :src="product?.photo"
+                    fit="cover"
+                    lazy
+                />
+                </template>
+                <div style="text-align: center; font-size: 1rem; line-height: 1.75rem">
+                    <b>{{ product?.name }}</b>,
+                    {{ currencyFormatter.format(product?.price.final_price || 0) }}
+                </div>
+            </el-popover>
+        </div>
+    </div>
+</el-card>
 </template>
 <style scoped>
 .card {
     border-radius: .5rem;
-    will-change: box-shadow;
+    will-change: box-shadow, color;
     flex-shrink: 0;
+    user-select: none;
+    cursor: pointer;
 }
 .card:deep(.el-card__body) {
     padding: .75rem;
@@ -103,7 +119,7 @@ h3 {
 .images {
     display: flex;
     gap: .5rem;
-    overflow-x: hidden;
+    overflow-x: scroll;
     max-width: 50%;
 }
 .images > * {
@@ -112,5 +128,8 @@ h3 {
     flex-shrink: 0;
     border-radius: .25rem;
     cursor: pointer;
+}
+.el-button + .el-button {
+    margin: 0;
 }
 </style>

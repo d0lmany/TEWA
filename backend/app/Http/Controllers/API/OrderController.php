@@ -15,6 +15,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Resources\OrderResource;
 use App\Http\Requests\StoreOrderRequest;
+use Illuminate\Http\JsonResponse;
 
 class OrderController extends Controller
 {
@@ -239,5 +240,17 @@ class OrderController extends Controller
         CartItem::whereIn('id', $cartItemIds)
             ->where('user_id', $userId)
             ->delete();
+    }
+
+    public function cancelOrder(Order $order): JsonResponse
+    {
+        return DB::transaction(function () use ($order) {
+            if ($order->user_id !== Auth::id())
+                return response()->json(['message' => 'Is not your order'], 403);
+
+            $order->update(['status' => 'cancelled']);
+
+            return response()->json(['message' => 'cancelled']);
+        });
     }
 }
