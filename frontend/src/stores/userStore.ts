@@ -1,5 +1,4 @@
-import type { FavoriteListItem, FavoriteList } from "@/ts/entities/Items";
-import type { User, UserData } from "@/ts/entities/User";
+import { UserRole, type User, type UserData } from "@/ts/entities/User";
 import { defineStore } from "pinia";
 import { useCartStore } from "./cartStore";
 import { useFavoriteStore } from "./favoriteStore";
@@ -11,7 +10,8 @@ export const useUserStore = defineStore('userData', {
             name: '',
             picture: '',
             birthday: '',
-        }
+            role: UserRole.Unsigned,
+        },
     }),
     actions: {
         login(user: User) {
@@ -20,7 +20,8 @@ export const useUserStore = defineStore('userData', {
         },
         logout() {
             this.user = {
-                name: '', picture: '', birthday: ''
+                name: '', picture: '',
+                birthday: '', role: UserRole.Unsigned,
             };
             useFavoriteStore().clear();
             useCartStore().clear();

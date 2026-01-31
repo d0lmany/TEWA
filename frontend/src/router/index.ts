@@ -35,6 +35,14 @@ const router = createRouter({
             }
         },
         {
+            path: '/my/admin',
+            name: 'AdminOffice',
+            component: () => import('@/pages/my/AdminOffice.vue'),
+            meta: {
+                title: 'Администрирование',
+            }
+        },
+        {
             path: '/my/:pathMatch(.*)*', 
             name: 'Profile',
             component: My,

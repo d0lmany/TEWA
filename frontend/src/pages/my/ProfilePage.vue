@@ -1,8 +1,11 @@
 <script setup lang="ts">
-import { Top, User, Location, Edit, Close, Memo } from '@element-plus/icons-vue';
+import { Top, User, Location, Edit, Close, Memo, OfficeBuilding } from '@element-plus/icons-vue';
 import { View } from '@/ts/types/View';
 import { useUserStore } from '@/stores/userStore';
 import { computed, reactive, ref, watch, type Component } from 'vue';
+import { useRoute } from 'vue-router';
+import { UserRole } from '@/ts/entities/User';
+
 import ChangeProfileModal from '@/components/modals/ChangeProfileModal.vue';
 import ChangePasswordModal from '@/components/modals/ChangePasswordModal.vue';
 import LogoutModal from '@/components/modals/LogoutModal.vue';
@@ -10,7 +13,6 @@ import DeleteAccountModal from '@/components/modals/DeleteAccountModal.vue';
 
 import AddressesSection from '@/components/sections/AddressesSection.vue';
 import OrdersSection from '@/components/sections/OrdersSection.vue';
-import { useRoute } from 'vue-router';
 
 const currentView = ref<View>(View.Addresses);
 const views = [
@@ -107,6 +109,14 @@ watch(
             >
                 <el-icon class="el-icon--left" :size="20"><Edit/></el-icon>
                 Изменить данные
+            </el-button>
+            <el-button
+                text
+                v-if="userStore.user.role === UserRole.Admin"
+                @click="$router.push({ name: 'AdminOffice' })"
+            >
+                <el-icon class="el-icon--left" :size="20"><OfficeBuilding/></el-icon>
+                Администрирование
             </el-button>
             <el-button
                 text

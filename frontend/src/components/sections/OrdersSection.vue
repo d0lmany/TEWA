@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { OrderStatus, type Order, type OrderLocation } from '@/ts/entities/Order';
+import { OrderStatus, type Order } from '@/ts/entities/Order';
 import type Services from '@/ts/types/Services';
 import { ElMessage } from 'element-plus';
 import { computed, inject, onMounted, reactive, ref } from 'vue';

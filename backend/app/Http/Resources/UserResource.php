@@ -15,6 +15,7 @@ class UserResource extends JsonResource
             'picture' => $this->picture
                 ? url('storage/' . $this->picture)
                 : null,
+            'role' => $this->role,
         ];
     }
 }
