@@ -4,12 +4,9 @@ import { useUserStore } from '@/stores/userStore';
 import { useCartStore } from '@/stores/cartStore';
 import { useFavoriteStore } from '@/stores/favoriteStore';
 import { ref, inject, reactive } from 'vue';
-import type { RegistrationData } from '@/ts/types/UserR-R';
-import type { default as US } from '@/ts/services/UserService';
-import type { default as AS } from '@/ts/services/ApiService';
-import type Services from '@/ts/types/Services';
-import { AuthState } from '@/ts/types/AuthState';
-import { createMaxRule, createMinRule, createRequiredRule, createTypeRule, type Rules } from '@/ts/utils/FormRules';
+import { type Services, ApiService as AS, UserService as US } from '@/ts/services';
+import { AuthState, type RegistrationData } from '@/ts/types';
+import { createMaxRule, createMinRule, createRequiredRule, createTypeRule, type Rules } from '@/ts/utils';
 
 const [userStore, cartStore, favoriteStore]
 = [useUserStore(), useCartStore(), useFavoriteStore()];

@@ -1,16 +1,14 @@
 <script setup lang="ts">
-import type Services from '@/ts/types/Services';
+import type { Services } from '@/ts/services';
 import { computed, inject, reactive, ref, watch } from 'vue';
 import { useFavoriteStore } from '@/stores/favoriteStore';
-import type { FavoriteList, FavoriteListItem } from '@/ts/entities/Items';
+import type { FavoriteList, FavoriteListItem, Product } from '@/ts/entities';
 import { ElMessage } from 'element-plus';
 import { Delete, EditPen, Refresh, Top, Box } from '@element-plus/icons-vue';
-import { createMaxRule, createMinRule, createRequiredRule, type Rules } from '@/ts/utils/FormRules';
-import type Filters from '@/ts/types/Filters';
+import { createMaxRule, createMinRule, createRequiredRule, type Rules } from '@/ts/utils';
+import type { Filters, UI } from '@/ts/types';
 import SearchFilters from '@/components/SearchFilters.vue';
 import ProductCard from '@/components/cards/ProductCard.vue';
-import type { Product } from '@/ts/entities/Product';
-import type { UI } from '@/ts/types/Provides';
 
 const filters = reactive<Filters>({});
 const FavoriteService = (inject('services') as Services).favorite;

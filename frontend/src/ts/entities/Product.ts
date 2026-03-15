@@ -29,7 +29,7 @@ export interface FullProduct extends Product {
         application: string,
     },
     attributes?: Record<string, ProductAttribute[]>,
-    shop: Shop,
+    shop?: Shop,
     tags: Tag[],
 }
 

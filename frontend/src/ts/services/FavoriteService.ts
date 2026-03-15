@@ -1,7 +1,6 @@
-import Repository from "@/ts/services/Repository";
-import ApiService from "@/ts/services/ApiService";
-import type ResponseResult from "@/ts/types/ResponseResult";
-import type { FavoriteList, FavoriteListItem } from "@/ts//entities/Items";
+import { ApiService, Repository } from "@/ts/services"
+import type { ResponseResult } from "@/ts/types"
+import type { FavoriteList, FavoriteListItem } from "@/ts//entities"
 /**
  * Favorite lists and favorite list items management service
  */

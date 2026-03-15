@@ -1,9 +1,9 @@
 <script setup lang="ts">
-import { OrderStatus, type Order } from '@/ts/entities/Order';
-import type { UI } from '@/ts/types/Provides';
+import { OrderStatus, type Order } from '@/ts/entities';
+import type { UI } from '@/ts/types';
 import { inject } from 'vue';
 import { ElMessage } from 'element-plus';
-import type Services from '@/ts/types/Services';
+import type { Services } from '@/ts/services';
 
 const { order } = defineProps<{
     order: Order
@@ -119,7 +119,7 @@ h3 {
 .images {
     display: flex;
     gap: .5rem;
-    overflow-x: scroll;
+    overflow-x: hidden;
     max-width: 50%;
 }
 .images > * {

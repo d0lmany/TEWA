@@ -1,5 +1,5 @@
-import type { CartItem, FavoriteList } from "@/ts/entities/Items";
-import type { User } from "@/ts/entities/User";
+import type { CartItem, FavoriteList } from "@/ts/entities"
+import type { User } from "@/ts/entities"
 
 export interface LoginData {
     email: string,

@@ -1,7 +1,6 @@
-import type ApiService from "@/ts/services/ApiService";
-import Repository from "@/ts/services/Repository";
-import type ResponseResult from "@/ts/types/ResponseResult";
-import type { Shop } from "@/ts/entities/Shop";
+import { Repository, type ApiService } from "@/ts/services"
+import type { ResponseResult } from "@/ts/types"
+import type { Shop } from "@/ts/entities"
 /**
  * Shop management service
  */

@@ -6,11 +6,10 @@ import { useRouter, type Router } from 'vue-router';
 import { useUserStore } from '@/stores/userStore';
 import { useCartStore } from '@/stores/cartStore';
 import { useFavoriteStore } from '@/stores/favoriteStore';
-import type { default as CS } from '@/ts/services/CategoryService';
-import type Services from '@/ts/types/Services';
+import { type Services, CategoryService as CS } from '@/ts/services';
 import type { UI } from '@/ts/types/Provides';
-import type { GroupedCategories } from '@/ts/entities/Category';
-import { getRandomInt } from '@/ts/utils/Random';
+import type { GroupedCategories } from '@/ts/entities';
+import { getRandomInt } from '@/ts/utils';
 
 const searchQuery = ref<string>('');
 const dialogVisibility = ref<boolean>(false);
@@ -143,7 +142,7 @@ onMounted(() => {
                     Избранное
                 </el-button>
             </el-badge>
-            <el-badge :hidden="!cartStore.length" type="primary" :value="cartStore.length">
+            <el-badge :hidden="!cartStore.length" type="primary" :value="cartStore.volume">
                 <el-button @click="goto('Cart')">
                     <el-icon class="el-icon--left" :size="22">
                         <shopping-cart/>

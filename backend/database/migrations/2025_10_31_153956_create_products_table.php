@@ -27,6 +27,7 @@ return new class extends Migration
             $table->decimal('discount', 5, 2)->default(0.0);
             $table->enum('status', ['on', 'off', 'draft'])->default('draft');
             $table->foreignIdFor(Shop::class)
+                ->nullable()
                 ->constrained()
                 ->cascadeOnDelete();
             $table->timestamps();

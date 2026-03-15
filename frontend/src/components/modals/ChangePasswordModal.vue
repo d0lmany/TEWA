@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import { ElMessage, ElNotification } from 'element-plus';
 import { inject, reactive, ref, watch } from 'vue';
-import type PasswordChange from "@/ts/types/PasswordChange";
-import type Services from '@/ts/types/Services';
-import { type Rules, createMaxRule, createMinRule, createRequiredRule } from '@/ts/utils/FormRules';
+import type { PasswordChange } from "@/ts/types";
+import type { Services } from '@/ts/services';
+import { type Rules, createMaxRule, createMinRule, createRequiredRule } from '@/ts/utils';
 
 const visible = defineModel({
     type: Boolean,

@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import type { Address, ExactAddress, Pickup } from '@/ts/entities/Addresses';
-import { type Rules, createMaxRule, createMinRule, createRequiredRule, createTypeRule } from '@/ts/utils/FormRules';
-import type Services from '@/ts/types/Services';
+import type { Address, ExactAddress, Pickup } from '@/ts/entities';
+import { type Rules, createMaxRule, createMinRule, createRequiredRule, createTypeRule } from '@/ts/utils';
+import type { Services } from '@/ts/services';
 import { ElMessage } from 'element-plus';
 import { reactive, ref, inject, watch, onUnmounted, onMounted, nextTick } from 'vue';
 

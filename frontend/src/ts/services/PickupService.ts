@@ -1,8 +1,6 @@
-import Repository from "@/ts/services/Repository";
-import type ApiService from "@/ts/services/ApiService";
-import type { GetRequest } from "@/ts/types/Request";
-import type { Pickup } from "@/ts/entities/Addresses";
-import type { PaginatedResult } from "@/ts/types/ResponseResult";
+import { Repository, type ApiService } from "@/ts/services"
+import type { GetRequest, PaginatedResult } from "@/ts/types"
+import type { Pickup } from "@/ts/entities"
 /**
  * Pickup management service
  */

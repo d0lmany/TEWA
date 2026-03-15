@@ -1,7 +1,7 @@
-import type ResponseResult from "@/ts/types/ResponseResult";
-import type ApiService from "@/ts/services/ApiService";
-import type { GetRequest, Request } from "@/ts/types/Request";
-import type { ResponseType } from "axios";
+import type { ResponseResult } from "@/ts/types"
+import type { ApiService } from "@/ts/services"
+import type { GetRequest, Request } from "@/ts/types"
+import type { ResponseType } from "axios"
 /**
  * Server request service
  */

@@ -1,7 +1,6 @@
-import type ApiService from "@/ts/services/ApiService";
-import Repository from "@/ts/services/Repository";
-import type { Category, GroupedCategories } from "@/ts/entities/Category";
-import type ResponseResult from "@/ts/types/ResponseResult";
+import type { Category, GroupedCategories } from "@/ts/entities"
+import type { ResponseResult } from "@/ts/types"
+import { Repository, type ApiService } from '@/ts/services'
 /**
  * Category management service
  */

@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import HomeAdmin from '@/components/sections/HomeAdmin.vue';
-import { AdminView } from '@/ts/types/View';
-import { HomeFilled, House } from '@element-plus/icons-vue';
+import { AdminView } from '@/ts/types';
+import { House, Back } from '@element-plus/icons-vue';
 import { ref, type Component } from 'vue';
 
 const currentView = ref<AdminView>(AdminView.Home);
@@ -26,6 +26,15 @@ const sections: Record<AdminView, Component> = {
                     <component :is="view.icon"/>
                 </el-icon>
                 {{ view.name }}
+            </el-button>
+            <el-button
+                text
+                @click="$router.push({name: 'Profile'})"
+            >
+                <el-icon class="el-icon--left" :size="20">
+                    <back/>
+                </el-icon>
+                Вернуться в профиль
             </el-button>
         </el-button-group>
     </aside>

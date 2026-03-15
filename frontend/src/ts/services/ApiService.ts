@@ -1,6 +1,5 @@
-import axios, { AxiosError, type AxiosInstance, type AxiosResponse, isAxiosError, type ResponseType } from "axios";
-import type ResponseResult from "@/ts/types/ResponseResult";
-import type { Request, GetRequest } from "@/ts//types/Request";
+import axios, { AxiosError, type AxiosInstance, type AxiosResponse, isAxiosError, type ResponseType } from "axios"
+import type { Request, GetRequest, ResponseResult } from "@/ts//types"
 /**
  * API object management and server request service
  */

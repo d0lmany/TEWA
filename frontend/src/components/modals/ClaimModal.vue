@@ -2,8 +2,8 @@
 import { ElMessage } from 'element-plus';
 import { useUserStore } from '@/stores/userStore';
 import { inject, reactive, ref } from 'vue';
-import type Services from '@/ts/types/Services';
-import { createMaxRule, createMinRule, createRequiredRule, type Rules } from '@/ts/utils/FormRules';
+import type { Services } from '@/ts/services';
+import { createMaxRule, createMinRule, createRequiredRule, type Rules } from '@/ts/utils';
 
 const visible = defineModel({
     type: Boolean,

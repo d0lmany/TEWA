@@ -1,7 +1,6 @@
-import Repository from "@/ts/services/Repository";
-import ApiService from "@/ts/services/ApiService";
-import type { CartProduct, CartItem } from "@/ts/entities/Items";
-import type ResponseResult from "@/ts/types/ResponseResult";
+import { ApiService, Repository } from "@/ts/services"
+import type { CartProduct, CartItem } from "@/ts/entities"
+import type { ResponseResult } from "@/ts/types"
 /**
  * Cart items management service
  */

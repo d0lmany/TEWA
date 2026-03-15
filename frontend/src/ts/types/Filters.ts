@@ -1,4 +1,4 @@
-export default interface Filters {
+export interface Filters {
     min_rating?: number,
     min_price?: number,
     max_price?: number,

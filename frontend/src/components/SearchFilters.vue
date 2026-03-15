@@ -2,9 +2,9 @@
 import { inject, onMounted, ref } from 'vue';
 import { ElMessage } from 'element-plus';
 import { InfoFilled, Refresh } from '@element-plus/icons-vue';
-import type Services from '@/ts/types/Services';
-import type { GroupedCategories, Tag } from '@/ts/entities/Category';
-import type Filters from '@/ts/types/Filters';
+import { type Services } from '@/ts/services';
+import type { GroupedCategories, Tag } from '@/ts/entities';
+import type { Filters } from '@/ts/types';
 
 defineProps<{ showReset?: boolean }>()
 

@@ -2,8 +2,8 @@
 import { computed, inject } from 'vue';
 import { useRouter } from 'vue-router';
 import { StarFilled } from '@element-plus/icons-vue';
-import type { UI } from '@/ts/types/Provides';
-import type { Product } from '@/ts/entities/Product';
+import type { UI } from '@/ts/types';
+import type { Product } from '@/ts/entities';
 
 const router = useRouter();
 const formatter = (inject('ui') as UI).currencyFormatter;

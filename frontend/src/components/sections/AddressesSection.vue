@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import AddressCard from '@/components/cards/AddressCard.vue';
-import type { Address } from '@/ts/entities/Addresses';
-import type Services from '@/ts/types/Services';
+import type { Address } from '@/ts/entities';
+import { type Services } from '@/ts/services';
 import { ElMessage } from 'element-plus';
 import { inject, onMounted, reactive, ref } from 'vue';
 import AddAddressOrPickupModal from '@/components/modals/AddAddressOrPickupModal.vue';
@@ -138,7 +138,6 @@ onMounted(() => {
     flex-direction: column;
     gap: .5rem;
     max-height: 65vh;
-    overflow-y: scroll;
 }
 .addresses div > * {
     order: 2;

@@ -1,4 +1,4 @@
-import type LocalizedString from "@/ts/types/LocalizedString";
+import type { LocalizedString } from "@/ts/types"
 /**
  * Localization management service
  */

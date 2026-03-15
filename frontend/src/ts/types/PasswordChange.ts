@@ -1,4 +1,4 @@
-export default interface PasswordChange {
+export interface PasswordChange {
     old_password: string,
     password: string,
     password_confirmation: string,

@@ -8,11 +8,10 @@ import ClaimModal from '@/components/modals/ClaimModal.vue';
 import { useUserStore } from '@/stores/userStore';
 import { useCartStore } from '@/stores/cartStore';
 import { useFavoriteStore } from '@/stores/favoriteStore';
-import type { UI } from '@/ts/types/Provides';
-import type { FullProduct, ProductAttribute } from '@/ts/entities/Product';
-import type Services from '@/ts/types/Services';
-import type { CartItem, FavoriteListItem } from '@/ts/entities/Items';
-import { getPricesWithAttrs } from '@/ts/utils/Prices';
+import type { UI } from '@/ts/types';
+import type { FullProduct, ProductAttribute, CartItem, FavoriteListItem } from '@/ts/entities';
+import type { Services } from '@/ts/services';
+import { getPricesWithAttrs } from '@/ts/utils';
 
 interface Attributes {
     checked: Record<string, string>,
@@ -502,7 +501,7 @@ watch(
                 </el-skeleton>
             </div>
         </el-card>
-        <el-card shadow="hover" body-class="flex low gap">
+        <el-card shadow="hover" body-class="flex low gap" v-if="product.shop">
             <el-skeleton
                 :loading="loadings.product"
                 animated
@@ -700,7 +699,7 @@ watch(
                             />
                         </div>
                         <el-popover
-                            :disabled="favoriteItem?.list === '__favorite__' || !favoriteItem"
+                            :disabled="!Object.keys(favoriteItem).length || favoriteItem?.list === '__favorite__'"
                         >
                             <div style="text-align: center">Добавлен в лист '{{ favoriteItem?.list }}'</div>
                             <template #reference>
@@ -820,8 +819,13 @@ aside {
     gap: 1rem;
     max-height: 400px;
     overflow-y: auto;
+    overflow-x: hidden;
     flex-shrink: 0;
-}    
+    scrollbar-width: 0;
+}
+.images::-webkit-scrollbar {
+    width: 0;
+}
 .images .image {
     width: 75px;
     height: 75px;

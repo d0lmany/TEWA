@@ -1,4 +1,4 @@
-import { UserRole, type User, type UserData } from "@/ts/entities/User";
+import { UserRole, type User, type UserData } from "@/ts/entities";
 import { defineStore } from "pinia";
 import { useCartStore } from "./cartStore";
 import { useFavoriteStore } from "./favoriteStore";

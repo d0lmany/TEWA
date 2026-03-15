@@ -7,17 +7,26 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use App\Http\Controllers\API\ConfigController;
 
 class Product extends Model
 {
     use HasFactory;
 
+    public function __construct()
+    {
+        $conf = ConfigController::getConfig();
+        $isMarket = $conf['mode'] === 'marketplace';
+        if ($isMarket) {
+            $fillable[] = 'shop_id';
+        }
+    }
+
     protected $fillable = [
         'name', 'quantity',
         'base_price', 'photo',
         'category_id', 'discount',
-        'status', 'shop_id',
+        'status',
     ];
 
     protected $casts = [

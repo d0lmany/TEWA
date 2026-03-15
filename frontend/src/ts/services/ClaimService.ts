@@ -1,6 +1,5 @@
-import type ApiService from "@/ts/services/ApiService";
-import Repository from "@/ts/services/Repository";
-import type Claim from "@/ts/entities/Claim";
+import { Repository, type ApiService } from "@/ts/services"
+import type { Claim } from "@/ts/entities"
 /**
  * Claim management service
  */

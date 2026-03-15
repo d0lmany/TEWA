@@ -1,4 +1,4 @@
-export default interface ResponseResult<T = any> {
+export interface ResponseResult<T = any> {
     success: boolean;
     status: number;
     data?: T;

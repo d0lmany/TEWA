@@ -1,10 +1,6 @@
-import Repository from "@/ts/services/Repository";
-import ApiService from "@/ts/services/ApiService";
-import type ResponseResult from "@/ts/types/ResponseResult";
-import type { LoginData, UserResponseData, RegistrationData } from "@/ts/types/UserR-R";
-import type { User } from "@/ts/entities/User";
-import type PasswordChange from "@/ts/types/PasswordChange";
-import type { CartProduct, FavoriteList } from "@/ts/entities/Items";
+import { Repository, ApiService } from "@/ts/services"
+import type { LoginData, UserResponseData, RegistrationData, ResponseResult, PasswordChange } from "@/ts/types"
+import type { User, CartProduct, FavoriteList } from "@/ts/entities"
 /**
  * Auth and User Entity management service
  */

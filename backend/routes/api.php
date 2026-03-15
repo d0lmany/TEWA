@@ -9,13 +9,16 @@ use App\Http\Controllers\API\AddressController;
 use App\Http\Controllers\API\ProductController;
 use App\Http\Controllers\API\CartItemController;
 use App\Http\Controllers\API\CategoryController;
+use App\Http\Controllers\API\ConfigController;
 use App\Http\Controllers\API\FavoriteController;
 use App\Http\Controllers\API\OrderController;
 use App\Http\Controllers\API\ShopController;
 use App\Http\Controllers\API\TagController;
 
+$conf = ConfigController::getConfig();
+
 Route::get('/', fn () => response()->json(['message' => 'Hello, World!']));
-Route::prefix('v1')->middleware('throttle:75,1')->group(function () {
+Route::prefix('v1')->middleware('throttle:75,1')->group(function () use ($conf) {
     Route::get('/', fn () => response()->json(['message' => 'It\'s API v1']));
     // публичные маршруты
     Route::post('auth/login', [AuthController::class, 'login']);
@@ -27,8 +30,9 @@ Route::prefix('v1')->middleware('throttle:75,1')->group(function () {
     Route::apiResource('products', ProductController::class)->only(['index', 'show']);
     Route::get('shops/{shop}', [ShopController::class, 'show']);
     
+    Route::get('config/public', [ConfigController::class, 'public']);
     // маршруты для авторизованных
-    Route::middleware('auth:sanctum')->group(function () {
+    Route::middleware('auth:sanctum')->group(function () use ($conf) {
         Route::get('auth/logout', [AuthController::class, 'logout']);
         Route::get('auth', [AuthController::class, 'show']);
         Route::post('auth/update', [AuthController::class, 'update']);
@@ -47,12 +51,14 @@ Route::prefix('v1')->middleware('throttle:75,1')->group(function () {
         // жалобы
         Route::post('claims', [ClaimController::class, 'store']);
         // товары
-        Route::middleware('shop.owner')->group(function () {
-            Route::middleware('product.owner')->group(function () {
-                Route::apiResource('products', ProductController::class)->only(['update', 'destroy']);
+        if ($conf['mode'] === 'marketplace') {
+            Route::middleware('shop.owner')->group(function () {
+                Route::middleware('product.owner')->group(function () {
+                    Route::apiResource('products', ProductController::class)->only(['update', 'destroy']);
+                });
+                Route::post('products', [ProductController::class, 'store']);
             });
-            Route::post('products', [ProductController::class, 'store']);
-        });
+        }
         // адреса и ПВЗ
         Route::apiResource('addresses', AddressController::class)->except('show');
         Route::get('pickups', [PickupController::class, 'index']);
@@ -61,8 +67,15 @@ Route::prefix('v1')->middleware('throttle:75,1')->group(function () {
         Route::post('orders', [OrderController::class, 'store']);
         Route::patch('orders/{order}/cancel', [OrderController::class, 'cancelOrder']);
         // маршруты для админа
-        Route::middleware('adminOnly')->group(function () {
+        Route::middleware('adminOnly')->group(function () use ($conf) {
+            // контент
             Route::apiResource('categories', CategoryController::class)->except(['index', 'show']);
+            if ($conf['mode'] === 'shop') {
+                Route::apiResource('products', ProductController::class)->only(['update', 'destroy', 'post']);
+            }
+            // настройки
+            Route::get('config', [ConfigController::class, 'index']);
+            Route::patch('/config/mode', [ConfigController::class, 'changeMode']);
         });
     });
 });

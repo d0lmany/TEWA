@@ -1,12 +1,10 @@
 <script setup lang="ts">
-import type { CartProduct } from '@/ts/entities/Items';
+import type { CartProduct, Address, OrderRequest } from '@/ts/entities';
 import { useCartStore } from '@/stores/cartStore';
-import type Services from '@/ts/types/Services';
+import { type Services } from '@/ts/services';
 import { computed, inject, onMounted, reactive, ref, watch } from 'vue';
-import type { Address } from '@/ts/entities/Addresses';
 import { ElMessage } from 'element-plus';
-import type { OrderRequest } from '@/ts/entities/Order';
-import type { UI } from '@/ts/types/Provides';
+import type { UI } from '@/ts/types';
 import { InfoFilled, ShoppingBag } from '@element-plus/icons-vue';
 
 const visible = defineModel<boolean>();
@@ -79,7 +77,7 @@ const setCurrentAddress = (addressIndex: number, addressId: number) => {
         order.destination_address_id = addressId;
     }
 }
-const totalBasePrice = () => currencyFormatter.format(items.reduce((acc, item) => acc + item.product.price.base_price, 0))
+const totalBasePrice = () => currencyFormatter.format(items.reduce((acc, item) => acc + item.product.price.base_price * item.quantity, 0))
 const totalPrice = () => currencyFormatter.format(items.reduce((acc, item) => acc + (item.total || item.product.price.final_price) * item.quantity, 0))
 
 const isDoneForOrder = computed(() => {
@@ -114,7 +112,7 @@ watch(
 <div class="grid">
     <section>
         <h4 class="section-header">Информация о заказе</h4>
-        <div class="flex low gap" style="max-width: 525px; overflow-x: scroll">
+        <div class="flex low gap info-order">
             <el-popover
                 v-for="item in items"
                 :key="item.product?.id"
@@ -148,11 +146,11 @@ watch(
             Оформить заказ
         </el-button>
         <div class="flex">
-            <el-text size="large">{{ `Товары (без скидки) (${items.length}):` }}</el-text>
+            <el-text size="large">{{ `Без скидки (${items.reduce((acc, item) => acc + item.quantity, 0)}):` }}</el-text>
             <el-text size="large">{{ totalBasePrice() }}</el-text>
         </div>
         <div class="flex">
-            <el-text size="large">Итого:</el-text>
+            <el-text size="large">Со скидкой:</el-text>
             <el-text size="large">{{ totalPrice() }}</el-text>
         </div>
         <div>
@@ -187,13 +185,12 @@ watch(
                     :style="{ order: address.is_default ? 1 : 2 }"
                 >
                     <el-text size="large">
-                        {{ address.address }}
+                        {{ address.address ?? address.pickup?.address }}
                     </el-text>
                     <div class="flex">
-                        <el-button @click="setCurrentAddress(index, address.id)">Выбрать</el-button>
-                        <el-text type="primary" v-if="address.checked">
-                            Выбран
-                        </el-text>
+                        <el-button @click="setCurrentAddress(index, address.id)" :disabled="address.checked">
+                            {{ address.checked ? 'Выбран' : 'Выбрать' }}
+                        </el-button>
                         <el-text v-if="address.is_default">
                             Ваш основной адрес
                         </el-text>
@@ -226,14 +223,13 @@ section {
     display: grid;
     grid-template-rows: auto auto;
     grid-template-columns: 1fr 1fr;
-    gap: 1rem;
+    gap: .5rem;
 }
 .addresses {
     display: flex;
     flex-direction: column;
     gap: .5rem;
-    max-height: 300px;
-    overflow-y: scroll;
+    overflow-y: auto;
 }
 article {
     border: 1px solid var(--el-border-color);
@@ -259,5 +255,8 @@ article > .el-text {
     display: flex;
     flex-direction: column;
     gap: 1.25rem;
+}
+.info-order {
+  overflow-x: auto;
 }
 </style>

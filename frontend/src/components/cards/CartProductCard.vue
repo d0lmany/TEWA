@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import { Plus, Minus, Delete, Star, StarFilled } from '@element-plus/icons-vue';
-import { type CartProduct } from '@/ts/entities/Items';
-import type { UI } from '@/ts/types/Provides';
-import type Services from '@/ts/types/Services';
+import { type CartProduct } from '@/ts/entities';
+import type { UI } from '@/ts/types';
+import type { Services } from '@/ts/services';
 import { inject } from 'vue';
 
 const { item, allowCheck } = defineProps<{
@@ -101,19 +101,14 @@ collectedAttrs();
                     />
                 </template>
             </el-popover>
-            <el-popover placement="top">
-                <div style="text-align: center; user-select: none">Удалить из корзины</div>
-                <template #reference>
-                    <el-button
-                        circle
-                        plain
-                        :icon="Delete"
-                        @click="emit('delete')"
-                        aria-label="Удалить из корзины"
-                        type="danger"
-                    />
-                </template>
-            </el-popover>
+            <el-button
+                circle
+                plain
+                :icon="Delete"
+                @click="emit('delete')"
+                aria-label="Удалить из корзины"
+                type="danger"
+            />
         </div>
     </div>
 </el-card>

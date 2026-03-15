@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import { computed, inject } from 'vue';
 import { User } from '@element-plus/icons-vue';
-import type { Review } from '@/ts/entities/Review';
-import type { UI } from '@/ts/types/Provides';
+import type { Review } from '@/ts/entities';
+import type { UI } from '@/ts/types';
 
 const formatter = (inject('ui') as UI).dateFormatter;
 const props = defineProps<{

@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers\API;
 
-use App\Models\Tag;
 use App\Models\Product;
 use App\Models\Category;
 use Illuminate\Http\Request;
@@ -135,14 +134,22 @@ class ProductController extends Controller
 
     public function show(Product $product)
     {
-        $product->loadMissing([
+        $conf = ConfigController::getConfig();
+        $isMarket = $conf['mode'] === 'marketplace';
+
+        $loads = [
             'category.parent',
             'productDetail', 
             'attributes',
-            'shop.seller',
             'reviews.user',
             'tags'
-        ]);
+        ];
+
+        if ($isMarket) {
+            $loads[] = 'shop.seller';
+        }
+
+        $product->loadMissing($loads);
         
         if (!$product->relationLoaded('rating')) {
             $product->loadAvg('reviews as rating', 'evaluation');
@@ -160,35 +167,5 @@ class ProductController extends Controller
     {
         $product->delete();
         return response()->json([], 204);
-    }
-
-    private function normalizeTags($tagsInput): array
-    {
-        if (is_array($tagsInput)) {
-            return array_filter(array_map('trim', $tagsInput));
-        }
-
-        if (is_string($tagsInput)) {
-            if ($this->isJson($tagsInput)) {
-                $decoded = json_decode($tagsInput, true);
-                if (is_array($decoded)) {
-                    return array_filter(array_map('trim', $decoded));
-                }
-            }
-
-            return array_filter(array_map('trim', explode(',', $tagsInput)));
-        }
-
-        if (is_numeric($tagsInput)) {
-            return [trim((string)$tagsInput)];
-        }
-
-        return [];
-    }
-
-    private function isJson(string $string): bool
-    {
-        json_decode($string);
-        return json_last_error() === JSON_ERROR_NONE;
     }
 }

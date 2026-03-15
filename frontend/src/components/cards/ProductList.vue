@@ -2,8 +2,8 @@
 import { ref, inject, onMounted, nextTick, onUnmounted, watch, reactive } from 'vue';
 import ProductCard from '@/components/cards/ProductCard.vue';
 import { ElMessage } from 'element-plus';
-import type Services from '@/ts/types/Services';
-import type { Product } from '@/ts/entities/Product';
+import type { Services } from '@/ts/services';
+import type { Product } from '@/ts/entities';
 
 const props = defineProps({
     params: {
@@ -122,9 +122,7 @@ onUnmounted(() => {
             'empty': !products.length,
             'loading-initial': paginate.loading
         }"
-        :style="{
-            'min-height': bigPage ? '75vh': 'max-content'
-        }"
+        :style="{ 'min-height': bigPage ? '75vh': 'max-content' }"
     >
         <el-empty v-if="!products.length" :description="paginate.loading ? 'Загружаю...' : 'Каталог пуст'"/>
         <div class="contents">
@@ -141,11 +139,10 @@ onUnmounted(() => {
 section {
     gap: 1rem;
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(clamp(200px, 25%, 250px), 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(clamp(250px, 25%, 300px), 1fr));
     content-visibility: auto;
     contain-intrinsic-size: auto 750px;
     position: relative;
-    min-height: 300px;
 }
 
 section.empty {

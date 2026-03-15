@@ -1,10 +1,10 @@
 <script setup lang="ts">
 import { Top, User, Location, Edit, Close, Memo, OfficeBuilding } from '@element-plus/icons-vue';
-import { View } from '@/ts/types/View';
+import { View } from '@/ts/types';
 import { useUserStore } from '@/stores/userStore';
 import { computed, reactive, ref, watch, type Component } from 'vue';
 import { useRoute } from 'vue-router';
-import { UserRole } from '@/ts/entities/User';
+import { UserRole } from '@/ts/entities';
 
 import ChangeProfileModal from '@/components/modals/ChangeProfileModal.vue';
 import ChangePasswordModal from '@/components/modals/ChangePasswordModal.vue';

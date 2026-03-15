@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref } from 'vue';
-import { LegalView } from '@/ts/types/View';
+import { LegalView } from '@/ts/types';
 
 const active = ref<LegalView>(LegalView.TermsOfService);
 </script>

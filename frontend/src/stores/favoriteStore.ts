@@ -1,4 +1,4 @@
-import type { FavoriteList, FavoriteListItem } from "@/ts/entities/Items";
+import type { FavoriteList, FavoriteListItem } from "@/ts/entities";
 import { defineStore } from "pinia";
 
 export const useFavoriteStore = defineStore('favorite', {

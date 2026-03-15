@@ -4,12 +4,9 @@ import { useUserStore } from '@/stores/userStore';
 import { useCartStore } from '@/stores/cartStore';
 import { useFavoriteStore } from '@/stores/favoriteStore';
 import { ElMessage } from 'element-plus';
-import type { LoginData } from '@/ts/types/UserR-R';
-import { default as US } from '@/ts/services/UserService';
-import type { default as AS } from '@/ts/services/ApiService';
-import type Services from '@/ts/types/Services';
-import { AuthState } from '@/ts/types/AuthState';
-import { createRequiredRule, type Rules } from '@/ts/utils/FormRules';
+import { type Services, ApiService as AS, UserService as US } from '@/ts/services';
+import { AuthState, type LoginData } from '@/ts/types';
+import { createRequiredRule, type Rules } from '@/ts/utils';
 
 const [userStore, cartStore, favoriteStore]
 = [useUserStore(), useCartStore(), useFavoriteStore()];

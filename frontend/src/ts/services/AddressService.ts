@@ -1,7 +1,6 @@
-import Repository from "@/ts/services/Repository";
-import type ApiService from "@/ts/services/ApiService";
-import type { Address } from "@/ts/entities/Addresses";
-import type ResponseResult from "@/ts/types/ResponseResult";
+import { Repository, type ApiService } from "@/ts/services"
+import type { Address } from "@/ts/entities"
+import type { ResponseResult } from "@/ts/types"
 /**
  * Address management service
  */

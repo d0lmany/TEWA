@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { Address } from '@/ts/entities/Addresses';
+import type { Address } from '@/ts/entities';
 import { TakeawayBox, MapLocation } from '@element-plus/icons-vue';
 
 const { address } = defineProps<{

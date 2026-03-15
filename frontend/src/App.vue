@@ -2,27 +2,24 @@
 // imports
 import { onMounted, onUnmounted, provide, reactive, ref, watch } from 'vue';
 // extra
-const backendURL = `http://127.0.0.1:8000/api/v1`;
+const backendURL = `http://10.246.203.117:8000/api/v1`;
 // components
 import AppHeader from '@/components/AppHeader.vue';
 import AppFooter from '@/components/AppFooter.vue';
 import LogModal from '@/components/modals/LoginModal.vue';
 import RegModal from '@/components/modals/RegistrationModal.vue';
+// types
+import { type UI, AuthState } from '@/ts/types';
+// entities
+import type { User } from '@/ts/entities';
 // services
-import type Services from '@/ts/types/Services';
-import ApiService from '@/ts/services/ApiService';
-import UserService from '@/ts/services/UserService';
-import CategoryService from '@/ts/services/CategoryService';
-import ProductService from '@/ts/services/ProductService';
-import I18n from '@/ts/services/I18n';
-import CartService from '@/ts/services/CartService';
-import FavoriteService from '@/ts/services/FavoriteService';
-import ClaimService from '@/ts/services/ClaimService';
-import AddressService from "@/ts/services/AddressService";
-import PickupService from "@/ts/services/PickupService";
-import ShopService from "@/ts/services/ShopService";
-import OrderService from '@/ts/services/OrderService';
-import TagService from '@/ts/services/TagService';
+import {
+    type Services, ApiService, UserService,
+    CategoryService, ProductService, I18n,
+    CartService, FavoriteService, ClaimService,
+    AddressService, PickupService, ShopService,
+    OrderService, TagService, ConfigService,
+} from '@/ts/services'
 
 const createServices = (): Services => {
     const api = new ApiService(backendURL);
@@ -38,13 +35,14 @@ const createServices = (): Services => {
     const shop = new ShopService(api);
     const order = new OrderService(api);
     const tag = new TagService(api);
+    const config = new ConfigService(api);
 
     return {
         api, user, category,
         product, i18n, cart,
         favorite, claim, address,
         pickup, shop, order,
-        tag,
+        tag, config, 
     }
 }
 const services = createServices();
@@ -52,11 +50,12 @@ const services = createServices();
 import { useUserStore } from '@/stores/userStore';
 import { useCartStore } from '@/stores/cartStore';
 import { useFavoriteStore } from '@/stores/favoriteStore';
-const [userStore, cartStore, favoriteStore]
-= [useUserStore(), useCartStore(), useFavoriteStore()];
+
+const [userStore, cartStore, favoriteStore, appStore]
+= [useUserStore(), useCartStore(), useFavoriteStore(), useAppStore()];
 // UI
 import { ElMessage, ElNotification } from 'element-plus';
-import type { UI } from '@/ts/types/Provides';
+import { useAppStore } from './stores/appStore';
 const currencyFormatter = new Intl.NumberFormat(navigator.language, {
     style: 'currency',
     currency: 'RUB',
@@ -80,8 +79,6 @@ const footerVisible = ref(false);
 const routerViewRef = ref<HTMLElement>();
 let observer: ResizeObserver | null = null;
 // methods
-import { AuthState } from '@/ts/types/AuthState';
-import type { User } from '@/ts/entities/User';
 const uiMethods = {
     callReg: () => {
         ui.loginVisible = false;
@@ -137,17 +134,28 @@ const checkHeight = () => {
     
     footerVisible.value = routerViewHeight < windowHeight
 }
+const loadConfig = async () => {
+    try {
+        const response = await services.config.index();
+
+        if (response.success && response.data) {
+            appStore.setConfig(response.data);
+        } else {
+            console.error(response);
+            throw new Error(response.message);
+        }
+    } catch (e) {
+        console.error(e);
+        ElMessage.error('Произошла ошибка при конфигурации приложения. Попробуйте войти позже');
+    }
+}
 // provides
 const provides: {
     services: Services,
-    ui: UI,
-    links: Record<string, string>
+    ui: UI
 } = {
     services: services,
-    ui: ui,
-    links: {
-        backendURL
-    }
+    ui: ui
 };
 (Object.keys(provides) as Array<keyof typeof provides>).forEach(key => {
     provide(key, provides[key]);
@@ -165,17 +173,18 @@ if (window.location.origin !== 'http://localhost:5173') {
     })
 }
 
-onMounted(() => {
-    loadUser()
-        .then(state => {
-            if (state === AuthState.Reject) {
-                ElMessage.warning('Не удалось войти');
-            }
-        })
-        .catch(error => {
-            console.error('Unexpected error in loadUser:', error);
-            ElMessage.error('Произошла непредвиденная ошибка');
-        });
+onMounted(async () => {
+    try {
+        await loadConfig();
+
+        const state = await loadUser();
+        if (state === AuthState.Reject) {
+            ElMessage.warning('Не удалось войти');
+        }
+    } catch (error) {
+        console.error('Ошибка при инициализации:', error);
+        ElMessage.error('Не удалось загрузить настройки приложения');
+    }
 
     observer = new ResizeObserver(checkHeight)
     

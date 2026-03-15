@@ -1,7 +1,6 @@
-import type ApiService from "@/ts/services/ApiService";
-import Repository from "@/ts/services/Repository";
-import type { Tag } from "@/ts/entities/Category";
-import type ResponseResult from "@/ts/types/ResponseResult";
+import { Repository, type ApiService } from "@/ts/services"
+import type { Tag } from "@/ts/entities"
+import type { ResponseResult } from "@/ts/types"
 /**
  * Tag management service
  */

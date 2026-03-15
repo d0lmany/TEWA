@@ -1,4 +1,4 @@
-import type { CartItem } from "@/ts/entities/Items";
+import type { CartItem } from "@/ts/entities";
 import { defineStore } from "pinia";
 
 export const useCartStore = defineStore('cart', {
@@ -78,7 +78,8 @@ export const useCartStore = defineStore('cart', {
         }
     },
     getters: {
-        length: state => state.cart.size,
-        asArray: state => state.cart.values(),
+      length: state => state.cart.size,
+      asArray: state => state.cart.values(),
+      volume: state => [...state.cart.values()].reduce((acc, item) => acc + item.quantity, 0),
     }
 });

@@ -4,7 +4,7 @@ import { computed, reactive, ref, watch } from 'vue';
 import { useRoute } from 'vue-router';
 import ProductList from '@/components/cards/ProductList.vue';
 import { Top } from '@element-plus/icons-vue';
-import type Filters from '@/ts/types/Filters';
+import type { Filters } from '@/ts/types';
 
 const route = useRoute();
 const routeQueries = reactive({

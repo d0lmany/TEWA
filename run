@@ -1,28 +1,43 @@
-#!/bin/bash
+#!/usr/bin/env bun
+import { spawn } from "bun";
 
-cleanup() {
-    echo "stopping processes..."
-    kill $BACKEND_PID $FRONTEND_PID 2>/dev/null
-    exit 0
-}
+const getLocalIp = (): string => {
+  const nets = require('os').networkInterfaces();
+  for (const name of Object.keys(nets)) {
+    for (const net of nets[name]!) {
+      if (net.family === 'IPv4' && !net.internal) {
+        return net.address;
+      }
+    }
+  }
+  return '127.0.0.1';
+};
 
-trap cleanup INT TERM
+const host = getLocalIp();
 
-echo "running backend..."
-cd backend
-php artisan serve &
-BACKEND_PID=$!
+console.log(`\x1b[36m Bun оживляет проект на: ${host}\x1b[0m`);
 
-sleep 2
+spawn(["php", "artisan", "serve", `--host=${host}`, "--port=8000"], {
+  cwd: "./backend",
+  stdout: "inherit",
+  stderr: "inherit",
+});
 
-echo "running frontend..."
-cd ../frontend
-bun run dev &
-FRONTEND_PID=$!
+setTimeout(() => {
+  console.log(`\x1b[36m Запуск Vite на ${host}...\x1b[0m`);
+  
+  spawn(["npm", "run", "dev", "--", "--host", host], {
+    cwd: "./frontend",
+    stdout: "inherit",
+    stderr: "inherit",
+  });
+}, 1500);
 
-echo "========================================"
-echo "backend PID: $BACKEND_PID"
-echo "frontend PID: $FRONTEND_PID"
-echo "========================================"
+console.log(`
+\x1b[32m========================================
+  Backend:  http://${host}:8000
+  Frontend: http://${host}:5173
+========================================\x1b[0m
+`);
 
-wait
+setInterval(() => {}, 1000);

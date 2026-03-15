@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { UI } from '@/ts/types/Provides';
+import type { UI } from '@/ts/types';
 import { Moon, Sunny } from '@element-plus/icons-vue';
 import { inject } from 'vue';
 

@@ -6,6 +6,8 @@ import MyFavorite from '@/pages/my/FavoritePage.vue';
 import My from '@/pages/my/ProfilePage.vue';
 import Search from '@/pages/SearchPage.vue';
 import Product from '@/pages/ProductPage.vue';
+import { useUserStore } from '@/stores/userStore';
+import { UserRole } from '@/ts/entities';
 
 const router = createRouter({
     history: createWebHistory(import.meta.env.BASE_URL),
@@ -40,6 +42,14 @@ const router = createRouter({
             component: () => import('@/pages/my/AdminOffice.vue'),
             meta: {
                 title: 'Администрирование',
+            },
+            beforeEnter: (_, __, next) => {
+                const userStore = useUserStore();
+                if (userStore.user.role === UserRole.Admin) {
+                    next();
+                } else {
+                    next({ name: 'Home' });
+                }
             }
         },
         {

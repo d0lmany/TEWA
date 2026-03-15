@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { useUserStore } from '@/stores/userStore';
-import type Services from '@/ts/types/Services';
+import { type Services } from '@/ts/services';
 import { ElMessage } from 'element-plus';
 import { inject, ref } from 'vue';
 import { useRouter, type Router } from 'vue-router';

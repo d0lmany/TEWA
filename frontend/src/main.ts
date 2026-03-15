@@ -17,11 +17,11 @@ import { vUnimplemented } from '@/ts/utils/Unimplemented';
 // bind, mount
 const app = createApp(App);
 
+app.use(createPinia());
 app.use(router);
 app.use(ElementPlus, {
     locale: ru  
 });
-app.use(createPinia());
 
 app.directive('unimplemented', vUnimplemented);
 

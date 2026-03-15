@@ -1,9 +1,6 @@
-import type ApiService from "@/ts/services/ApiService";
-import Repository from "@/ts/services/Repository";
-import type ResponseResult from "@/ts/types/ResponseResult";
-import type { GetRequest } from "@/ts/types/Request";
-import type { FullProduct, Product } from "@/ts/entities/Product";
-import type { PaginatedResult } from "@/ts/types/ResponseResult";
+import { Repository, type ApiService } from "@/ts/services"
+import type { ResponseResult, GetRequest, PaginatedResult } from "@/ts/types"
+import type { FullProduct, Product } from "@/ts/entities"
 /**
  * Product management service
  */

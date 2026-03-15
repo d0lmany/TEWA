@@ -2,12 +2,12 @@
 import CartProductCard from '@/components/cards/CartProductCard.vue';
 import { useCartStore } from '@/stores/cartStore';
 import { useFavoriteStore } from '@/stores/favoriteStore';
-import type { CartProduct } from '@/ts/entities/Items';
-import type Services from '@/ts/types/Services';
+import type { CartProduct } from '@/ts/entities';
+import type { Services } from '@/ts/services';
 import { ElMessage } from 'element-plus';
 import { InfoFilled, ShoppingBag, Top } from '@element-plus/icons-vue';
 import { inject, reactive, ref, watch, computed } from 'vue';
-import type { UI } from '@/ts/types/Provides';
+import type { UI } from '@/ts/types'
 import ProcessOrderModal from '@/components/modals/ProcessOrderModal.vue';
 
 const {
@@ -148,7 +148,7 @@ const toggleFavorite = async (item: CartProduct) => {
 }
 const setCheckedForAll = (definition: boolean) => cart.forEach(item => item.checked = definition);
 const destroyRange = async () => {
-    try {
+  try {
         const items = checkedCartItems.value.map(item => item.id);
         const response = await CartService.destroyRange(items);
 
@@ -184,10 +184,11 @@ loadCart();
         <div class="flex">
             <h1 class="section-header">Корзина</h1>
             <div class="flex gap">
-                <el-text size="large">Товаров всего: {{ cartStore.length }}</el-text>
+                <el-text size="large">Позиций: {{ cartStore.length }}</el-text>
+                <el-text size="large">Товаров: {{ cartStore.volume }}</el-text>
                 <el-button v-if="!isAllChecked" @click="setCheckedForAll(true)">Выбрать все</el-button>
                 <el-button v-else @click="setCheckedForAll(false)">Убрать все</el-button>
-                <el-button @click="destroyRange">Удалить выбранные</el-button>
+                <el-button @click="destroyRange" :disabled="!checkedCartItems.length">Удалить выбранные</el-button>
             </div>
         </div>
         <el-empty
@@ -243,7 +244,7 @@ loadCart();
     </main>
     <aside>
         <div class="flex">
-            <el-text size="large">Товары ({{ checkedCartItems.length }})</el-text>
+            <el-text size="large">Товары ({{ checkedCartItems.reduce((acc, item) => acc + item.quantity, 0) }})</el-text>
             <el-text size="large">{{ formatter.format(totalCheckedCartItems) }}</el-text>
         </div>
         <el-button

@@ -1,11 +1,11 @@
 <script setup lang="ts">
-import { Shop as ShopIcon, InfoFilled, Service, Top, Share, Refresh } from '@element-plus/icons-vue';
-import type { Shop } from '@/ts/entities/Shop';
-import type Services from '@/ts/types/Services';
+import { Shop as ShopIcon, InfoFilled, Service, Top, Share } from '@element-plus/icons-vue';
+import type { Shop } from '@/ts/entities';
+import type { Services } from '@/ts/services';
 import { useRoute, useRouter } from 'vue-router';
 import { inject, onMounted, reactive, ref, computed } from 'vue';
 import { ElMessage } from 'element-plus';
-import type Filters from '@/ts/types/Filters';
+import type { Filters } from '@/ts/types';
 import ClaimModal from '@/components/modals/ClaimModal.vue';
 import SearchFilters from '@/components/SearchFilters.vue';
 import ProductCard from '@/components/cards/ProductCard.vue';

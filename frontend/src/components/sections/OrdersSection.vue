@@ -1,10 +1,10 @@
 <script setup lang="ts">
-import { OrderStatus, type Order } from '@/ts/entities/Order';
-import type Services from '@/ts/types/Services';
+import { OrderStatus, type Order } from '@/ts/entities';
+import { type Services } from '@/ts/services';
 import { ElMessage } from 'element-plus';
 import { computed, inject, onMounted, reactive, ref } from 'vue';
 import OrderCard from '@/components/cards/OrderCard.vue';
-import type { UI } from '@/ts/types/Provides';
+import type { UI } from '@/ts/types';
 
 const OrderService = (inject('services') as Services).order;
 const orders = reactive<Order[]>([]);
@@ -226,7 +226,6 @@ onMounted(() => {
     gap: .5rem;
     display: flex;
     flex-direction: column;
-    overflow-y: scroll;
     max-height: 65vh;
 }
 .soft .el-tag {
@@ -259,7 +258,6 @@ onMounted(() => {
     display: flex;
     gap: 1rem;
     max-width: 100%;
-    overflow-x: scroll;
 }
 .item-card {
     display: flex;

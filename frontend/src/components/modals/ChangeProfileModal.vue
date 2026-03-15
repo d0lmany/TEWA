@@ -1,11 +1,11 @@
 <script setup lang="ts">
 import { computed, inject, reactive, ref } from 'vue';
 import { useUserStore } from '@/stores/userStore';
-import type { User } from '@/ts/entities/User';
+import type { User } from '@/ts/entities';
 import { Plus } from '@element-plus/icons-vue';
 import { ElMessage, type UploadFile, type UploadRawFile } from 'element-plus';
-import type Services from '@/ts/types/Services';
-import { createMaxRule, createMinRule, type Rules } from '@/ts/utils/FormRules';
+import type { Services } from '@/ts/services';
+import { createMaxRule, createMinRule, type Rules } from '@/ts/utils';
 
 const types = ['image/jpeg', 'image/png', 'image/jpg', 'image/webp'];
 const selectedFile = ref<UploadRawFile>();
@@ -20,6 +20,7 @@ const form = reactive<User>({
     name: userStore.user.name,
     birthday: userStore.user.birthday,
     picture: userStore.user.picture,
+    role: userStore.user.role,
 });
 const rules: Rules = {
     name: [
