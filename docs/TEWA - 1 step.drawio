@@ -6868,7 +6868,7 @@
     </mxGraphModel>
   </diagram>
   <diagram name="Копия UX" id="U71Sa_AgDkO1kArk0jkG">
-    <mxGraphModel dx="599" dy="900" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0" adaptiveColors="auto">
+    <mxGraphModel dx="345" dy="733" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0" adaptiveColors="auto">
       <root>
         <mxCell id="n0rN4iEjbdfXVsVUMtqu-0" />
         <mxCell id="n0rN4iEjbdfXVsVUMtqu-1" parent="n0rN4iEjbdfXVsVUMtqu-0" />
@@ -7429,33 +7429,6 @@
         <mxCell id="n0rN4iEjbdfXVsVUMtqu-655" parent="n0rN4iEjbdfXVsVUMtqu-642" style="rounded=0;whiteSpace=wrap;html=1;" value="Поле ввода" vertex="1">
           <mxGeometry height="23" width="120" x="150.5" y="173" as="geometry" />
         </mxCell>
-        <mxCell id="n0rN4iEjbdfXVsVUMtqu-656" parent="n0rN4iEjbdfXVsVUMtqu-642" style="ellipse;whiteSpace=wrap;html=1;aspect=fixed;fontSize=8;rounded=0;labelBackgroundColor=none;" value="i" vertex="1">
-          <mxGeometry height="18" width="18" x="135" y="92" as="geometry" />
-        </mxCell>
-        <mxCell id="n0rN4iEjbdfXVsVUMtqu-657" edge="1" parent="n0rN4iEjbdfXVsVUMtqu-642" source="n0rN4iEjbdfXVsVUMtqu-659" style="edgeStyle=none;curved=1;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;fontSize=12;startSize=8;endSize=8;" target="n0rN4iEjbdfXVsVUMtqu-656" value="ховер">
-          <mxGeometry relative="1" as="geometry" />
-        </mxCell>
-        <mxCell id="n0rN4iEjbdfXVsVUMtqu-658" edge="1" parent="n0rN4iEjbdfXVsVUMtqu-642" source="n0rN4iEjbdfXVsVUMtqu-659" style="edgeStyle=none;curved=1;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;fontSize=12;startSize=8;endSize=8;" target="n0rN4iEjbdfXVsVUMtqu-661" value="ховер">
-          <mxGeometry relative="1" as="geometry" />
-        </mxCell>
-        <mxCell id="n0rN4iEjbdfXVsVUMtqu-659" parent="n0rN4iEjbdfXVsVUMtqu-642" style="rounded=0;whiteSpace=wrap;html=1;" value="объяснение что это и зачем" vertex="1">
-          <mxGeometry height="60" width="120" x="248.5" y="34" as="geometry" />
-        </mxCell>
-        <mxCell id="n0rN4iEjbdfXVsVUMtqu-660" parent="n0rN4iEjbdfXVsVUMtqu-642" style="text;html=1;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontStyle=0;fontSize=14;" value="Режим сайта" vertex="1">
-          <mxGeometry height="30" width="206.5" x="380.5" y="34" as="geometry" />
-        </mxCell>
-        <mxCell id="n0rN4iEjbdfXVsVUMtqu-661" parent="n0rN4iEjbdfXVsVUMtqu-642" style="ellipse;whiteSpace=wrap;html=1;aspect=fixed;fontSize=8;rounded=0;labelBackgroundColor=none;" value="i" vertex="1">
-          <mxGeometry height="18" width="18" x="490.5" y="40" as="geometry" />
-        </mxCell>
-        <mxCell id="n0rN4iEjbdfXVsVUMtqu-662" parent="n0rN4iEjbdfXVsVUMtqu-642" style="rounded=0;whiteSpace=wrap;html=1;" value="" vertex="1">
-          <mxGeometry height="24" width="199.5" x="380.5" y="66" as="geometry" />
-        </mxCell>
-        <mxCell id="n0rN4iEjbdfXVsVUMtqu-663" parent="n0rN4iEjbdfXVsVUMtqu-642" style="rounded=1;whiteSpace=wrap;html=1;" value="Интернет-магазин" vertex="1">
-          <mxGeometry height="20" width="107.5" x="383" y="67" as="geometry" />
-        </mxCell>
-        <mxCell id="n0rN4iEjbdfXVsVUMtqu-664" parent="n0rN4iEjbdfXVsVUMtqu-642" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" value="Маркетплейс" vertex="1">
-          <mxGeometry height="30" width="84.5" x="495.5" y="63" as="geometry" />
-        </mxCell>
         <mxCell id="n0rN4iEjbdfXVsVUMtqu-665" parent="n0rN4iEjbdfXVsVUMtqu-642" style="text;html=1;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontStyle=0;fontSize=14;" value="Коммиссия" vertex="1">
           <mxGeometry height="30" width="206.5" x="377" y="87" as="geometry" />
         </mxCell>
@@ -7812,7 +7785,7 @@
     </mxGraphModel>
   </diagram>
   <diagram name="Копия useCases" id="_PcWgN9oPrj--znwdGzG">
-    <mxGraphModel dx="1810" dy="621" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+    <mxGraphModel dx="1497" dy="419" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
       <root>
         <mxCell id="3KcDMVPgS_z88oyBmRFM-0" />
         <mxCell id="3KcDMVPgS_z88oyBmRFM-1" parent="3KcDMVPgS_z88oyBmRFM-0" />
@@ -8123,12 +8096,6 @@
         </mxCell>
         <mxCell id="3KcDMVPgS_z88oyBmRFM-146" parent="3KcDMVPgS_z88oyBmRFM-1" style="ellipse;whiteSpace=wrap;html=1;fillColor=#60a917;fontColor=#ffffff;strokeColor=#2D7600;" value="Открыть раздел настроек ИС" vertex="1">
           <mxGeometry height="60" width="100" x="420" y="383.31" as="geometry" />
-        </mxCell>
-        <mxCell id="3KcDMVPgS_z88oyBmRFM-147" edge="1" parent="3KcDMVPgS_z88oyBmRFM-1" source="3KcDMVPgS_z88oyBmRFM-148" style="edgeStyle=none;curved=1;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;fontSize=12;startSize=8;endSize=8;dashed=1;" target="3KcDMVPgS_z88oyBmRFM-146" value="ех">
-          <mxGeometry relative="1" as="geometry" />
-        </mxCell>
-        <mxCell id="3KcDMVPgS_z88oyBmRFM-148" parent="3KcDMVPgS_z88oyBmRFM-1" style="ellipse;whiteSpace=wrap;html=1;" value="Сменить режим &quot;Маркетплейс/Онлайн-Магазин&quot;" vertex="1">
-          <mxGeometry height="60" width="100" x="320" y="458" as="geometry" />
         </mxCell>
         <mxCell id="3KcDMVPgS_z88oyBmRFM-149" edge="1" parent="3KcDMVPgS_z88oyBmRFM-1" source="3KcDMVPgS_z88oyBmRFM-150" style="edgeStyle=none;curved=1;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;fontSize=12;startSize=8;endSize=8;dashed=1;" target="3KcDMVPgS_z88oyBmRFM-143" value="ех">
           <mxGeometry relative="1" as="geometry" />

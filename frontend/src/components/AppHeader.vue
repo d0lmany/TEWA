@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, inject, onMounted, reactive } from 'vue';
+import { ref, inject, onMounted, reactive, provide } from 'vue';
 import { Menu, Search, ShoppingCart, Star, User, Close } from '@element-plus/icons-vue';
 import { ElButton, ElMessage } from 'element-plus';
 import { useRouter, type Router } from 'vue-router';
@@ -12,7 +12,6 @@ import type { GroupedCategories } from '@/ts/entities';
 import { getRandomInt } from '@/ts/utils';
 
 const searchQuery = ref<string>('');
-const dialogVisibility = ref<boolean>(false);
 const categories = ref<GroupedCategories>({});
 const router: Router = useRouter();
 const CategoryService: CS = (inject('services') as Services).category;
@@ -98,7 +97,7 @@ onMounted(() => {
         <router-link class="logo" :to="{ name: 'Home' }">
             TEWA
         </router-link>
-        <el-button @click="dialogVisibility = true" class="categoriesButton">
+        <el-button @click="ui.categoriesVisible = true" class="categoriesButton">
             <el-icon class="el-icon--left" :size="22">
                 <Menu />
             </el-icon>
@@ -158,7 +157,7 @@ onMounted(() => {
             </el-button>
         </nav>
     </header>
-    <el-dialog title="Категории" v-model="dialogVisibility" width="75%" top="5vh" center>
+    <el-dialog title="Категории" v-model="ui.categoriesVisible" width="75%" top="5vh" center>
         <div class="categoriesDialog">
             <ul class="categories" v-for="(subs, name, i) in categories" :key="i">
                 <li>{{ name }}</li>
@@ -169,7 +168,7 @@ onMounted(() => {
                             category_id: sub.id,
                             category: sub.name
                         }
-                    }" @click="dialogVisibility = false">{{ sub.name }}</router-link>
+                    }" @click="ui.categoriesVisible = false">{{ sub.name }}</router-link>
                 </li>
             </ul>
         </div>

@@ -4,6 +4,7 @@ export enum View {
 }
 export enum AdminView {
     Home,
+    Categories,
 }
 export enum LegalView {
     TermsOfService,

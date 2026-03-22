@@ -65,8 +65,7 @@ const router = createRouter({
             name: 'Search',
             component: Search,
             meta: {
-                // @ts-ignore
-                title: (route) => `Поиск: ${route.query.q || route.query.category }`
+                title: (route: any) => `Поиск: ${route.query.q || route.query.category }`
             }
         },
         {
@@ -74,8 +73,7 @@ const router = createRouter({
             name: 'Product',
             component: Product,
             meta: {
-                // @ts-ignore
-                title: (route) => `${route.params.slug} на TEWA`
+                title: (route: any) => `${route.params.slug} на TEWA`
             }
         },
         {
@@ -112,26 +110,25 @@ router.beforeEach((to, from, next) => {
             ? nearestWithTitle.meta.title(to)
             : nearestWithTitle.meta.title
         if (to.query.name) {
-            // @ts-ignore
-            pageTitle = `${pageTitle} | ${decodeURIComponent(to.query.name)}`
+            pageTitle = `${pageTitle} | ${decodeURIComponent(to.query.name as string)}`
         }
     }
     document.title = pageTitle
     Array.from(document.querySelectorAll('[data-vue-router-controlled]'))
-            // @ts-ignore
+    // @ts-ignore
         .forEach(el => el.parentNode.removeChild(el))
     const metaTags = to.meta.metaTags || []
     const processedMetaTags = typeof metaTags === 'function'
         ? metaTags(to)
         : metaTags
-            // @ts-ignore
+    // @ts-ignore
     if (!processedMetaTags.some(tag => tag.property === 'og:title')) {
         processedMetaTags.push({
             property: 'og:title',
             content: pageTitle
         })
     }
-            // @ts-ignore
+    // @ts-ignore
     processedMetaTags.forEach(tagDef => {
         const tag = document.createElement('meta')
         Object.keys(tagDef).forEach(key => {

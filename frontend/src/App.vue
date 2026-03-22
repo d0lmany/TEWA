@@ -2,7 +2,7 @@
 // imports
 import { onMounted, onUnmounted, provide, reactive, ref, watch } from 'vue';
 // extra
-const backendURL = `http://10.246.203.117:8000/api/v1`;
+const backendURL = `http://127.0.0.1:8001/api/v1`;
 // components
 import AppHeader from '@/components/AppHeader.vue';
 import AppFooter from '@/components/AppFooter.vue';
@@ -72,6 +72,7 @@ const ui = reactive<UI>({
     darkTheme: false,
     regVisible: false,
     loginVisible: false,
+    categoriesVisible: false,
     currencyFormatter,
     dateFormatter,
 });
@@ -165,7 +166,7 @@ watch(() => ui.darkTheme, uiMethods.changeTheme);
 // logic
 ui.darkTheme = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
 
-if (window.location.origin !== 'http://localhost:5173') {
+if (!window.location.origin.includes('localhost')) {
     ElNotification({
         title: 'Внимание',
         message: 'Это тестовый релиз для дипломного проекта, не пытайтесь воспользоваться системой',

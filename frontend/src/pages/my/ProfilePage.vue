@@ -89,7 +89,7 @@ watch(
                 :src="userStore.user.picture"
                 style="width: 200px; height: 200px;"
             ><el-icon :size="48"><User/></el-icon></el-avatar>
-            <figcaption>{{ userStore.user.name }}, {{ age }}</figcaption>
+            <figcaption>{{ userStore.user.name }}<br>{{ age }}</figcaption>
         </figure>
         <el-button-group class="buttons">
             <el-button text

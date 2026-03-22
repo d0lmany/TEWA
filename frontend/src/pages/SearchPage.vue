@@ -58,8 +58,7 @@ const set = () => {
     
     (Object.keys(filters.value) as Array<keyof Filters>).forEach(key => {
         if (filters.value[key]) {
-            // @ts-ignore-next-line
-            cleanFilters[key] = filters.value[key];
+            (cleanFilters[key] as any) = filters.value[key];
         }
     });
 

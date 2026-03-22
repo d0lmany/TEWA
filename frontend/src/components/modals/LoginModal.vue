@@ -6,7 +6,7 @@ import { useFavoriteStore } from '@/stores/favoriteStore';
 import { ElMessage } from 'element-plus';
 import { type Services, ApiService as AS, UserService as US } from '@/ts/services';
 import { AuthState, type LoginData } from '@/ts/types';
-import { createRequiredRule, type Rules } from '@/ts/utils';
+import { createMinRule, createRequiredRule, createTypeRule, type Rules } from '@/ts/utils';
 
 const [userStore, cartStore, favoriteStore]
 = [useUserStore(), useCartStore(), useFavoriteStore()];
@@ -18,8 +18,8 @@ const loading = ref(false);
 const UserService: US = (inject('services') as Services).user;
 const ApiService: AS = (inject('services') as Services).api;
 const rules: Rules = {
-    email: [ createRequiredRule('Почта') ],
-    password: [ createRequiredRule('Пароль') ]
+    email: [ createRequiredRule('Почта'), createTypeRule('email') ],
+    password: [ createRequiredRule('Пароль'), createMinRule(8) ]
 };
 const visible = defineModel({
     type: Boolean,
@@ -103,11 +103,11 @@ const handleSubmit = async () => {
         :rules="rules"
     >
     <el-form-item label="Почта" prop="email">
-        <el-input v-model="form.email"/>
+        <el-input v-model="form.email" clearable/>
     </el-form-item>
     <el-form-item></el-form-item>
     <el-form-item label="Пароль" prop="password">
-        <el-input v-model="form.password" type="password" show-password/>
+        <el-input v-model="form.password" type="password" show-password clearable/>
     </el-form-item>
         <el-form-item style="margin-bottom:0">
             <div class="flex" style="width:100%">

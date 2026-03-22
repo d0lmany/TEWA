@@ -192,6 +192,7 @@ const handleSubmit = async () => {
             <el-form-item label="Почта" prop="email">
                 <el-input
                     v-model="form.email"
+                    type="email"
                     placeholder="Введите вашу почту"
                 />
             </el-form-item>
@@ -213,7 +214,7 @@ const handleSubmit = async () => {
                     show-password
                 />
             </el-form-item>
-            <el-form-item label="Повторите пароль" prop="passwordConfirmation">
+            <el-form-item label="Повторите пароль" prop="password_confirmation">
                 <el-input
                     v-model="form.password_confirmation"
                     type="password"

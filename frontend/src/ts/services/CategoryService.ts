@@ -1,5 +1,5 @@
 import type { Category, GroupedCategories } from "@/ts/entities"
-import type { ResponseResult } from "@/ts/types"
+import type { RawCategory, ResponseResult } from "@/ts/types"
 import { Repository, type ApiService } from '@/ts/services'
 /**
  * Category management service
@@ -65,4 +65,14 @@ export default class CategoryService
             };
         }
     }
+
+    public store = async (data: RawCategory) => await this.repo.store({ data })
+
+    public update = async (id: number, data: Partial<RawCategory>) => await this.repo.update({
+        url: `categories/${id}`, data
+    })
+
+    public destroy = async (id: number) => await this.repo.destroy({
+        url: `/categories/${id}`
+    })
 }

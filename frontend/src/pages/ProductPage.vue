@@ -723,8 +723,9 @@ watch(
                         <hr v-if="userStore.isAuth" style="margin-block: 1rem; color: var(--el-card-border-color);">
                         <div v-if="userStore.isAuth">
                             <el-button
-                                type="danger" text
+                                type="danger" plain round
                                 @click="claimFormVisible = true"
+                                style="width: 100%"
                             >
                                 <el-icon class="el-icon--left"><Service/></el-icon>
                                 Пожаловаться

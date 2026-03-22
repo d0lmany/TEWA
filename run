@@ -1,43 +1,23 @@
 #!/usr/bin/env bun
 import { spawn } from "bun";
 
-const getLocalIp = (): string => {
-  const nets = require('os').networkInterfaces();
-  for (const name of Object.keys(nets)) {
-    for (const net of nets[name]!) {
-      if (net.family === 'IPv4' && !net.internal) {
-        return net.address;
-      }
-    }
-  }
-  return '127.0.0.1';
-};
-
-const host = getLocalIp();
-
-console.log(`\x1b[36m Bun оживляет проект на: ${host}\x1b[0m`);
-
-spawn(["php", "artisan", "serve", `--host=${host}`, "--port=8000"], {
+console.log(`\x1b[36m running backend...\x1b[0m`)
+const backend = spawn(["php", "artisan", "serve"], {
   cwd: "./backend",
   stdout: "inherit",
   stderr: "inherit",
 });
 
-setTimeout(() => {
-  console.log(`\x1b[36m Запуск Vite на ${host}...\x1b[0m`);
-  
-  spawn(["npm", "run", "dev", "--", "--host", host], {
-    cwd: "./frontend",
-    stdout: "inherit",
-    stderr: "inherit",
-  });
-}, 1500);
+console.log(`\x1b[36m running frontend...\x1b[0m`);
+const frontend = spawn(["npm", "run", "dev"], {
+  cwd: "./frontend",
+  stdout: "inherit",
+  stderr: "inherit",
+});
 
 console.log(`
 \x1b[32m========================================
-  Backend:  http://${host}:8000
-  Frontend: http://${host}:5173
+  Backend:  ${backend.pid}
+  Frontend: ${frontend.pid}
 ========================================\x1b[0m
 `);
-
-setInterval(() => {}, 1000);

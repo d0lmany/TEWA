@@ -1,15 +1,18 @@
 <script setup lang="ts">
 import HomeAdmin from '@/components/sections/HomeAdmin.vue';
+import categories from '@/components/sections/categories.vue';
 import { AdminView } from '@/ts/types';
-import { House, Back } from '@element-plus/icons-vue';
+import { House, Back, Menu } from '@element-plus/icons-vue';
 import { ref, type Component } from 'vue';
 
 const currentView = ref<AdminView>(AdminView.Home);
 const views = [
-    { type: AdminView.Home, name: 'Главная', icon: House }
+    { type: AdminView.Home, name: 'Главная', icon: House },
+    { type: AdminView.Categories, name: 'Категории', icon: Menu }
 ];
 const sections: Record<AdminView, Component> = {
     [AdminView.Home]: HomeAdmin,
+    [AdminView.Categories]: categories,
 };
 </script>
 <template>
@@ -21,6 +24,7 @@ const sections: Record<AdminView, Component> = {
                 v-for="view in views"
                 :key="view.type"
                 :type="currentView === view.type ? 'primary' : ''"
+                @click="currentView = view.type"
             >
                 <el-icon class="el-icon--left" :size="20">
                     <component :is="view.icon"/>
