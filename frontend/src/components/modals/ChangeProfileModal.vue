@@ -16,17 +16,13 @@ const visible = defineModel({
     required: true,
 });
 const formRef = ref();
-const form = reactive<User>({
+const form = reactive<Omit<User, 'role'>>({
     name: userStore.user.name,
     birthday: userStore.user.birthday,
     picture: userStore.user.picture,
-    role: userStore.user.role,
 });
 const rules: Rules = {
-    name: [
-        createMinRule(2),
-        createMaxRule(255),
-    ],
+    name: [ createMinRule(2), createMaxRule(255) ],
     birthday: [
         {
             validator: (_: any, value: any, callback: Function) => {
@@ -86,19 +82,19 @@ const handleSubmit = async () => {
             formData.append('picture', selectedFile.value);
         }
 
-        if (form.name && form.name !== userStore.user.name) {
+        if (form.name) {
             formData.append('name', form.name);
         }
 
-        if (form.birthday && form.birthday !== userStore.user.birthday) {
+        if (form.birthday) {
             formData.append('birthday', form.birthday);
         }
 
         const response = await UserService.updatePersonalData(formData);
 
-        if (response.success) {
+        if (response.success && response.data) {
             ElMessage.success('Успешно обновлено!');
-            userStore.login(response.data.data);
+            userStore.login(response.data);
             visible.value = false;
         } else {
             console.error(response);
@@ -112,6 +108,12 @@ const handleSubmit = async () => {
 }
 
 const imageUrl = computed<string>(() => (selectedFile.value ? URL.createObjectURL(selectedFile.value) : form.picture) ?? '')
+const isUpdateDisabled = computed(() => {
+    const sameName = form.name.trim() === userStore.user.name.trim();
+    const sameBirthday = form.birthday === userStore.user.birthday;
+
+    return !(sameName === false || sameBirthday === false);
+})
 
 const emit = defineEmits(['openChangePassword', 'deleteAccount']);
 </script>
@@ -189,6 +191,7 @@ const emit = defineEmits(['openChangePassword', 'deleteAccount']);
                 :loading="loading"
                 native-type="submit"
                 form="changeProfileForm"
+                :disabled="isUpdateDisabled"
             >
                 Изменить
             </el-button>

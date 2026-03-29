@@ -54,7 +54,7 @@ export default class UserService
         url: '/auth/login', data
     })
 
-    public updatePersonalData = async (data: FormData) => await this.repo.store({
+    public updatePersonalData = async (data: FormData): Promise<ResponseResult<User>> => await this.repo.store({
         url: '/auth/update', data, headers: { 'Content-Type': 'multipart/form-data' }
     });
 

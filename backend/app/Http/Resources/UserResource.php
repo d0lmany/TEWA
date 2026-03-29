@@ -16,6 +16,7 @@ class UserResource extends JsonResource
                 ? url('storage/' . $this->picture)
                 : null,
             'role' => $this->role,
+            'seller' => new SellerResource($this->whenLoaded('seller'))
         ];
     }
 }

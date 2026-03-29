@@ -13,6 +13,7 @@ import OrderService from "./OrderService"
 import TagService from "./TagService"
 import Repository from "./Repository"
 import ConfigService from "./ConfigService"
+import SellerService from "./SellerService"
 
 export {
     ApiService,
@@ -30,6 +31,7 @@ export {
     TagService,
     Repository,
     ConfigService,
+    SellerService,
 }
 
 export interface Services {
@@ -47,4 +49,5 @@ export interface Services {
     order: OrderService,
     tag: TagService,
     config: ConfigService,
+    seller: SellerService,
 }

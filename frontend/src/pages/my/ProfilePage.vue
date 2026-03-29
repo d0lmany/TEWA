@@ -1,7 +1,8 @@
 <script setup lang="ts">
-import { Top, User, Location, Edit, Close, Memo, OfficeBuilding } from '@element-plus/icons-vue';
-import { View } from '@/ts/types';
+import { Top, User, Location, Edit, Close, Memo, OfficeBuilding, Shop } from '@element-plus/icons-vue';
+import { AppMode, View } from '@/ts/types';
 import { useUserStore } from '@/stores/userStore';
+import { useAppStore } from '@/stores/appStore';
 import { computed, reactive, ref, watch, type Component } from 'vue';
 import { useRoute } from 'vue-router';
 import { UserRole } from '@/ts/entities';
@@ -10,6 +11,7 @@ import ChangeProfileModal from '@/components/modals/ChangeProfileModal.vue';
 import ChangePasswordModal from '@/components/modals/ChangePasswordModal.vue';
 import LogoutModal from '@/components/modals/LogoutModal.vue';
 import DeleteAccountModal from '@/components/modals/DeleteAccountModal.vue';
+import becomeASeller from '@/components/modals/become-a-seller.vue';
 
 import AddressesSection from '@/components/sections/AddressesSection.vue';
 import OrdersSection from '@/components/sections/OrdersSection.vue';
@@ -23,12 +25,13 @@ const sections: Record<View, Component> = {
     [View.Addresses]: AddressesSection,
     [View.Orders]: OrdersSection,
 };
-const userStore = useUserStore();
+const [userStore, appStore] = [useUserStore(), useAppStore()];
 const visibilities = reactive({
     changeProfile: false,
     changePassword: false,
     wannaLogout: false,
     accountDeleting: false,
+    becomeASeller: false,
 });
 const route = useRoute();
 
@@ -86,7 +89,7 @@ watch(
             <el-avatar
                 size="large"
                 shape="square"
-                :src="userStore.user.picture"
+                :src="userStore?.user?.picture"
                 style="width: 200px; height: 200px;"
             ><el-icon :size="48"><User/></el-icon></el-avatar>
             <figcaption>{{ userStore.user.name }}<br>{{ age }}</figcaption>
@@ -120,6 +123,22 @@ watch(
             </el-button>
             <el-button
                 text
+                v-if="(userStore.user.role === UserRole.Admin && appStore.mode === AppMode.Shop) || !!userStore.user.seller"
+                @click="$router.push({ name: 'SellerOffice' })"
+            >
+                <el-icon class="el-icon--left" :size="20"><Shop/></el-icon>
+                Кабинет продавца
+            </el-button>
+            <el-button
+                text
+                v-else
+                @click="visibilities.becomeASeller = true"
+            >
+                <el-icon class="el-icon--left" :size="20"><Shop/></el-icon>
+                Стать продавцом
+            </el-button>
+            <el-button
+                text
                 type="danger"
                 @click="visibilities.wannaLogout = true"
             >
@@ -144,6 +163,7 @@ watch(
     <change-password-modal v-model="visibilities.changePassword"/>
     <logout-modal v-model="visibilities.wannaLogout"/>
     <delete-account-modal v-model="visibilities.accountDeleting"/>
+    <become-a-seller v-model="visibilities.becomeASeller"/>
 </div>
 </template>
 <style scoped>

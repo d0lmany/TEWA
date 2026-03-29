@@ -3,7 +3,7 @@ import { defineStore } from "pinia";
 import { useCartStore } from "./cartStore";
 import { useFavoriteStore } from "./favoriteStore";
 
-export const useUserStore = defineStore('userData', {
+export const useUserStore = defineStore('user', {
     state: (): UserData => ({
         isAuth: false,
         user: {

@@ -12,7 +12,9 @@ class SellerResource extends JsonResource
         return [
             'full_name' => $this->full_name,
             'code' => $this->code,
-            'type' => $this->type
+            'type' => $this->type,
+            'shops' => ShopResource::collection($this->whenLoaded('shops')),
+            'verified_at' => $this->verified_at,
         ];
     }
 }

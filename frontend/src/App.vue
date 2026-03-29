@@ -2,7 +2,7 @@
 // imports
 import { onMounted, onUnmounted, provide, reactive, ref, watch } from 'vue';
 // extra
-const backendURL = `http://127.0.0.1:8001/api/v1`;
+const backendURL = `http://127.0.0.1:8000/api/v1`;
 // components
 import AppHeader from '@/components/AppHeader.vue';
 import AppFooter from '@/components/AppFooter.vue';
@@ -19,6 +19,7 @@ import {
     CartService, FavoriteService, ClaimService,
     AddressService, PickupService, ShopService,
     OrderService, TagService, ConfigService,
+    SellerService,
 } from '@/ts/services'
 
 const createServices = (): Services => {
@@ -36,13 +37,14 @@ const createServices = (): Services => {
     const order = new OrderService(api);
     const tag = new TagService(api);
     const config = new ConfigService(api);
+    const seller = new SellerService(api);
 
     return {
         api, user, category,
         product, i18n, cart,
         favorite, claim, address,
         pickup, shop, order,
-        tag, config, 
+        tag, config, seller,
     }
 }
 const services = createServices();

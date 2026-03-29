@@ -10,3 +10,6 @@ export enum LegalView {
     TermsOfService,
     PersonalDataPolicy,
 }
+export enum SellerView {
+    Home,
+}

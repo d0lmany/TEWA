@@ -61,7 +61,9 @@ class AuthController extends Controller
 
     public function show(): UserResource|JsonResponse {
         try {
+            /** @var \App\Models\User $user */
             $user = Auth::user();
+            $user->load('seller.shops');
 
             return new UserResource($user);
         } catch (Exception $e) {
@@ -78,7 +80,7 @@ class AuthController extends Controller
         $user = Auth::user();
         $data = $request->validated();
         
-        if (isset($validatedData['delete_picture']) && $validatedData['delete_picture']) {
+        if (isset($data['delete_picture']) && $data['delete_picture']) {
             if ($user->picture) {
                 Storage::disk('public')->delete($user->picture);
             }

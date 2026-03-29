@@ -16,7 +16,7 @@ class SellerVerification extends Model
 
     protected $fillable = [
         'user_id', 'passport_numbers',
-        'passport_scan',
+        'passport_scan', 'created_at'
     ];
 
     public $timestamps = false;

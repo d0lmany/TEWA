@@ -7,7 +7,9 @@ import My from '@/pages/my/ProfilePage.vue';
 import Search from '@/pages/SearchPage.vue';
 import Product from '@/pages/ProductPage.vue';
 import { useUserStore } from '@/stores/userStore';
+import { useAppStore } from '@/stores/appStore';
 import { UserRole } from '@/ts/entities';
+import { AppMode } from '@/ts/types';
 
 const router = createRouter({
     history: createWebHistory(import.meta.env.BASE_URL),
@@ -46,6 +48,22 @@ const router = createRouter({
             beforeEnter: (_, __, next) => {
                 const userStore = useUserStore();
                 if (userStore.user.role === UserRole.Admin) {
+                    next();
+                } else {
+                    next({ name: 'Home' });
+                }
+            }
+        },
+        {
+            path: '/my/office',
+            name: 'SellerOffice',
+            component: () => import('@/pages/my/SellerOffice.vue'),
+            meta: {
+                title: 'Кабинет продавца'
+            },
+            beforeEnter: (_, __, next) => {
+                const userStore = useUserStore(), appStore = useAppStore();
+                if ((userStore.user.role === UserRole.Admin && appStore.mode === AppMode.Shop) || !!userStore.user.seller) {
                     next();
                 } else {
                     next({ name: 'Home' });

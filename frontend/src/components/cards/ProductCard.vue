@@ -28,6 +28,8 @@ const rating = computed(() => parseFloat(product.feedbacks.rating.toString()).to
     @click="showProduct"
     header-class="product-card-header"
     role="article"
+    tabindex="0"
+    @keydown.enter="showProduct"
 >
     <template #header>
         <el-image :src="product.photo" fit="contain" lazy class="img"/>

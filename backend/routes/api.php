@@ -12,6 +12,7 @@ use App\Http\Controllers\API\CategoryController;
 use App\Http\Controllers\API\ConfigController;
 use App\Http\Controllers\API\FavoriteController;
 use App\Http\Controllers\API\OrderController;
+use App\Http\Controllers\API\SellerController;
 use App\Http\Controllers\API\ShopController;
 use App\Http\Controllers\API\TagController;
 
@@ -75,7 +76,9 @@ Route::prefix('v1')->middleware('throttle:75,1')->group(function () use ($conf) 
             }
             // настройки
             Route::get('config', [ConfigController::class, 'index']);
-            Route::patch('/config/mode', [ConfigController::class, 'changeMode']);
+            Route::patch('config/mode', [ConfigController::class, 'changeMode']);
+            // модерация
+            Route::post('sellers', [SellerController::class, 'store']);
         });
     });
 });
