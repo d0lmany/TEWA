@@ -12,6 +12,7 @@ import ChangePasswordModal from '@/components/modals/ChangePasswordModal.vue';
 import LogoutModal from '@/components/modals/LogoutModal.vue';
 import DeleteAccountModal from '@/components/modals/DeleteAccountModal.vue';
 import becomeASeller from '@/components/modals/become-a-seller.vue';
+import SelectAShop from '@/components/modals/select-a-shop.vue';
 
 import AddressesSection from '@/components/sections/AddressesSection.vue';
 import OrdersSection from '@/components/sections/OrdersSection.vue';
@@ -32,6 +33,7 @@ const visibilities = reactive({
     wannaLogout: false,
     accountDeleting: false,
     becomeASeller: false,
+    selectAShop: false,
 });
 const route = useRoute();
 
@@ -124,7 +126,7 @@ watch(
             <el-button
                 text
                 v-if="(userStore.user.role === UserRole.Admin && appStore.mode === AppMode.Shop) || !!userStore.user.seller"
-                @click="$router.push({ name: 'SellerOffice' })"
+                @click="visibilities.selectAShop = true"
             >
                 <el-icon class="el-icon--left" :size="20"><Shop/></el-icon>
                 Кабинет продавца
@@ -164,6 +166,7 @@ watch(
     <logout-modal v-model="visibilities.wannaLogout"/>
     <delete-account-modal v-model="visibilities.accountDeleting"/>
     <become-a-seller v-model="visibilities.becomeASeller"/>
+    <select-a-shop v-model="visibilities.selectAShop"/>
 </div>
 </template>
 <style scoped>

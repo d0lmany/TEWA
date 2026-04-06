@@ -1,15 +1,18 @@
 <script setup lang="ts">
 import homeSeller from '@/components/sections/home-seller.vue';
+import financesSeller from '@/components/sections/finances-seller.vue';
 import { SellerView } from '@/ts/types';
 import { ref, type Component } from 'vue';
-import { House, Back } from '@element-plus/icons-vue';
+import { House, Back, Money } from '@element-plus/icons-vue';
 
 const currentView = ref<SellerView>(SellerView.Home);
 const views = [
     { type: SellerView.Home, name: 'Главная', icon: House },
+    { type: SellerView.Finances, name: 'Финансы', icon: Money },
 ]
 const sections: Record<SellerView, Component> = {
     [SellerView.Home]: homeSeller,
+    [SellerView.Finances]: financesSeller,
 }
 </script>
 <template>

@@ -12,4 +12,5 @@ export enum LegalView {
 }
 export enum SellerView {
     Home,
+    Finances,
 }

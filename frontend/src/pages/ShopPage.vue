@@ -14,7 +14,7 @@ import { useUserStore } from '@/stores/userStore';
 const {
     shop: ShopService,
     i18n,
-} = (inject('services') as Services);
+} = inject('services') as Services;
 const shop = reactive<Partial<Shop>>({});
 const loading = ref(true);
 const [route, router] = [useRoute(), useRouter()];
@@ -82,9 +82,7 @@ const filteredItems = computed(() => {
     });
 });
 
-onMounted(() => {
-    getShop()
-})
+onMounted(getShop)
 </script>
 <template>
 <main>

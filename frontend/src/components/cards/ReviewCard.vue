@@ -64,4 +64,7 @@ p {
     font-size: .75rem;
     right: 0;
 }
+.el-card:deep(.el-card__footer) {
+    padding: 1rem;
+}
 </style>
