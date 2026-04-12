@@ -14,7 +14,6 @@ class ShopController extends Controller
         try {
         $shop->load([
             'seller',
-            'products.category',
         ])
         ->loadCount('reviews');
 

@@ -76,7 +76,7 @@
                         />
                     </el-form-item>
                 </div>
-                <el-form-item label="Скан паспорта" prop="passport_scan"  style="margin-bottom: 0">
+                <el-form-item label="Скан паспорта" prop="passport_scan" style="margin-bottom: 0">
                     <el-upload
                         :show-file-list="false"
                         :auto-upload="false"
@@ -121,10 +121,7 @@ import { createMaxRule, createMinRule, createRequiredRule, type Rules } from '@/
 import { ElMessage, type UploadFile } from 'element-plus'
 import type { Services } from '@/ts/services'
 
-const visible = defineModel({
-    type: Boolean,
-    required: true,
-})
+const visible = defineModel<boolean>()
 const formRef = ref()
 const selectedFile = ref<File>()
 const loading = ref(false);

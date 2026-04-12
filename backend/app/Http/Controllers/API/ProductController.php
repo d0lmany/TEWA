@@ -70,6 +70,11 @@ class ProductController extends Controller
             }
         }
 
+        if ($request->filled('shop_id') && intval($request->shop_id) !== 0) {
+            $shop_id = intval($request->shop_id);
+            $query->where('shop_id', $shop_id);
+        }
+
         $sortField = $request->get('sort', 'reviews_count');
         $sortDirection = in_array($request->get('direction'), ['ASC', 'DESC']) 
             ? $request->get('direction') 

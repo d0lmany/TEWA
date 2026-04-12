@@ -33,7 +33,7 @@ class StoreProductRequest extends FormRequest
             'status' => ['sometimes', 'string', Rule::in(['on', 'off', 'draft'])],
         ];
 
-        if ($isShop) {
+        if (!$isShop) {
             $rules['shop_id'] = ['required', 'exists:shops,id'];
         }
 

@@ -12,9 +12,6 @@ import { Top } from '@element-plus/icons-vue';
 </template>
 <style scoped>
 main {
-    background: var(--el-color-primary-light-9);
-    padding: 1rem;
-    border-radius: 1rem;
-    margin: 1rem;
+    margin: 1rem 2rem;
 }
 </style>

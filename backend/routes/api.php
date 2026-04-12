@@ -72,7 +72,7 @@ Route::prefix('v1')->middleware('throttle:75,1')->group(function () use ($conf) 
             // контент
             Route::apiResource('categories', CategoryController::class)->except(['index', 'show']);
             if ($conf['mode'] === 'shop') {
-                Route::apiResource('products', ProductController::class)->only(['update', 'destroy', 'post']);
+                Route::apiResource('products', ProductController::class)->only(['update', 'destroy', 'store']);
             }
             // настройки
             Route::get('config', [ConfigController::class, 'index']);

@@ -23,7 +23,7 @@ class UpdateProductRequest extends FormRequest
                 'mimetypes:image/jpeg,image/png,image/jpg,image/webp'],
             'category_id' => ['required', 'exists:categories,id'],
             'tags' => ['sometimes', 'array'],
-            'tags.*' => ['string'],
+            'tags.*' => ['integer'],
             'discount' => ['sometimes', 'numeric', 'min:0', 'max:100'],
             'status' => ['sometimes', 'string', Rule::in(['on', 'off', 'draft'])],
         ];

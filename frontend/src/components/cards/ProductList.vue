@@ -1,43 +1,44 @@
 <script setup lang="ts">
-import { ref, inject, onMounted, nextTick, onUnmounted, watch, reactive } from 'vue';
+import { ref, inject, onMounted, nextTick, onUnmounted, watch, reactive, type Component } from 'vue';
 import ProductCard from '@/components/cards/ProductCard.vue';
 import { ElMessage } from 'element-plus';
 import type { Services } from '@/ts/services';
 import type { Product } from '@/ts/entities';
+import type { Filters } from '@/ts/types';
 
-const props = defineProps({
-    params: {
-        type: Object,
-        default: () => {}
-    },
-    firstPage: {
-        type: Number,
-        default: 1
-    },
-    lastPage: {
-        type: Number,
-        default: null
-    },
-    bigPage: {
-        type: Boolean,
-        default: false
-    }
-});
-
+const props = withDefaults(defineProps<{
+    params?: {
+        q?: string
+        sort?: string
+        direction?: string
+        shop_id?: number
+    } & Filters
+    firstPage?: number
+    lastPage?: number
+    bigPage?: boolean
+    card?: Component
+}>(), {
+    card: ProductCard,
+    firstPage: 1,
+})
 const ProductService = (inject('services') as Services).product;
 const products = reactive<Product[]>([]);
 const paginate = reactive<{
-    observer: IntersectionObserver | null,
-    page: number,
-    loading: boolean,
-    hasMore: boolean,
+    observer: IntersectionObserver | null
+    page: number
+    loading: boolean
+    hasMore: boolean
 }>({
     observer: null,
-    page: props.firstPage,
+    page: props.firstPage || 0,
     loading: false,
     hasMore: true,
 });
 const sentinel = ref(null);
+
+defineExpose({
+    products,
+})
 
 const fetchProducts = async () => {
     if (paginate.loading || !paginate.hasMore) return;
@@ -82,7 +83,7 @@ const fetchProducts = async () => {
 
 watch(() => [props.params, props.firstPage, props.lastPage], () => {
     products.splice(0);
-    paginate.page = props.firstPage;
+    paginate.page = props.firstPage || 0;
     paginate.hasMore = true;
     paginate.loading = false;
     if (paginate.observer) {
@@ -126,10 +127,11 @@ onUnmounted(() => {
     >
         <el-empty v-if="!products.length" :description="paginate.loading ? 'Загружаю...' : 'Каталог пуст'"/>
         <div class="contents">
-            <product-card
+            <component
                 v-for="product in products"
                 :product="product"
                 :key="product.id"
+                :is="card"
             />
             <div ref="sentinel" style="height:1px"></div>
         </div>

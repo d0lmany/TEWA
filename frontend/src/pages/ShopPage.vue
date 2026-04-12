@@ -1,15 +1,15 @@
 <script setup lang="ts">
 import { Shop as ShopIcon, InfoFilled, Service, Top, Share } from '@element-plus/icons-vue';
-import type { Shop } from '@/ts/entities';
+import type { Product, Shop } from '@/ts/entities';
 import type { Services } from '@/ts/services';
 import { useRoute, useRouter } from 'vue-router';
-import { inject, onMounted, reactive, ref, computed } from 'vue';
+import { inject, onMounted, reactive, ref } from 'vue';
 import { ElMessage } from 'element-plus';
 import type { Filters } from '@/ts/types';
 import ClaimModal from '@/components/modals/ClaimModal.vue';
 import SearchFilters from '@/components/SearchFilters.vue';
-import ProductCard from '@/components/cards/ProductCard.vue';
 import { useUserStore } from '@/stores/userStore';
+import ProductList from '@/components/cards/ProductList.vue';
 
 const {
     shop: ShopService,
@@ -21,6 +21,7 @@ const [route, router] = [useRoute(), useRouter()];
 const claimFormVisible = ref(false);
 const filters = reactive<Filters>({});
 const userStore = useUserStore();
+const productListRef = ref<{ products: Product[] }>()
 
 const getShop = async () => {
     try {
@@ -58,29 +59,6 @@ const copy = async (target: string) => {
         ElMessage.error(`Не удалось скопировать "${target}": ${e}`);
     }
 }
-const filteredItems = computed(() => {
-    if (!shop?.products) return [];
-    return shop.products.filter(product => {
-        const rating = product.feedbacks?.rating || 0;
-        const price = product.price?.final_price || 0;
-        const tags = product.tags || [];
-        
-        if (rating <= (filters.min_rating || 0)) return false;
-        
-        if (price <= (filters.min_price || 0)) return false;
-        if (price >= (filters.max_price || Infinity)) return false;
-        
-        if (filters.category_id && product.category?.id !== filters.category_id) return false;
-        
-        if (filters.tags?.length) {
-            const tagNames = new Set(tags.map(t => t.name));
-            const hasTag = filters.tags.some(tag => tagNames.has(tag));
-            if (!hasTag) return false;
-        }
-        
-        return true;
-    });
-});
 
 onMounted(getShop)
 </script>
@@ -132,7 +110,7 @@ onMounted(getShop)
                 </h1>
                 <div class="flex gap">
                     <el-tag v-if="shop.rating">Рейтинг: {{ shop.rating.toFixed(1) }}</el-tag>
-                    <el-tag v-if="shop.products">Товары: {{ shop.products.length }}</el-tag>
+                    <el-tag v-if="productListRef?.products.length">Товары: {{ productListRef?.products.length }}</el-tag>
                     <el-tag v-if="shop.reviewsCount">Отзывы: {{ shop.reviewsCount }}</el-tag>
                 </div>
             </div>
@@ -165,14 +143,11 @@ onMounted(getShop)
             />
         </aside>
         <div class="main">
-            <section v-if="filteredItems.length">
-                <product-card
-                    v-for="product in filteredItems"
-                    :product="product"
-                    :key="product?.id"
-                />
-            </section>
-            <el-empty v-else description="У этого магазина нет товаров"/>
+            <product-list
+                :params="{ shop_id: shop.id }"
+                ref="productListRef"
+                style="width: 100%;"
+            />
         </div>
         <el-backtop>
             <el-icon :size="24"><top/></el-icon>
@@ -212,12 +187,5 @@ aside, .main {
     display: flex;
     flex-direction: column;
     gap: 1rem;
-}
-.main section {
-    gap: 1rem;
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(clamp(200px, 25%, 250px), 1fr));
-    content-visibility: auto;
-    contain-intrinsic-size: auto 750px;
 }
 </style>

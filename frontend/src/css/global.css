@@ -1,6 +1,7 @@
 /* main */
 html {
     font-size: 16px;
+    scrollbar-width: none;
 }
 body {
     margin: 0;
