@@ -17,6 +17,7 @@ class ProductController extends Controller
     {
         $query = Product::where('status', 'on')
             ->where('quantity', '>', 0)
+            ->whereNull('deleted_at')
             ->withCount('reviews')
             ->withAvg('reviews as rating_avg', 'evaluation');
 
@@ -139,6 +140,11 @@ class ProductController extends Controller
 
     public function show(Product $product)
     {
+        if ($product->deleted_at !== null) {
+            return response()->json([
+                'message' => 'Not Found'
+            ], 404);
+        }
         $conf = ConfigController::getConfig();
         $isMarket = $conf['mode'] === 'marketplace';
 
@@ -170,6 +176,7 @@ class ProductController extends Controller
 
     public function destroy(Product $product)
     {
+        // сделать нормальное не мягкое удаление
         $product->delete();
         return response()->json([], 204);
     }

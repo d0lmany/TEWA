@@ -1,17 +1,20 @@
 <script setup lang="ts">
 import { computed, inject } from 'vue'
 import { useRouter } from 'vue-router'
-import { StarFilled } from '@element-plus/icons-vue'
+import { Message, StarFilled } from '@element-plus/icons-vue'
 import type { UI } from '@/ts/types'
 import type { FullProduct, Product } from '@/ts/entities'
 import { useShopStore } from '@/stores/shop'
+import type { Services } from '@/ts/services'
+import { ElMessage } from 'element-plus'
 
 const shopStore = useShopStore()
 const router = useRouter()
 const formatter = (inject('ui') as UI).currencyFormatter
 const { product } = defineProps<{
     product: Product
-}>();
+}>()
+const ProductService = (inject('services') as Services).product
 const formatPrice = (price: number) => formatter.format(price)
 const showProduct = () => router.push({
     name: 'Product',
@@ -25,6 +28,19 @@ const updateProduct = () => {
     shopStore.currentProduct = product as FullProduct
     shopStore.createFormVisible = true
 }
+const destroy = async () => {
+    try {
+        const response = await ProductService.destroy(product.id);
+        if (response.success) {
+            ElMessage.success('Удалено!');
+        } else {
+            console.error(response);
+            throw new Error(response.message);
+        }
+    } catch (e) {
+        ElMessage.error(`Произошла ошибка при удалении товара: ${e instanceof Error ? e.message : 'Неизвестная ошибка'}`);
+    }
+}
 
 const rating = computed(() => parseFloat(product.feedbacks.rating.toString()).toFixed(1));
 </script>
@@ -36,6 +52,7 @@ const rating = computed(() => parseFloat(product.feedbacks.rating.toString()).to
     role="article"
     tabindex="0"
     @keydown.enter="showProduct"
+    @click.self="showProduct"
 >
     <template #header>
         <el-image :src="product.photo" fit="contain" lazy class="img"/>
@@ -56,10 +73,11 @@ const rating = computed(() => parseFloat(product.feedbacks.rating.toString()).to
                 @click="updateProduct"
             >Управление</el-button>
             <el-button
-                type="primary"
+                plain
+                type="danger"
                 style="flex: 1"
-                @click="showProduct"
-            >Перейти</el-button>
+                @click="destroy"
+            >Удалить</el-button>
         </div>
     </template>
 </el-card>
@@ -68,6 +86,15 @@ const rating = computed(() => parseFloat(product.feedbacks.rating.toString()).to
 .card {
     border-radius: .5rem;
     will-change: box-shadow;
+}
+.card:deep(.el-card__footer) {
+    transition: var(--el-transition-duration);
+}
+.card:hover {
+    --el-card-border-color: var(--el-color-primary);
+}
+.card:hover :is(p, b) {
+    color: var(--el-color-primary);
 }
 .img {
     width: 100%;

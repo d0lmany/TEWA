@@ -21,4 +21,8 @@ export default class ProductService
     public update = async (id: number, data: FullProductRequest) => await this.repo.update({
         url: `/products/${id}`, data
     })
+
+    public destroy = async (id: number) => await this.repo.destroy({
+        url: `/products/${id}`
+    })
 }
