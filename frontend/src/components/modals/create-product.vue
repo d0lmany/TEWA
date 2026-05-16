@@ -76,7 +76,8 @@
             <el-form-item label="Процент скидки" prop="discount">
                 <el-input-number
                     v-model.number="product.price.discount"
-                    clearable :max="100" :min="0"
+                    clearable :max="100" :min="0" :step="0.01"
+                    inputmode="decimal" :precision="2"
                 />
             </el-form-item>
             <el-text size="large">Итоговая цена: {{ formatter.format(finalPrice) }}</el-text>
@@ -209,7 +210,7 @@ const handleSubmit = async () => {
         let response;
         if (shopStore.currentMode === 'create') {
             response = await ProductService.store({
-                name: product.name, quantity: product.quantity,
+                ...product,
                 base_price: product.price.base_price, discount: product.price.discount,
                 photo: selectedFile.value, category_id: product.category.id,
                 tags: product.tags.map(tag => tag.id), status: 'on',
