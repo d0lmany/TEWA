@@ -141,7 +141,7 @@ onMounted(() => {
             <el-radio :value="false" label="Нет"/>
         </el-radio-group>
         <div class="divider"></div>
-        <el-text>Фильтрация</el-text>
+        <el-text>Сортировка</el-text>
         <el-select v-model="preparedRules.sort" style="width: 15rem">
             <el-option value="updated_at" label="По дате изменения"/>
             <el-option value="created_at" label="По дате оформления"/>
