@@ -9,7 +9,7 @@ export const useUserStore = defineStore('user', {
         user: {
             name: '',
             picture: '',
-            birthday: '',
+            // birthday: '',
             role: UserRole.Unsigned,
         },
     }),
@@ -21,7 +21,8 @@ export const useUserStore = defineStore('user', {
         logout() {
             this.user = {
                 name: '', picture: '',
-                birthday: '', role: UserRole.Unsigned,
+                // birthday: '',
+                role: UserRole.Unsigned,
             };
             useFavoriteStore().clear();
             useCartStore().clear();

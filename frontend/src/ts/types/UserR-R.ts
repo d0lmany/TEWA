@@ -9,7 +9,7 @@ export interface LoginData {
 export interface RegistrationData {
     name: string,
     email: string,
-    birthday: string,
+    // birthday: string,
     password: string,
     password_confirmation: string,
 }

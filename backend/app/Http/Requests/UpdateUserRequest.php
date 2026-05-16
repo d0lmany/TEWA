@@ -15,7 +15,7 @@ class UpdateUserRequest extends FormRequest
    {
       return [
          'name' => ['sometimes', 'string', 'max:255'],
-         'birthday' => ['sometimes', 'date', 'before:-13 years'],
+         # 'birthday' => ['sometimes', 'date', 'before:-13 years'],
          'picture' => [
             'sometimes', 'image',
             'mimes:jpeg,png,jpg,webp', 'max:2048',

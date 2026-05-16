@@ -98,7 +98,8 @@ class AuthController extends Controller
             $user->save();
         }
         
-        $user->update($request->only(['name', 'birthday']));
+        # $user->update($request->only(['name', 'birthday']));
+        $user->update($request->only(['name']));
         
         return new UserResource($user->fresh());
     }

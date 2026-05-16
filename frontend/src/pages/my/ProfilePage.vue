@@ -37,7 +37,7 @@ const visibilities = reactive({
 });
 const route = useRoute();
 
-const age = computed(() => {
+/* const age = computed(() => {
     const today = new Date();
     const birthday = new Date(userStore.user?.birthday);
     let ageNum = today.getFullYear() - birthday.getFullYear();
@@ -63,7 +63,7 @@ const age = computed(() => {
     }
 
     return `${ageNum} ${ageSuffix}`;
-});
+}) */
 
 watch(
     () => route.path,
@@ -94,7 +94,7 @@ watch(
                 :src="userStore?.user?.picture"
                 style="width: 200px; height: 200px;"
             ><el-icon :size="48"><User/></el-icon></el-avatar>
-            <figcaption>{{ userStore.user.name }}<br>{{ age }}</figcaption>
+            <figcaption>{{ userStore.user.name }}</figcaption>
         </figure>
         <el-button-group class="buttons">
             <el-button text

@@ -17,7 +17,7 @@ class UserFactory extends Factory
             'name' => explode(' ', fake()->name())[0],
             'email' => fake()->unique()->safeEmail(),
             'password' => Hash::make('password'),
-            'birthday' => fake()->date('Y-m-d', '-13 years'),
+            # 'birthday' => fake()->date('Y-m-d', '-13 years'),
             'picture' => fake()->randomElement(['profiles/profile.png', NULL])
         ];
     }

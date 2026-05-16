@@ -7,7 +7,7 @@ export interface UserData {
 export interface User {
     name: string
     picture?: string
-    birthday: string
+    // birthday: string
     role: UserRole
     seller?: Seller
 }

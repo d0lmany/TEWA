@@ -18,7 +18,7 @@ class UserSeeder extends Seeder
             'name' => 'Джонни Гэт',
             'email' => 'master@gmail.com',
             'password' => Hash::make('iLefw$62jey'),
-            'birthday' => '2006-04-14',
+            # 'birthday' => '2006-04-14',
             'role' => 'admin',
         ]);
 
@@ -26,14 +26,14 @@ class UserSeeder extends Seeder
             'name' => 'Алина Малевич',
             'email' => 'AlinaMalevich01@mail.com',
             'password' => Hash::make('498t3598tyigh3oGLea!'),
-            'birthday' => '2002-07-12',
+            # 'birthday' => '2002-07-12',
         ]);
 
         User::create([
             'name' => 'Уэйн',
             'email' => 'waynemccallow@memphis.com',
             'password' => Hash::make('fwefwJBI69##;'),
-            'birthday' => '1996-05-05',
+            # 'birthday' => '1996-05-05',
         ]);
     }
 }

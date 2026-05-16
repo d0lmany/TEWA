@@ -28,14 +28,14 @@ class StoreUserRequest extends FormRequest
                ->symbols()
                ->max(100)
          ],
-         'birthday' => ['required', 'date', 'before:-13 years'],
+         # 'birthday' => ['required', 'date', 'before:-13 years'],
       ];
    }
 
    public function messages(): array
    {
       return [
-         'birthday.before' => 'You must be at least 13 years old.',
+         # 'birthday.before' => 'You must be at least 13 years old.',
          'password.confirmed' => 'Password confirmation does not match.',
       ];
    }

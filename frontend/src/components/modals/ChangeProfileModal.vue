@@ -18,11 +18,11 @@ const visible = defineModel({
 const formRef = ref();
 const form = reactive<Omit<User, 'role'>>({
     name: userStore.user.name,
-    birthday: userStore.user.birthday,
+    // birthday: userStore.user.birthday,
     picture: userStore.user.picture,
 });
 const rules: Rules = {
-    name: [ createMinRule(2), createMaxRule(255) ],
+    name: [ createMinRule(2), createMaxRule(255) ],/* 
     birthday: [
         {
             validator: (_: any, value: any, callback: Function) => {
@@ -48,13 +48,13 @@ const rules: Rules = {
             },
             trigger: 'change'
         }
-    ],
+    ], */
 };
 const UserService = (inject('services') as Services).user;
 
 const cancel = () => {
     form.name = userStore.user.name;
-    form.birthday = userStore.user.birthday;
+    // form.birthday = userStore.user.birthday;
     form.picture = userStore.user.picture;
     selectedFile.value = undefined;
 
@@ -86,9 +86,9 @@ const handleSubmit = async () => {
             formData.append('name', form.name);
         }
 
-        if (form.birthday) {
+/*         if (form.birthday) {
             formData.append('birthday', form.birthday);
-        }
+        } */
 
         const response = await UserService.updatePersonalData(formData);
 
@@ -110,9 +110,10 @@ const handleSubmit = async () => {
 const imageUrl = computed<string>(() => (selectedFile.value ? URL.createObjectURL(selectedFile.value) : form.picture) ?? '')
 const isUpdateDisabled = computed(() => {
     const sameName = form.name.trim() === userStore.user.name.trim();
-    const sameBirthday = form.birthday === userStore.user.birthday;
+    // const sameBirthday = form.birthday === userStore.user.birthday;
 
-    return !(sameName === false || sameBirthday === false);
+    return !(sameName === false);
+    // return !(sameName === false || sameBirthday === false);
 })
 
 const emit = defineEmits(['openChangePassword', 'deleteAccount']);
@@ -163,7 +164,7 @@ const emit = defineEmits(['openChangePassword', 'deleteAccount']);
                 placeholder="Как вас называть?"
             />
         </el-form-item>
-        <el-form-item label="Дата рождения" prop="birthday">
+        <!--el-form-item label="Дата рождения" prop="birthday">
             <el-input
                 type="date"
                 format="DD.MM.YYYY"
@@ -171,7 +172,7 @@ const emit = defineEmits(['openChangePassword', 'deleteAccount']);
                 value-format="YYYY-MM-DD"
                 placeholder="Когда вы родились?"
             />
-        </el-form-item>
+        </el-form-item-->
         <el-form-item label="Действия" style="margin-bottom: 0">
             <el-button-group>
                 <el-button @click="emit('openChangePassword')">Изменить пароль</el-button>

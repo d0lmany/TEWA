@@ -16,7 +16,7 @@ const ApiService: AS = (inject('services') as Services).api;
 const form = reactive<RegistrationData>({
     name: '',
     email: '',
-    birthday: '',
+    // birthday: '',
     password: '',
     password_confirmation: '',
 });
@@ -31,7 +31,7 @@ const rules: Rules = {
         createMaxRule(255),
         createTypeRule('Нужен корректный email', 'email')
     ],
-    birthday: [
+/*     birthday: [
         createRequiredRule('Дата рождения'),
         {
             validator: (_: any, value: any, callback: Function) => {
@@ -57,7 +57,7 @@ const rules: Rules = {
             },
             trigger: 'change'
         }
-    ],
+    ], */
     password: [
         createRequiredRule('Пароль'),
         createMinRule(8),
@@ -196,7 +196,7 @@ const handleSubmit = async () => {
                     placeholder="Введите вашу почту"
                 />
             </el-form-item>
-            <el-form-item label="Дата рождения" prop="birthday">
+            <!--el-form-item label="Дата рождения" prop="birthday">
                 <el-date-picker
                     v-model="form.birthday"
                     type="date"
@@ -205,7 +205,7 @@ const handleSubmit = async () => {
                     value-format="YYYY-MM-DD"
                     style="width: 100%"
                 />
-            </el-form-item>
+            </el-form-item-->
             <el-form-item label="Пароль" prop="password">
                 <el-input
                     v-model="form.password"

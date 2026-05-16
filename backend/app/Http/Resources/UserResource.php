@@ -11,7 +11,7 @@ class UserResource extends JsonResource
     {
         return [
             'name' => $this->name,
-            'birthday' => $this->birthday,
+            # 'birthday' => $this->birthday,
             'picture' => $this->picture
                 ? url('storage/' . $this->picture)
                 : null,
