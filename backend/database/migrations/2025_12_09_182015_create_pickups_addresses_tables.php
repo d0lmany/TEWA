@@ -15,8 +15,8 @@ return new class extends Migration
             $table->string('name', 300);
             $table->string('country', 100);
             $table->string('city', 100);
-            $table->text('address');
-
+            // $table->text('address');
+            $table->string('address', 500);
             $table->unique(['country', 'city', 'address']);
 
             $table->index('country');
@@ -33,7 +33,8 @@ return new class extends Migration
                 ->nullable()
                 ->constrained()
                 ->nullOnDelete();
-            $table->text('address')
+            // $table->text('address')
+            $table->string('address', 500)
                 ->nullable();
             $table->boolean('is_default')
                 ->default(false);

@@ -14,7 +14,8 @@ return new class extends Migration
             $table->id();
             $table->string('name')
                 ->unique();
-            $table->text('description');
+            // $table->text('description');
+            $table->string('description', 500);
         });
         Schema::create('product_tag', function (Blueprint $table) {
             $table->foreignIdFor(Product::class)

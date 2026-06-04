@@ -38,7 +38,8 @@ return new class extends Migration
             $table->enum('entity', ['product']);
             $table->string('entity_id');
             $table->string('topic');
-            $table->text('text');
+            // $table->text('text');
+            $table->string('text', 500);
             $table->timestamp('created_at')
                 ->useCurrent();
         });

@@ -29,8 +29,10 @@ return new class extends Migration
             $table->foreignIdFor(User::class)
                 ->constrained()
                 ->cascadeOnDelete();
-            $table->text('passport_numbers');
-            $table->text('passport_scan');
+            // $table->text('passport_numbers');
+            $table->string('passport_numbers', 500);
+            $table->string('passport_scan', 500);
+            // $table->text('passport_scan');
             $table->timestamp('created_at')
                 ->useCurrent();
         });
