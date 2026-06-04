@@ -2,7 +2,7 @@
 // imports
 import { onMounted, onUnmounted, provide, reactive, ref, watch } from 'vue';
 // extra
-const backendURL = `http://127.0.0.1:8000/api/v1`;
+const backendURL = `https://tewa-backend-production.up.railway.app/api/v1`;
 // components
 import AppHeader from '@/components/AppHeader.vue';
 import AppFooter from '@/components/AppFooter.vue';
