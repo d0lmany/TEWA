@@ -15,12 +15,13 @@ class Product extends Model
     use HasFactory;
     use SoftDeletes;
 
-    public function __construct()
+    public function initializeProduct()
     {
         $conf = ConfigController::getConfig();
-        $isMarket = $conf['mode'] === 'marketplace';
+        $isMarket = ($conf['mode'] ?? '') === 'marketplace';
+        
         if ($isMarket) {
-            $fillable[] = 'shop_id';
+            $this->mergeFillable(['shop_id']);
         }
     }
 
