@@ -67,6 +67,8 @@ Route::prefix('v1')->middleware('throttle:75,1')->group(function () use ($conf) 
         Route::get('orders', [OrderController::class, 'index']);
         Route::post('orders', [OrderController::class, 'store']);
         Route::patch('orders/{order}/cancel', [OrderController::class, 'cancelOrder']);
+        // пока вернём продавцов
+        Route::post('sellers', [SellerController::class, 'store']);
         // маршруты для админа
         Route::middleware('adminOnly')->group(function () use ($conf) {
             // контент
@@ -78,7 +80,6 @@ Route::prefix('v1')->middleware('throttle:75,1')->group(function () use ($conf) 
             Route::get('config', [ConfigController::class, 'index']);
             Route::patch('config/mode', [ConfigController::class, 'changeMode']);
             // модерация
-            Route::post('sellers', [SellerController::class, 'store']);
         });
     });
 });
